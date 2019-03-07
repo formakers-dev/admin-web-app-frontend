@@ -12,11 +12,6 @@ aliases:
   - &update-npm
       |
       sudo npm install -g npm@6.1.0
-      sudo npm install -g @vue/cli-plugin-unit-jest
-      sudo npm install -g @vue/cli-plugin-eslint
-      sudo npm install -g @vue/cli-plugin-babel
-      sudo npm install -g @vue/cli-service
-      sudo npm install -g vue-template-compiler
 
   - &install-dependencies
     |
@@ -85,6 +80,9 @@ jobs:
       - checkout
       - attach_workspace: *attach-workspace
       - run: *update-npm
+      - restore_cache: *restore-npm-cache
+      - run: *install-dependencies
+      - save_cache: *save-npm-cache
       - run:
           name: set environment variables at Runtime
           command: |
