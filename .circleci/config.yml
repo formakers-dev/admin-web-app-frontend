@@ -11,6 +11,7 @@ aliases:
 
   - &update-npm
       |
+      sudo npm install -g @vue/cli-plugin-unit-jest
       sudo npm install -g @vue/cli-plugin-eslint
       sudo npm install -g @vue/cli-plugin-babel
       sudo npm install -g @vue/cli-service
