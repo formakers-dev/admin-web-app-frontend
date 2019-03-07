@@ -12,8 +12,8 @@ fi
 echo "add deploy for $VERSION"
 ### end of getting version
 
-git config --global user.email "appbee0908@gmail.com"
-git config --global user.name "AppBee Dragon"
+git config --global user.email "appbee1018@gmail.com"
+git config --global user.name "AppBee Admin"
 
 cp .gitignore .gitignore_original
 sed -i '/dist/d' .gitignore
