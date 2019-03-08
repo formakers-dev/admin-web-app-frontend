@@ -15,6 +15,7 @@ echo "add deploy for $VERSION"
 git config --global user.email "appbee1018@gmail.com"
 git config --global user.name "AppBee Admin"
 
+### [For only Vue.js] Heroku의 Express 환경 구성을 위한 Dummy 파일들
 cp .circleci/package.json dist/
 cp .circleci/server.js dist/
 
