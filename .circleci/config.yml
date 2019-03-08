@@ -36,15 +36,16 @@ aliases:
 
   - &setup-branch-and-commit
     name: Setup Branch and Commit
-    command: bash .circleci/setup-branch-and-commit.sh heroku-$HEROKU_APP
+    command: |
+      cp .circleci/package.json dist/
+      cp .circleci/server.js dist/
+      bash .circleci/setup-branch-and-commit.sh heroku-$HEROKU_APP
 
   - &deploy-to-heroku
     name: Deploy to Heroku
     command: |
       ls; ls dist
-      GIT_RESULT=`git subtree split --prefix=dist -b heroku-$HEROKU_APP-deploy`
-      echo ${GIT_RESULT}
-      git push -v heroku ${GIT_RESULT}:master --force
+      git subtree push --prefix dist heroku master
       sleep 5
       heroku restart
 
