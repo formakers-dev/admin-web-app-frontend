@@ -37,8 +37,6 @@ aliases:
   - &setup-branch-and-commit
     name: Setup Branch and Commit
     command: |
-      cp .circleci/package.json dist/
-      cp .circleci/server.js dist/
       bash .circleci/setup-branch-and-commit.sh heroku-$HEROKU_APP
 
   - &deploy-to-heroku

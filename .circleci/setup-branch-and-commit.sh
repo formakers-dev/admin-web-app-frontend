@@ -15,6 +15,9 @@ echo "add deploy for $VERSION"
 git config --global user.email "appbee1018@gmail.com"
 git config --global user.name "AppBee Admin"
 
+cp .circleci/package.json dist/
+cp .circleci/server.js dist/
+
 cp .gitignore .gitignore_original
 sed -i '/dist/d' .gitignore
 git add dist && git commit -m "add deploy for $VERSION"
