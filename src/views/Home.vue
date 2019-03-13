@@ -1,16 +1,11 @@
 <template>
   <div class="home">
-    <NotiSender/>
+    <p>포메이커스 운영 페이지</p>
   </div>
 </template>
 
 <script>
-import NotiSender from '@/components/NotiSender.vue';
-
 export default {
   name: 'home',
-  components: {
-    NotiSender,
-  },
 };
 </script>

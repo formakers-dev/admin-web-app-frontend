@@ -2,7 +2,8 @@
   <div id="app">
     <div id="nav">
       <div id="title"><b>운영 페이지</b> - {{ buildType }}</div>
-      <router-link to="/">Admin Home</router-link> |
+      <router-link to="/">홈</router-link> |
+      <router-link to="/noti-sender">알림 보내기</router-link> |
       <router-link to="/about">About</router-link>
     </div>
     <router-view/>
