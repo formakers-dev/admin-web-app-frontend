@@ -1,7 +1,6 @@
 import axios from 'axios';
 import config from '../../config';
 
-module.exports = axios.create({
+export default axios.create({
   baseURL: config.serverBaseUrl,
-  withCredentials: true,
 });
