@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import request from '../common/http';
 
 export default {
   name: 'NotiSender',
@@ -85,7 +85,7 @@ export default {
         emails: splitedEmails,
       };
 
-      axios.create().post('http://localhost:3000/noti', body)
+      request.post('/noti', body)
         .then((result) => {
           this.result = result;
         });

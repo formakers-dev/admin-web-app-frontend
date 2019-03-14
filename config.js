@@ -1,7 +1,7 @@
 const config = {};
 
 config.development = {
-  serverBaseUrl: process.env.SERVER_BASE_URL || 'http://localhost:8080',
+  serverBaseUrl: process.env.SERVER_BASE_URL || 'http://localhost:3000',
   port: process.env.PORT || 8989,
   env: process.env.NODE_ENV,
 };
