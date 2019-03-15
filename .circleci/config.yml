@@ -18,7 +18,7 @@ aliases:
       npm install
 
   - &attach-workspace
-    at: ~/dragonwebapp
+    at: ~/fomesadmin-frontend
 
   - &build
     name: Build
@@ -62,8 +62,6 @@ jobs:
 ####### TODO : move to a shell script for build
   test-and-build:
     <<: *defaults
-    environment:
-    - HEROKU_APP: fomes-admin-frontend
     steps:
       - checkout
       - attach_workspace: *attach-workspace
