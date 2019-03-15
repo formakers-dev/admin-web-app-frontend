@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Buefy from 'buefy';
 import 'buefy/dist/buefy.css';
+import 'mdi/css/materialdesignicons.min.css';
 import 'babel-polyfill';
 import axios from 'axios';
 import App from './App.vue';

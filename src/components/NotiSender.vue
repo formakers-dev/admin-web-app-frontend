@@ -6,7 +6,7 @@
   </h2>
   <br/>
 
-  <b-field>
+  <b-field style="padding-bottom: 20px">
     <b-radio-button v-model="notiType"
                     native-value="individual">
       <span>개별</span>
@@ -15,6 +15,30 @@
                     native-value="topic">
       <span>단체(토픽)</span>
     </b-radio-button>
+  </b-field>
+
+  <b-field style="align-items: center" class="box">
+    <b-switch v-model="isReserved"
+              v-on:input="$event === false ? when = null : when">
+      예약 <b>{{ booleanToSwitchString(isReserved) }}</b>
+    </b-switch>
+    <b-field v-if="isReserved" style="padding-left: 10px; align-items: center">
+      <b-datepicker v-model="when"
+                    style="padding-right: 10px"
+                    placeholder="예약할 날자를 선택하세요"
+                    icon="calendar-today"
+                    mobile-native="true"
+                    editable>
+      </b-datepicker>
+      <b-timepicker v-model="when"
+                    style="padding-right: 10px"
+                    placeholder="예약할 시간을 선택하세요"
+                    icon="clock"
+                    mobile-native="true"
+                    editable>
+      </b-timepicker>
+      에 전송됩니다.
+    </b-field>
   </b-field>
 
   <br/>
@@ -61,7 +85,8 @@
   <br/>
   <b-field label="딥링크 (deeplink)">
     알림 클릭시 이동할 HTTP 링크나 포메스 딥링크를 설정합니다.
-    <b-input v-model="noti.deeplink" placeholder="ex) http://www.naver.com 혹은 fomes://launch?action=main"></b-input>
+    <b-input v-model="noti.deeplink"
+             placeholder="ex) http://www.naver.com 혹은 fomes://launch?action=main"></b-input>
   </b-field>
 
   <br/>
@@ -98,6 +123,7 @@ export default {
       // 채널은 나중에 디비에서 리스트를 가져올 수 있지 않을까?
       channelList: ['channel_default', 'channel_announce', 'channel_betatest'],
       topicList: ['notice-all'],
+      isReserved: false,
       noti: {
         channel: '',
         title: '',
@@ -107,6 +133,7 @@ export default {
         summarySubText: '',
         deeplink: '',
       },
+      when: null,
       emails: 'yenarue@gmail.com, copyx00@gmail.com',
       topic: 'notice-all',
       result: '',
@@ -127,6 +154,7 @@ export default {
       const body = {
         data: this.noti,
         emails: splitedEmails,
+        when: this.when,
       };
 
       request.post('/noti', body)
@@ -137,7 +165,10 @@ export default {
     sendNotiByTopic() {
       const body = {
         data: this.noti,
+        when: this.when,
       };
+
+      body.data.isSummary = body.data.isSummary.toString();
 
       request.post(`/noti/topics/${this.topic}`, body)
         .then((result) => {
