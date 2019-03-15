@@ -83,6 +83,9 @@ jobs:
             source $BASH_ENV
       - run: *build
       - persist_to_workspace: *delivery-dist
+      - run:
+          name: check dist directory
+          command: ls; ls dist
 
   # Deploy
   dev-deploy:
@@ -95,6 +98,10 @@ jobs:
     - run: *setup-heroku
     - run: *setup-branch-and-commit
     - run: *deploy-to-heroku
+    - persist_to_workspace: *delivery-dist
+    - run:
+        name: check dist directory
+        command: ls; ls dist
 
   prd-deploy:
     <<: *defaults
