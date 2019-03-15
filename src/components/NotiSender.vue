@@ -62,7 +62,9 @@
 
   <b-field class="column" label="알림이 펼쳐져있을 때 보여질 내용 (message)">
     알림을 펼쳤을 때 보여질 문구입니다. 적지 않으면 `내용`에 적은 문구가 보여집니다.
-    <b-input v-model="noti.message" type="textarea"></b-input>
+    <b-input v-bind:value="noti.message || ''"
+             v-on:input="noti.message = ($event === '' ? null : $event)"
+             type="textarea"></b-input>
   </b-field>
   </div>
 
@@ -78,14 +80,17 @@
     </b-field>
 
     <b-field class="column" v-if="noti.isSummary" label="그룹화 시킬 때의 알림 내용 (summarySubText)">
-      <b-input v-model="noti.summarySubText" type="textarea"></b-input>
+      <b-input v-bind:value="noti.summarySubText || ''"
+               v-on:input="noti.summarySubText = ($event === '' ? null : $event)"
+               type="textarea"></b-input>
     </b-field>
   </div>
 
   <br/>
   <b-field label="딥링크 (deeplink)">
     알림 클릭시 이동할 HTTP 링크나 포메스 딥링크를 설정합니다.
-    <b-input v-model="noti.deeplink"
+    <b-input v-bind:value="noti.deeplink || ''"
+             v-on:input="noti.deeplink = ($event === '' ? null : $event)"
              placeholder="ex) http://www.naver.com 혹은 fomes://launch?action=main"></b-input>
   </b-field>
 
@@ -128,10 +133,10 @@ export default {
         channel: '',
         title: '',
         subTitle: '',
-        message: '',
+        message: null,
         isSummary: false,
-        summarySubText: '',
-        deeplink: '',
+        summarySubText: null,
+        deeplink: null,
       },
       when: null,
       emails: 'yenarue@gmail.com, copyx00@gmail.com',
