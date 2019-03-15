@@ -61,9 +61,11 @@
   </b-field>
 
   <b-field class="column" label="알림이 펼쳐져있을 때 보여질 내용 (message)">
-    알림을 펼쳤을 때 보여질 문구입니다. 적지 않으면 `내용`에 적은 문구가 보여집니다.
+    접힌 알림을 펼쳤을 때 보여질 문구입니다. 입력하지 않으면 `내용(subTitle)`에 적은 문구가 보여집니다.
     <b-input v-bind:value="noti.message || ''"
              v-on:input="noti.message = ($event === '' ? null : $event)"
+             placeholder="30자 이상 적어주세요!"
+             minlength="30"
              type="textarea"></b-input>
   </b-field>
   </div>
@@ -114,7 +116,11 @@
             v-on:click="sendNotiByTopic"
             v-bind:disabled="disabled"><b>단체(토픽) 전송</b></button>
   </div>
-  <p>{{ result }}</p>
+
+  <br/>
+  <b-field v-if="result" label="Log">
+    <b-message class="white-space-pre">{{ JSON.stringify(result, null, '    ') }}</b-message>
+  </b-field>
 </div>
 </template>
 
@@ -141,7 +147,7 @@ export default {
       when: null,
       emails: 'yenarue@gmail.com, copyx00@gmail.com',
       topic: 'notice-all',
-      result: '',
+      result: null,
       notiType: 'individual',
     };
   },
@@ -165,6 +171,25 @@ export default {
       request.post('/noti', body)
         .then((result) => {
           this.result = result;
+
+          let toastMessage;
+          if (this.isReserved) {
+            toastMessage = `예약 성공! (${this.when})`;
+          } else {
+            toastMessage = `${splitedEmails.length}개 알림 전송 성공!
+             (성공 : ${this.result.data.result.success},
+             실패 : ${this.result.data.result.failure})`;
+          }
+
+          if (result.status === 200) {
+            this.showSuccessToast(toastMessage);
+          } else {
+            this.showErrorToast();
+          }
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast();
         });
     },
     sendNotiByTopic() {
@@ -178,8 +203,32 @@ export default {
       request.post(`/noti/topics/${this.topic}`, body)
         .then((result) => {
           this.result = result;
+
+          if (result.status === 200) {
+            this.showSuccessToast(`예약 성공! (${this.when})`);
+          } else {
+            this.showErrorToast();
+          }
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast();
         });
     },
+    showSuccessToast(toastMessage) {
+      this.$toast.open({
+        duration: 4000,
+        message: toastMessage,
+        type: 'is-success',
+      });
+    },
+    showErrorToast() {
+      this.$toast.open({
+        duration: 4000,
+        message: '실패! 로그를 확인하시오!',
+        type: 'is-danger',
+      });
+    }
   },
 };
 </script>
@@ -188,6 +237,9 @@ export default {
 .noti-sender {
   text-align: start;
   padding: 30px;
+}
+.white-space-pre {
+  white-space: pre-wrap;
 }
 
 </style>
