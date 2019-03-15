@@ -83,7 +83,7 @@ jobs:
       - persist_to_workspace: *delivery-dist
       - run:
           name: check dist directory
-          command: ls; ls dist
+          command: pwd; ls; ls dist
 
   # Deploy
   dev-deploy:
