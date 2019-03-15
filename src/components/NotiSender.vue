@@ -90,11 +90,9 @@
 
 <script>
 import request from '../common/http';
-import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete';
 
 export default {
   name: 'NotiSender',
-  components: { BAutocomplete },
   data() {
     return {
       // 채널은 나중에 디비에서 리스트를 가져올 수 있지 않을까?
