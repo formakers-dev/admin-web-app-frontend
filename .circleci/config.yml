@@ -60,7 +60,7 @@ defaults: &defaults
 version: 2
 jobs:
 ####### TODO : move to a shell script for build
-  test-and-build-and-deploy:
+  test-and-build:
     <<: *defaults
     environment:
     - HEROKU_APP: fomes-admin-frontend
@@ -83,14 +83,42 @@ jobs:
             source $BASH_ENV
       - run: *build
       - persist_to_workspace: *delivery-dist
-      # Deploy
-      - run: *setup-heroku
-      - run: *setup-branch-and-commit
-      - run: *deploy-to-heroku
+
+  # Deploy
+  dev-deploy:
+    <<: *defaults
+    environment:
+    - HEROKU_APP: fomes-admin-frontend-dev
+    steps:
+    - checkout
+    - attach_workspace: *attach-workspace
+    - run: *setup-heroku
+    - run: *setup-branch-and-commit
+    - run: *deploy-to-heroku
+
+  prd-deploy:
+    <<: *defaults
+    environment:
+    - HEROKU_APP: fomes-admin-frontend
+    steps:
+    - checkout
+    - attach_workspace: *attach-workspace
+    - run: *setup-heroku
+    - run: *setup-branch-and-commit
+    - run: *deploy-to-heroku
 
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - test-and-build-and-deploy:
+      - test-and-build:
+          filters: *filter
+      - dev-deploy:
+          requires:
+            - test-and-build
+          filters: *filter
+      - prd-deploy:
+          requires:
+            - test-and-build
+            - dev-deploy
           filters: *filter
