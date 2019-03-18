@@ -20,12 +20,6 @@ aliases:
   - &attach-workspace
     at: ~/fomes-admin-frontend
 
-  - &build
-    name: Build
-    command: |
-      env | grep -i base_url
-      npm run build
-
   - &delivery-dist
     root: .
     paths: dist
@@ -60,7 +54,7 @@ defaults: &defaults
 version: 2
 jobs:
 ####### TODO : move to a shell script for build
-  test-and-build:
+  test:
     <<: *defaults
     steps:
       - checkout
@@ -73,13 +67,46 @@ jobs:
       - run:
           name: test
           command: npm test
-      # Build
+
+  dev-build:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace: *attach-workspace
+      - run: *update-npm
+      - restore_cache: *restore-npm-cache
+      - run: *install-dependencies
+      - save_cache: *save-npm-cache
       - run:
           name: set environment variables at Runtime
           command: |
             echo 'export BASE_URL=$DEV_BASE_URL' >> $BASH_ENV
             source $BASH_ENV
-      - run: *build
+      - run:
+          name: Build in Development Mode
+          command: npm run build-dev
+      - persist_to_workspace: *delivery-dist
+      - run:
+          name: check dist directory
+          command: pwd; ls; ls dist
+
+  prd-build:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace: *attach-workspace
+      - run: *update-npm
+      - restore_cache: *restore-npm-cache
+      - run: *install-dependencies
+      - save_cache: *save-npm-cache
+      - run:
+          name: set environment variables at Runtime
+          command: |
+            echo 'export BASE_URL=$DEV_BASE_URL' >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Build in Production Mode
+          command: npm run build
       - persist_to_workspace: *delivery-dist
       - run:
           name: check dist directory
@@ -97,9 +124,6 @@ jobs:
     - run: *setup-branch-and-commit
     - run: *deploy-to-heroku
     - persist_to_workspace: *delivery-dist
-    - run:
-        name: check dist directory
-        command: ls; ls dist
 
   prd-deploy:
     <<: *defaults
@@ -116,14 +140,22 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - test-and-build:
+      - test:
           filters: *filter
+      - dev-build:
+          requires:
+            - test
       - dev-deploy:
           requires:
-            - test-and-build
+            - test
+            - dev-build
           filters: *filter
+      - prd-build:
+          requires:
+            - test
+            - dev-deploy
       - prd-deploy:
           requires:
-            - test-and-build
-            - dev-deploy
+            - test
+            - prd-build
           filters: *filter
