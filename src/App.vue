@@ -11,12 +11,10 @@
 </template>
 
 <script>
-const config = require('../config');
-
 export default {
   data() {
     return {
-      buildType: config.env,
+      buildType: process.env.NODE_ENV,
     };
   },
 };

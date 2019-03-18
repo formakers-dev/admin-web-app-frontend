@@ -1,9 +1,8 @@
 const config = {};
 
 config.development = {
-  serverBaseUrl: process.env.SERVER_BASE_URL || 'http://localhost:3000',
-  port: process.env.PORT || 8989,
-  env: process.env.NODE_ENV,
+  serverBaseUrl: process.env.VUE_APP_SERVER_BASE_URL || 'http://localhost:3000',
+  port: process.env.VUE_APP_PORT || 8989,
 };
 
 config.staging = config.development;
