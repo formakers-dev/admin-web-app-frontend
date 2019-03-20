@@ -4,6 +4,7 @@
       <div id="title">ADMIN <b>{{ buildType.toUpperCase() }}</b></div>
       <router-link to="/">홈</router-link> |
       <router-link to="/noti-sender">알림 보내기</router-link> |
+      <router-link to="/reserved-noti">예약된 알림</router-link> |
       <router-link to="/about">About</router-link>
     </div>
     <router-view/>

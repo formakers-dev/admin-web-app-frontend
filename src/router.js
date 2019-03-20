@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
 import NotiSender from './components/NotiSender.vue';
+import ReservedNoti from './components/ReservedNoti.vue';
 
 Vue.use(Router);
 
@@ -18,6 +19,11 @@ export default new Router({
       path: '/noti-sender',
       name: 'noti-sender',
       component: NotiSender,
+    },
+    {
+      path: '/reserved-noti',
+      name: 'reserved-noti',
+      component: ReservedNoti,
     },
     {
       path: '/about',
