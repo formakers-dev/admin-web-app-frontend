@@ -8,7 +8,7 @@
 
   <br/>
   <button class="button field is-danger"
-          @click="checkedRows = []"
+          @click="cancel()"
           :disabled="!checkedRows.length">
     <b-icon icon="close"></b-icon>
     <span>{{ checkedRows.length > 0 ? checkedRows.length + '개' : '' }} 삭제</span>
@@ -96,6 +96,22 @@ export default {
           this.showErrorToast();
         });
     },
+    cancel() {
+      const checkedNotiIds = this.checkedRows.map(row => row._id);
+
+      request.post('/noti/reserved/cancel', checkedNotiIds)
+        .then((res) => {
+          if (res.status === 200) {
+            this.getReservedNoti();
+          } else {
+            this.showErrorToast('삭제 실패! 재시도 하세욧!!!');
+          }
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast('삭제 실패! 재시도 하세욧!!!');
+        });
+    },
     showSuccessToast(toastMessage) {
       this.$toast.open({
         duration: 4000,
@@ -103,10 +119,10 @@ export default {
         type: 'is-success',
       });
     },
-    showErrorToast() {
+    showErrorToast(errorMsg) {
       this.$toast.open({
         duration: 4000,
-        message: '실패! 로그를 확인하시오!',
+        message: errorMsg || '실패!',
         type: 'is-danger',
       });
     },
