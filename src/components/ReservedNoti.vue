@@ -7,21 +7,51 @@
   <br/>
 
   <br/>
-  <button class="button field is-danger"
+
+  <strong v-if="!isLoading && data.reservedNotiList.length <= 0" class="is-center">
+    ❌️ 예약된 노티가 없습니다 ❌️
+  </strong>
+  <button v-else class="button field is-danger"
           @click="cancel()"
           :disabled="!checkedRows.length">
     <b-icon icon="close"></b-icon>
     <span>{{ checkedRows.length > 0 ? checkedRows.length + '개' : '' }} 삭제</span>
   </button>
+
   <br/>
 
   <b-table
     :data="data.reservedNotiList"
-    :columns="columns"
+    :loading="isLoading"
     :checked-rows.sync="checkedRows"
     :is-row-checkable="(row) => row.id !== 3"
     checkable
     detailed>
+
+    <template slot-scope="props">
+      <b-table-column field="title" label="제목">
+        {{ props.row.data.data.title }}
+      </b-table-column>
+
+      <b-table-column field="nextRunAt" label="예약시간">
+        {{ props.row.nextRunAt }}
+      </b-table-column>
+
+      <b-table-column field="channel" label="채널" centered>
+        <strong class="tag is-primary">
+          {{ props.row.data.data.channel }}
+        </strong>
+      </b-table-column>
+
+      <b-table-column label="전송타입" centered>
+        <strong v-if="props.row.name.includes('topic')" class="tag is-black">
+          단체
+        </strong>
+        <strong v-else class="tag is-warning">
+          개별
+        </strong>
+      </b-table-column>
+    </template>
 
     <template slot="detail" slot-scope="props">
       <article class="media">
@@ -54,12 +84,14 @@
 </template>
 
 <script>
+import moment from 'moment';
 import request from '../common/http';
 
 export default {
   name: 'ReservedNoti',
   data() {
     return {
+      isLoading: true,
       data: {
         reservedNotiList: [],
       },
@@ -71,6 +103,10 @@ export default {
         {
           field: 'nextRunAt',
           label: '예약시간',
+        },
+        {
+          field: 'data.data.channel',
+          label: '채널',
         },
       ],
       checkedRows: [],
@@ -86,10 +122,15 @@ export default {
         .then((res) => {
           console.log(res);
           if (res.status === 200) {
-            this.data.reservedNotiList = res.data;
+            this.data.reservedNotiList = res.data.map((item) => {
+              const result = item;
+              result.nextRunAt = moment(result.nextRunAt).format('YYYY-MM-DD (ddd) HH:mm:ss');
+              return result;
+            });
           } else {
             this.showErrorToast();
           }
+          this.isLoading = false;
         })
         .catch((err) => {
           this.result = err;
