@@ -33,7 +33,7 @@
         {{ props.row.data.data.title }}
       </b-table-column>
 
-      <b-table-column field="nextRunAt" label="예약시간">
+      <b-table-column field="nextRunAt" label="예약시">
         {{ props.row.nextRunAt }}
       </b-table-column>
 
@@ -51,6 +51,10 @@
           개별
         </strong>
       </b-table-column>
+      <b-table-column label="전송결과" centered>
+        <strong v-if="props.row.failCount > 0" class="tag is-danger">실패</strong>
+        <strong v-else class="tag is-black">대기중</strong>
+      </b-table-column>
     </template>
 
     <template slot="detail" slot-scope="props">
@@ -58,21 +62,46 @@
         <div class="media-content">
           <div class="content">
             <p>
-              <strong class="tag is-success">{{ props.row.data.data.channel }}</strong><br/>
-              <strong>title : {{ props.row.data.data.title }}</strong><br/>
-              <strong>subTitle : {{ props.row.data.data.subTitle }}</strong><br/>
-              <strong>message : {{ props.row.data.data.message }}</strong><br/>
-              <strong>isSummary : {{ props.row.data.data.isSummary }}</strong><br/>
-              <strong>summarySubText : {{ props.row.data.data.summarySubText }}</strong><br/>
-              <strong>deeplink : {{ props.row.data.data.deeplink }}</strong><br/>
-              <strong v-if="props.row.name.includes('topic')">
-                topic : {{ props.row.data.topic }}
+              <!-- tags -->
+              <strong class="tag is-primary">{{ props.row.data.data.channel }}</strong>
+              &nbsp;
+              <strong v-if="props.row.name.includes('topic')" class="tag is-black">
+                단체
               </strong>
-              <strong v-else>
-                receivers : {{ props.row.data.receivers }}
+              <strong v-else class="tag is-warning">
+                개별
               </strong>
+              &nbsp;
+              <strong v-if="props.row.failCount > 0" class="tag is-danger">실패</strong>
+              <strong v-else class="tag is-black">대기중</strong>
+            </p>
+            <br/>
+            <p v-if="props.row.failCount > 0">
+              <b-message type="is-danger" :closable="false" title="실패 상세내용">
+                failCount : {{ props.row.failCount }}<br/>
+                failReason : {{ props.row.failReason }}<br/>
+                failedAt : {{ props.row.failedAt }}<br/>
+                lastFinishedAt : {{ props.row.lastFinishedAt }}<br/>
+              </b-message>
               <br/>
-              <strong>nextRunAt : {{ props.row.nextRunAt }}</strong>
+            </p>
+            <p>
+              <b-message :closable="false" title="예약 상세내용">
+                <strong>title : {{ props.row.data.data.title }}</strong><br/>
+                <strong>subTitle : {{ props.row.data.data.subTitle }}</strong><br/>
+                <strong>message : {{ props.row.data.data.message }}</strong><br/>
+                <strong>isSummary : {{ props.row.data.data.isSummary }}</strong><br/>
+                <strong>summarySubText : {{ props.row.data.data.summarySubText }}</strong><br/>
+                <strong>deeplink : {{ props.row.data.data.deeplink }}</strong><br/>
+                <strong v-if="props.row.name.includes('topic')">
+                  topic : {{ props.row.data.topic }}
+                </strong>
+                <strong v-else>
+                  receivers : {{ props.row.data.receivers }}
+                </strong>
+                <br/>
+                <strong>nextRunAt : {{ props.row.nextRunAt }}</strong>
+              </b-message>
             </p>
           </div>
         </div>
@@ -90,11 +119,13 @@ import request from '../common/http';
 export default {
   name: 'ReservedNoti',
   data() {
+    const data = {
+      reservedNotiList: [],
+    };
+
     return {
       isLoading: true,
-      data: {
-        reservedNotiList: [],
-      },
+      data,
       columns: [
         {
           field: 'data.data.title',
@@ -124,6 +155,9 @@ export default {
           if (res.status === 200) {
             this.data.reservedNotiList = res.data.map((item) => {
               const result = item;
+              if (result.failCount > 0) {
+                result.nextRunAt = result.data.when;
+              }
               result.nextRunAt = moment(result.nextRunAt).format('YYYY-MM-DD (ddd) HH:mm:ss');
               return result;
             });
@@ -179,5 +213,4 @@ export default {
 .white-space-pre {
   white-space: pre-wrap;
 }
-
 </style>
