@@ -69,7 +69,7 @@
                 topic : {{ props.row.data.topic }}
               </strong>
               <strong v-else>
-                emails : {{ props.row.data.emails }}
+                receivers : {{ props.row.data.receivers }}
               </strong>
               <br/>
               <strong>nextRunAt : {{ props.row.nextRunAt }}</strong>

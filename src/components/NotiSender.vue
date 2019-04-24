@@ -97,15 +97,37 @@
   </b-field>
 
   <br/>
-  <b-field v-if="notiType === 'individual'" label="대상자들의 이메일 (emails) *">
-    여러개의 이메일 입력 가능하며 엔터(\n)와 쉼표(,)로 구분합니다.
-    <b-input v-model="emails" type="textarea"></b-input>
-  </b-field>
-  <b-field v-if="notiType === 'topic'" label="토픽 (topic) *">
-    <b-autocomplete v-model="topic"
-                    placeholder="ex) notice-all"
-                    v-bind:data="topicList" ></b-autocomplete>
-  </b-field>
+
+  <div class="box">
+
+    <div v-if="notiType === 'individual'">
+      <b-field style="padding-bottom: 20px">
+        <b-radio-button v-model="receiversType"
+                        native-value="email"
+                        type="is-black">
+          <span>Email</span>
+        </b-radio-button>
+        <b-radio-button v-model="receiversType"
+                        native-value="userId"
+                        type="is-black">
+          <span>UserId</span>
+        </b-radio-button>
+      </b-field>
+
+      <b-field v-if="receiversType === 'email'" label="대상자들의 이메일 (emails) *"></b-field>
+      <b-field v-else label="대상자들의 유저 아이디 (userIds) *"></b-field>
+      여러개의 <span v-if="receiversType === 'email'">이메일을</span>
+      <span v-else>유저 아이디를</span> 입력 가능하며 엔터(\n)와 쉼표(,)로 구분합니다.
+
+      <b-input v-model="receivers" type="textarea"></b-input>
+
+    </div>
+    <b-field v-if="notiType === 'topic'" label="토픽 (topic) *">
+      <b-autocomplete v-model="topic"
+                      placeholder="ex) notice-all"
+                      v-bind:data="topicList"></b-autocomplete>
+    </b-field>
+  </div>
 
   <br/>
   <div class="buttons are-large">
@@ -145,7 +167,8 @@ export default {
         deeplink: null,
       },
       when: null,
-      emails: 'yenarue@gmail.com, copyx00@gmail.com',
+      receiversType: 'email',
+      receivers: 'yenarue@gmail.com, copyx00@gmail.com',
       topic: 'notice-all',
       result: null,
       notiType: 'individual',
@@ -161,10 +184,13 @@ export default {
       return bool ? 'ON' : 'OFF';
     },
     sendNoti() {
-      const splitedEmails = this.emails ? this.emails.split(/[,\s\n]+/) : [];
+      const receiverList = this.receivers ? this.receivers.split(/[,\s\n]+/) : [];
       const body = {
         data: this.noti,
-        emails: splitedEmails,
+        receivers: {
+          type: this.receiversType,
+          value: receiverList,
+        },
         when: this.when,
       };
 
@@ -176,7 +202,7 @@ export default {
           if (this.isReserved) {
             toastMessage = `예약 성공! (${this.when})`;
           } else {
-            toastMessage = `${splitedEmails.length}개 알림 전송 성공!
+            toastMessage = `${receiverList.length}개 알림 전송 성공!
              (성공 : ${this.result.data.result.success},
              실패 : ${this.result.data.result.failure})`;
           }
@@ -228,7 +254,7 @@ export default {
         message: '실패! 로그를 확인하시오!',
         type: 'is-danger',
       });
-    }
+    },
   },
 };
 </script>
@@ -241,5 +267,4 @@ export default {
 .white-space-pre {
   white-space: pre-wrap;
 }
-
 </style>
