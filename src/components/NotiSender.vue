@@ -121,6 +121,12 @@
 
       <b-input v-model="receivers" type="textarea"></b-input>
 
+      <br/>
+      <div class="field">
+        <b-switch v-model="isExcluded">
+          위 유저들을 제외한 모두에게 보내기
+        </b-switch>
+      </div>
     </div>
     <b-field v-if="notiType === 'topic'" label="토픽 (topic) *">
       <b-autocomplete v-model="topic"
@@ -172,6 +178,7 @@ export default {
       topic: 'notice-all',
       result: null,
       notiType: 'individual',
+      isExcluded: false,
     };
   },
   computed: {
@@ -190,6 +197,7 @@ export default {
         receivers: {
           type: this.receiversType,
           value: receiverList,
+          isExcluded: this.isExcluded,
         },
         when: this.when,
       };
