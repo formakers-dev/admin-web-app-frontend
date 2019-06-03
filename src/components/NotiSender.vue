@@ -25,14 +25,14 @@
     <b-field v-if="isReserved" style="padding-left: 10px; align-items: center">
       <b-datepicker v-model="when"
                     style="padding-right: 10px"
-                    placeholder="예약할 날자를 선택하세요"
+                    placeholder="예약할 날짜를 선택하세요"
                     icon="calendar-today"
                     mobile-native="true"
                     editable>
       </b-datepicker>
       <b-timepicker v-model="when"
                     style="padding-right: 10px"
-                    placeholder="예약할 시간을 선택하세요"
+                    placeholder="예약할 시각을 선택하세요"
                     icon="clock"
                     mobile-native="true"
                     editable>
