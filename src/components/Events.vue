@@ -1,11 +1,52 @@
 <template>
   <div class="events">
-    <h1 class="title">🎉 이벤트 배너 등록하기 🎉</h1>
+    <h1 class="title">🎉 이벤트 배너 🎉</h1>
     <h2 class="subtitle">
       이벤트 배너를 좀 더 편하게 등록하고 싶은 모두의 염원이 만들어낸 페이지 🤗
     </h2>
     <br/>
 
+    <div class="box">
+    <h2 class="title">💁🏻‍♀️ 현재 보여지고 있는 배너 리스트</h2>
+    <b-table
+      :data="allPosts"
+      :loading="isLoading"
+      detailed>
+
+      <template slot-scope="props">
+        <b-table-column field="order" label="순서" centered>
+          <strong>{{ props.row.order }}</strong>
+        </b-table-column>
+
+        <b-table-column field="title" label="제목">
+          {{ props.row.title }}
+        </b-table-column>
+
+        <b-table-column field="openDate" label="오픈 날짜">
+          {{ props.row.openDateDisplay }}
+        </b-table-column>
+
+        <b-table-column field="closeDate" label="종료 날짜">
+          {{ props.row.closeDateDisplay }}
+        </b-table-column>
+      </template>
+
+      <template slot="detail" slot-scope="props">
+        <article class="media">
+          <div class="media-content">
+            <div class="content">
+              {{ props }}
+            </div>
+          </div>
+        </article>
+      </template>
+    </b-table>
+    </div>
+
+    <br/>
+
+    <div class="box">
+      <h2 class="title">🙇🏻‍♀️ 이벤트 배너 등록하기</h2>
     <b-field label="오픈 날짜 (openDate) *"/>
     <b-field style="padding-left: 10px; align-items: center">
       <b-datepicker v-model="openDate"
@@ -126,6 +167,7 @@
       <button class="button is-primary is-fullwidth"
               v-on:click="registerEvent"><b>이벤트 등록</b></button>
     </div>
+    </div>
 
     <br/>
     <b-field v-if="result" label="Log">
@@ -135,12 +177,15 @@
 </template>
 
 <script>
+import moment from 'moment';
 import request from '../common/http';
 
 export default {
   name: 'Events',
   data() {
     return {
+      allPosts: [],
+      isLoading: true,
       order: 0,
       openDate: null,
       closeDate: null,
@@ -153,7 +198,34 @@ export default {
       contentType: 'image',
     };
   },
+  created() {
+    this.getAllPosts();
+  },
   methods: {
+    convertDateFormat(date) {
+      return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
+    },
+    getAllPosts() {
+      request.get('/posts')
+        .then((res) => {
+          console.log(res.data);
+          if (res.status === 200) {
+            this.allPosts = res.data.map((post) => {
+              const result = post;
+              result.openDateDisplay = moment(post.openDate).format('YYYY-MM-DD (ddd) HH:mm:ss');
+              result.closeDateDisplay = moment(post.closeDate).format('YYYY-MM-DD (ddd) HH:mm:ss');
+              return result;
+            });
+          } else {
+            this.showErrorToast();
+          }
+          this.isLoading = false;
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast();
+        });
+    },
     mergeWithHtml(imageUrl) {
       return `<img style='width: 100%; object-fit: contain' src='${imageUrl}' title='source: imgur.com' />`;
     },

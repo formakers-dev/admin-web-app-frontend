@@ -33,7 +33,7 @@
         {{ props.row.data.data.title }}
       </b-table-column>
 
-      <b-table-column field="nextRunAt" label="예약시">
+      <b-table-column field="nextRunAt" label="예약시각">
         {{ props.row.nextRunAt }}
       </b-table-column>
 
