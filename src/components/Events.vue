@@ -39,7 +39,14 @@
                       v-on:click="alertRowData(props.row)">
                 Row Data 확인해보기
               </button>
-
+              <button class="button is-info"
+                      v-on:click="isModifyModal = true" disabled>
+                수정하기
+              </button>
+              <b-modal :active.sync="isModifyModal" has-modal-card>
+                <!--배너 등록 레이아웃을 컴포넌트로 분리시킨 다음에 여기에 연결하자-->
+                <modal-form v-bind="props.row"></modal-form>
+              </b-modal>
               <br/>
               <br/>
               <strong>- 제목 (title) : </strong>{{ props.row.title }}<br/>
@@ -219,9 +226,11 @@
 <script>
 import moment from 'moment';
 import request from '../common/http';
+import BModal from 'buefy/src/components/modal/Modal';
 
 export default {
   name: 'Events',
+  components: { BModal },
   data() {
     return {
       allPosts: [],
@@ -236,8 +245,7 @@ export default {
       deeplink: '',
       result: null,
       contentType: 'image',
-      isRowDataModel: false,
-      isContentsRowDataModel: false,
+      isModifyModal: false,
     };
   },
   created() {
@@ -252,6 +260,13 @@ export default {
       this.$dialog.alert({
         title: 'Row Data 확인해보기',
         message: msg,
+        confirmText: '닫기',
+      });
+    },
+    alertModifyData(rowData) {
+      this.$dialog.alert({
+        title: '수정하기',
+        message: rowData,
         confirmText: '닫기',
       });
     },
