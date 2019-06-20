@@ -35,7 +35,48 @@
         <article class="media">
           <div class="media-content">
             <div class="content">
-              {{ props }}
+              <button class="button is-black"
+                      v-on:click="isRowDataModel = true">
+                Row Data 확인해보기
+              </button>
+
+              <b-modal :active.sync="isRowDataModel">
+                <p class="box">
+                  {{ props }}
+                </p>
+              </b-modal>
+
+              <br/>
+              <br/>
+              <strong>- 제목 (title) : </strong>{{ props.row.title }}<br/>
+              <strong>- 오픈 날짜 (openDate) : </strong>{{ props.row.openDateDisplay }}<br/>
+              <strong>- 종료 날짜 (closeDate) : </strong>{{ props.row.closeDateDisplay }}<br/>
+              <strong>- 커버 이미지 (coverImageUrl) : </strong>
+              <div style="width: 500px">
+                <a v-bind:href="props.row.coverImageUrl">{{ props.row.coverImageUrl }}</a><br/>
+                <img v-bind:src="props.row.coverImageUrl"/>
+              </div>
+              <br/>
+              <div v-if="props.row.deeplink">
+                <strong>- 딥링크 (deeplink) : </strong>
+                <a v-bind:href="props.row.deeplink">{{props.row.deeplink}}</a>
+                <br/>
+              </div>
+              <div v-else>
+                <strong>- 내용 (contents) : </strong>
+                {{ props.row.contents }}
+                <br/>
+                <div style="width: 400px">
+                <span v-if="props.row.contents.startsWith('<img')"
+                      v-html="props.row.contents"></span>
+                  <img v-else-if="props.row.contents.toLowerCase().endsWith('.png')
+                                  || props.row.contents.toLowerCase().endsWith('.jpg')"
+                       v-bind:src="props.row.contents.match(/http.*\.(png|PNG|jpg|JPG)/)"/>
+                  <span v-else
+                        v-html="props.row.contents"></span>
+                </div>
+              </div>
+              <br/>
             </div>
           </div>
         </article>
@@ -196,6 +237,7 @@ export default {
       deeplink: '',
       result: null,
       contentType: 'image',
+      isRowDataModel: false,
     };
   },
   created() {
