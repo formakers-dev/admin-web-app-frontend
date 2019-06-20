@@ -36,15 +36,9 @@
           <div class="media-content">
             <div class="content">
               <button class="button is-black"
-                      v-on:click="isRowDataModel = true">
+                      v-on:click="alertRowData(props.row)">
                 Row Data 확인해보기
               </button>
-
-              <b-modal :active.sync="isRowDataModel">
-                <p class="box">
-                  {{ props }}
-                </p>
-              </b-modal>
 
               <br/>
               <br/>
@@ -64,14 +58,19 @@
               </div>
               <div v-else>
                 <strong>- 내용 (contents) : </strong>
-                {{ props.row.contents }}
+                <button class="button is-black is-small"
+                        v-on:click="alertRowData(props.row.contents)">
+                  내용(Contents) Row Data 확인해보기
+                </button>
                 <br/>
                 <div style="width: 400px">
-                <span v-if="props.row.contents.startsWith('<img')"
-                      v-html="props.row.contents"></span>
+                  <span v-if="props.row.contents.startsWith('<img')"
+                        v-html="props.row.contents"></span>
                   <img v-else-if="props.row.contents.toLowerCase().endsWith('.png')
                                   || props.row.contents.toLowerCase().endsWith('.jpg')"
                        v-bind:src="props.row.contents.match(/http.*\.(png|PNG|jpg|JPG)/)"/>
+                  <a v-else-if="props.row.contents.toLowerCase().startsWith('http')"
+                     v-bind:href="props.row.contents">{{props.row.contents}}</a>
                   <span v-else
                         v-html="props.row.contents"></span>
                 </div>
@@ -238,12 +237,24 @@ export default {
       result: null,
       contentType: 'image',
       isRowDataModel: false,
+      isContentsRowDataModel: false,
     };
   },
   created() {
     this.getAllPosts();
   },
   methods: {
+    alertRowData(rowData) {
+      const msg = '<textarea class="box" style="width: 100%; height: 400px; resize: none;" readonly>'
+        .concat(JSON.stringify(rowData, null, 4))
+        .concat('</textarea>');
+      console.log(msg)
+      this.$dialog.alert({
+        title: 'Row Data 확인해보기',
+        message: msg,
+        confirmText: '닫기',
+      });
+    },
     convertDateFormat(date) {
       return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
     },
