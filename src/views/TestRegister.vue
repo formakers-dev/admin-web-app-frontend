@@ -181,24 +181,22 @@ export default {
   },
   methods: {
     registerBetaTest() {
-      // const body = this.betaTest;
-      //
-      // request.post('/beta-test', body)
-      //   .then((result) => {
-      //     this.result = result;
-      //
-      //     const toastMessage = '등록 성공!';
-      //
-      //     if (result.status === 200) {
-      //       this.showSuccessToast(toastMessage);
-      //     } else {
-      //       this.showErrorToast();
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     this.result = err;
-      //     this.showErrorToast();
-      //   });
+      const body = this.betaTest;
+
+      request.post('/beta-test', body)
+        .then((result) => {
+          this.result = result;
+
+          if (result.status === 200) {
+            this.showSuccessToast('등록 성공!');
+          } else {
+            this.showErrorToast('실패! 로그를 확인하시오!');
+          }
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast();
+        });
     },
     addRewardCard() {
       console.log('addRewardCard');
@@ -242,17 +240,17 @@ export default {
       const itemIndex = this.betaTest.missions.indexOf(item);
       this.betaTest.missions.splice(itemIndex, 1);
     },
-    successToast(toastMessage) {
+    showSuccessToast(toastMessage) {
       this.$toast.open({
         duration: 4000,
         message: toastMessage,
         type: 'is-success',
       });
     },
-    showErrorToast() {
+    showErrorToast(toastMessage) {
       this.$toast.open({
         duration: 4000,
-        message: '실패! 로그를 확인하시오!',
+        message: toastMessage,
         type: 'is-danger',
       });
     },
