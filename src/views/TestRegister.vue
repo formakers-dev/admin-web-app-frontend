@@ -73,6 +73,12 @@
       </b-field>
 
       <br/>
+
+      <b-field label="목적 (purpose)">
+        <b-input v-model="betaTest.purpose"></b-input>
+      </b-field>
+
+      <br/>
       <div class="columns box">
         <b-field class="column" label="대표 이미지 URL (overviewImageUrl) *">
           <p>
@@ -159,12 +165,14 @@ export default {
       betaTest: {
         title: '',
         description: '',
+        tags: [],
+        purpose: '',
         overviewImageUrl: '',
         iconImageUrl: '',
         openDate: new Date(),
         closeDate: new Date(),
         rewards: {
-          minimumDelay: Number,
+          // minimumDelay: Number,
           list: [],
         },
         missions: [],
