@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
-import NotiSender from './components/NotiSender.vue';
-import ReservedNoti from './components/ReservedNoti.vue';
-import Events from './components/Events.vue';
+import NotiSender from './views/NotiSender.vue';
+import ReservedNoti from './views/ReservedNoti.vue';
+import Events from './views/Events.vue';
+import TestRegister from './views/TestRegister.vue';
 
 Vue.use(Router);
 
@@ -15,6 +16,16 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/test/register',
+      name: 'test-register',
+      component: TestRegister,
+    },
+    {
+      path: '/noti-sender',
+      name: 'noti-sender',
+      component: NotiSender,
     },
     {
       path: '/noti-sender',
