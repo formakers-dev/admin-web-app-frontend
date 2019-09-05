@@ -1,6 +1,6 @@
 <template>
   <div class="test-register">
-    <h1 class="title">🎮 게임 테스트 등록하기</h1>
+    <h1 class="title">🎮 게임 테스트 등록하기 (개발중) </h1>
     <h2 class="subtitle">
       게임 테스트를 좀 더 편하게 등록하고 싶은 모두의 염원이 만들어낸 페이지 🤗
     </h2>
@@ -112,35 +112,17 @@
 
       <br/>
 
-      <div class="columns box">
-        <b-field label="미션 (missions) *">
-          <div class="box is-vertical">
-            <b-field label="순서 (order) *"> <b-input /> </b-field>
-            <b-field label="제목 아이콘 (iconImageUrl) *"> <b-input placeholder="https://i.imgur.com/NBfLCwq.png"/> </b-field>
-            <img style="width: 500px" v-bind:src="betaTest.iconImageUrl"/>
-            <b-field label="제목 (title) *"> <b-input placeholder="1단계 미션"/> </b-field>
-            <b-field label="내용 (description) *">
-              <b-input placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요.]"/>
-            </b-field>
-            <b-field label="내용 이미지 (descriptionImageUrl)">
-              <b-input placeholder="https://i.imgur.com/NBfLCwq.png"/>
-            </b-field>
-            <img style="width: 500px" v-bind:src="betaTest.overviewImageUrl"/>
-            <b-field label="아이템 제목 (item.title) *"> <b-input placeholder="의견을 작성하라!"/> </b-field>
-            <b-field label="액션 타입 (actionType)"> <b-input placeholder="link"/> </b-field>
-            <b-field label="액션 (action) *"> <b-input placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"/> </b-field>
-            <b-field label="옵션 (option)">
-              <b-taginput
-                v-model="missionItemOptions"
-                :data="missionItemOptionsSamples"
-                autocomplete
-                field="user.first_name"
-                icon="label"
-                placeholder="Add a option">
-              </b-taginput>
-            </b-field>
+      <div class="box">
+        <div>
+          <b-field label="미션 (missions) *"/>
+          <button class="button is-black is-small" v-on:click="addMissionCard"><b>추가</b></button>
         </div>
-        </b-field>
+        <div class="columns is-multiline">
+          <Mission v-for="mission in betaTest.missions"
+                   v-bind:key="mission.order"
+                   v-bind:mission="mission"
+                   v-on:remove-mission="removeMissionCard"/>
+        </div>
       </div>
 
       <br/>
@@ -163,17 +145,17 @@
 <script>
 import request from '../common/http';
 import RewardItem from '../components/RewardItem.vue';
+import Mission from '../components/Mission.vue';
 
 export default {
   name: 'TestRegister',
   components: {
     RewardItem,
+    Mission,
   },
   data() {
     return {
       isLoading: true,
-      missionItemOptionsSamples: ['mandatory', 'repeatable'],
-      missionItemOptions: [],
       betaTest: {
         title: '',
         description: '',
@@ -215,7 +197,7 @@ export default {
       const rewardListLength = this.betaTest.rewards.list.length;
       this.betaTest.rewards.list.push({
         order: rewardListLength > 0
-          ? this.betaTest.rewards.list[rewardListLength - 1].order + 1 : 1,
+          ? Number(this.betaTest.rewards.list[rewardListLength - 1].order) + 1 : 1,
         iconImageUrl: '',
         title: '',
         content: '',
@@ -226,6 +208,31 @@ export default {
       const item = this.betaTest.rewards.list.find(i => i.order === order);
       const itemIndex = this.betaTest.rewards.list.indexOf(item);
       this.betaTest.rewards.list.splice(itemIndex, 1);
+    },
+    addMissionCard() {
+      console.log('addMissionCard');
+      const missionLength = this.betaTest.missions.length;
+      this.betaTest.missions.push({
+        order: missionLength > 0
+          ? Number(this.betaTest.missions[missionLength - 1].order) + 1 : 1,
+        iconImageUrl: '',
+        title: '',
+        description: '',
+        descriptionImageUrl: '',
+        item: {
+          order: 1,
+          title: '',
+          actionType: '',
+          action: '',
+          option: '',
+        },
+      });
+    },
+    removeMissionCard(order) {
+      console.log('removeMissionCard order', order);
+      const item = this.betaTest.missions.find(i => i.order === order);
+      const itemIndex = this.betaTest.missions.indexOf(item);
+      this.betaTest.missions.splice(itemIndex, 1);
     },
     successToast(toastMessage) {
       this.$toast.open({
