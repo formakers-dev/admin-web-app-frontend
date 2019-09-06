@@ -156,6 +156,13 @@
       </div>
 
       <br/>
+
+      <b-switch v-model="isTargetToFomesMebers">
+        해당 테스트를 <strong class="has-text-primary">포메이커스 팀원들</strong>에게 보여지게 하기!
+      </b-switch>
+
+      <br/>
+      <br/>
       <div class="buttons are-large">
         <button class="button is-primary is-fullwidth"
                 v-on:click="registerBetaTest"><b>등록</b></button>
@@ -185,6 +192,13 @@ export default {
   data() {
     return {
       isLoading: true,
+      isTargetToFomesMebers: true,
+      fomesMembersUserIds: [
+        'google110897406327517511196',
+        'google104451659553773678959',
+        'google110241405528009969953',
+        'google115909938647516500511',
+      ],
       betaTest: {
         title: '',
         description: '',
@@ -204,11 +218,19 @@ export default {
           doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
           done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
         },
+        targetUserIds: [],
       },
     };
   },
   methods: {
+    prepareDataToRegister() {
+      if (this.isTargetToFomesMebers) {
+        this.betaTest.targetUserIds.push(this.fomesMembersUserIds);
+      }
+    },
     registerBetaTest() {
+      this.prepareDataToRegister();
+
       const body = this.betaTest;
 
       request.post('/beta-test', body)
