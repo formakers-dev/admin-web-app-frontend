@@ -113,7 +113,8 @@
         </div>
         <br/>
         <div class="columns is-multiline">
-          <RewardItem v-for="reward in betaTest.rewards.list"
+          <RewardItem class="padding-right-10 padding-bottom-10"
+                      v-for="reward in betaTest.rewards.list"
                       v-bind:key="reward.order"
                       v-bind:reward="reward"
                       v-on:remove-reward-item="removeRewardCard"/>
@@ -129,7 +130,8 @@
         </div>
         <br/>
         <div class="columns is-multiline">
-          <Mission v-for="mission in betaTest.missions"
+          <Mission class="padding-right-10 padding-bottom-10"
+                   v-for="mission in betaTest.missions"
                    v-bind:key="mission.order"
                    v-bind:mission="mission"
                    v-on:remove-mission="removeMissionCard"/>
@@ -318,5 +320,18 @@ export default {
 
   .white-space-pre {
     white-space: pre-wrap;
+  }
+
+  .padding-0 {
+    padding: 0;
+  }
+  .padding-left-10 {
+    padding-left: 10px;
+  }
+  .padding-right-10 {
+    padding-right: 10px;
+  }
+  .padding-bottom-10 {
+    padding-bottom: 10px;
   }
 </style>

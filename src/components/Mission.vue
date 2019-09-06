@@ -1,25 +1,27 @@
 <template>
   <div class="mission">
     <div class="box is-vertical">
-      <b-field label="순서 (order) *">
-        <b-input type="number" v-model="mission.order"/>
-      </b-field>
-      <b-field label="타입 (type) *">
-        <b-select v-model="display.mission.item.type"
-                  v-on:input="setMissionItemType">
-          <option
-            v-for="type in missionItemTypes"
-            :value="type"
-            :key="type">
-            {{ type }}
-          </option>
-        </b-select>
+      <b-field class="columns">
+        <b-field class="column padding-0" label="순서 (order) *">
+          <b-input type="number" v-model="mission.order"/>
+        </b-field>
+        <b-field class="column padding-0 padding-left-10" label="타입 (type) *">
+          <b-select v-model="display.mission.item.type"
+                    v-on:input="setMissionItemType">
+            <option
+              v-for="type in missionItemTypes"
+              :value="type"
+              :key="type">
+              {{ type }}
+            </option>
+          </b-select>
+        </b-field>
       </b-field>
       <b-field label="제목 아이콘 (iconImageUrl) *">
         <b-input v-model="mission.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"/>
       </b-field>
       <img v-if="mission.iconImageUrl.length > 0"
-        style="width: 150px" v-bind:src="mission.iconImageUrl"/>
+        style="width: 100px" v-bind:src="mission.iconImageUrl"/>
       <b-field label="제목 (title) *">
         <b-input v-model="mission.title" placeholder="1단계 미션"/>
       </b-field>
@@ -61,7 +63,6 @@
           v-model="mission.item.options"
           :data="missionItemOptions"
           autocomplete
-          field="user.first_name"
           icon="label"
           placeholder="미션 아이템의 옵션을 추가해주세요">
         </b-taginput>
@@ -84,7 +85,8 @@ export default {
       display: {
         mission: {
           item: {
-            type: '',
+            actionType: 'default',
+            type: 'default',
           },
         },
       },
@@ -119,5 +121,14 @@ export default {
 <style scoped>
   .mission {
     width: 500px;
+  }
+  .padding-0 {
+    padding: 0;
+  }
+  .padding-left-10 {
+    padding-left: 10px;
+  }
+  .padding-right-10 {
+    padding-right: 10px;
   }
 </style>
