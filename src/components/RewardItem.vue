@@ -2,7 +2,7 @@
   <div class="reward-item">
     <div class="box is-vertical">
       <b-field label="순서 (order) *">
-        <b-input v-model="reward.order"/>
+        <b-input type="number" v-model="reward.order"/>
       </b-field>
       <b-field label="아이콘 (iconImageUrl) *">
         <b-input v-model="reward.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"/>

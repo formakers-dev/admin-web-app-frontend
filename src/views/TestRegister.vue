@@ -115,7 +115,7 @@
         <div class="columns is-multiline">
           <RewardItem class="padding-right-10 padding-bottom-10"
                       v-for="reward in betaTest.rewards.list"
-                      v-bind:key="reward.order"
+                      v-bind:key="reward"
                       v-bind:reward="reward"
                       v-on:remove-reward-item="removeRewardCard"/>
         </div>
@@ -132,9 +132,10 @@
         <div class="columns is-multiline">
           <Mission class="padding-right-10 padding-bottom-10"
                    v-for="mission in betaTest.missions"
-                   v-bind:key="mission.order"
+                   v-bind:key="mission"
                    v-bind:mission="mission"
-                   v-on:remove-mission="removeMissionCard"/>
+                   v-on:remove-mission="removeMissionCard"
+                   v-on:update-mission-title="updateMissionTitle"/>
         </div>
       </div>
 
@@ -193,6 +194,7 @@ export default {
   },
   data() {
     return {
+      result: '',
       isLoading: true,
       isTargetToFomesMebers: true,
       fomesMembersUserIds: [
@@ -293,6 +295,10 @@ export default {
       const item = this.betaTest.missions.find(i => i.order === order);
       const itemIndex = this.betaTest.missions.indexOf(item);
       this.betaTest.missions.splice(itemIndex, 1);
+    },
+    updateMissionTitle(value) {
+      const item = this.betaTest.missions.find(i => i.order === value.order);
+      item.title = value.title;
     },
     showSuccessToast(toastMessage) {
       this.$toast.open({

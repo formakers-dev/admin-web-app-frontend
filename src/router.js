@@ -28,11 +28,6 @@ export default new Router({
       component: NotiSender,
     },
     {
-      path: '/noti-sender',
-      name: 'noti-sender',
-      component: NotiSender,
-    },
-    {
       path: '/reserved-noti',
       name: 'reserved-noti',
       component: ReservedNoti,
