@@ -7,7 +7,8 @@
     <br/>
 
     <div class="box">
-
+      <div class="subtitle"><strong>테스트 기본 정보</strong></div>
+      <br/>
       <div class="columns box">
         <b-field class="column" label="오픈 날짜 (openDate) *">
           <b-field style="padding-left: 10px; align-items: center">
@@ -107,9 +108,10 @@
 
       <div class="box">
         <div>
-          <b-field label="리워드 (reward) *"/>
+          <div class="subtitle"><strong>리워드 (reward) *</strong></div>
           <button class="button is-black is-small" v-on:click="addRewardCard"><b>추가</b></button>
         </div>
+        <br/>
         <div class="columns is-multiline">
           <RewardItem v-for="reward in betaTest.rewards.list"
                       v-bind:key="reward.order"
@@ -122,9 +124,10 @@
 
       <div class="box">
         <div>
-          <b-field label="미션 (missions) *"/>
+          <div class="subtitle"><strong>미션 (missions) *</strong></div>
           <button class="button is-black is-small" v-on:click="addMissionCard"><b>추가</b></button>
         </div>
+        <br/>
         <div class="columns is-multiline">
           <Mission v-for="mission in betaTest.missions"
                    v-bind:key="mission.order"
