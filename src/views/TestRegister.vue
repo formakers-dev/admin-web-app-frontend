@@ -79,28 +79,30 @@
       </b-field>
 
       <br/>
-      <div class="columns box">
-        <b-field class="column" label="대표 이미지 URL (overviewImageUrl) *">
-          <p>
-            메인화면에서 보여지는 커버 이미지 입니다.
-            <b-input v-model="betaTest.overviewImageUrl"
-                     placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
-            <br/>
-            <img style="width: 500px" v-bind:src="betaTest.overviewImageUrl" alt="대표 이미지가 보여집니다"/>
-          </p>
-        </b-field>
+      <div class="box">
+        <div class="subtitle"><strong>의뢰 게임 정보</strong></div>
+        <div class="columns">
+          <b-field class="column" label="대표 이미지 URL (overviewImageUrl) *">
+            <p>
+              메인화면에서 보여지는 커버 이미지 입니다.
+              <b-input v-model="betaTest.overviewImageUrl"
+                       placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
+              <br/>
+              <img style="width: 500px" v-bind:src="betaTest.overviewImageUrl" alt="대표 이미지가 보여집니다"/>
+            </p>
+          </b-field>
 
-        <b-field class="column" label="앱 아이콘 (iconImageUrl) *">
-          <p>
-            배너 클릭시 보여질 디테일 화면 입니다.
-            <b-input v-model="betaTest.iconImageUrl"
-                     placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
-            <br/>
-            <img style="width: 150px" v-bind:src="betaTest.iconImageUrl" alt="앱 아이콘이 보여집니다"/>
-          </p>
-        </b-field>
+          <b-field class="column" label="앱 아이콘 (iconImageUrl) *">
+            <p>
+              배너 클릭시 보여질 디테일 화면 입니다.
+              <b-input v-model="betaTest.iconImageUrl"
+                       placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
+              <br/>
+              <img style="width: 150px" v-bind:src="betaTest.iconImageUrl" alt="앱 아이콘이 보여집니다"/>
+            </p>
+          </b-field>
+        </div>
       </div>
-
       <br/>
 
       <div class="box">
@@ -133,6 +135,24 @@
 
       <br/>
 
+      <div class="box">
+        <div class="subtitle"><strong>테스트 진행 상태별 문구 (progressText) *</strong></div>
+        <br/>
+        <b-field label="참여 전 (ready) *">
+          <b-input v-model="betaTest.progressText.ready"
+                   placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."></b-input>
+        </b-field>
+        <b-field label="참여 중 (doing) *">
+          <b-input v-model="betaTest.progressText.doing"
+                   placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"></b-input>
+        </b-field>
+        <b-field label="참여 완료 (done) *">
+          <b-input v-model="betaTest.progressText.done"
+                   placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."></b-input>
+        </b-field>
+      </div>
+
+      <br/>
       <div class="buttons are-large">
         <button class="button is-primary is-fullwidth"
                 v-on:click="registerBetaTest"><b>등록</b></button>
@@ -176,6 +196,11 @@ export default {
           list: [],
         },
         missions: [],
+        progressText: {
+          ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
+          doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
+          done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
+        },
       },
     };
   },
