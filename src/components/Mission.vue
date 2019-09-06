@@ -41,7 +41,15 @@
         <b-input v-model="mission.item.title" placeholder="의견을 작성하라!"/>
       </b-field>
       <b-field label="액션 타입 (item.actionType)">
-        <b-input v-model="mission.item.actionType" placeholder="link"/>
+        <b-select v-model="display.mission.item.actionType"
+                  v-on:input="setMissionItemActionType">
+          <option
+            v-for="type in missionItemActionTypes"
+            :value="type"
+            :key="type">
+            {{ type }}
+          </option>
+        </b-select>
       </b-field>
       <b-field label="액션 (item.action) *">
         <b-input
@@ -51,7 +59,7 @@
       <b-field label="옵션 (option)">
         <b-taginput
           v-model="mission.item.option"
-          :data="missionItemOptionsSamples"
+          :data="missionItemOptions"
           autocomplete
           field="user.first_name"
           icon="label"
@@ -80,8 +88,9 @@ export default {
           },
         },
       },
-      missionItemOptionsSamples: ['mandatory', 'repeatable'],
+      missionItemOptions: ['mandatory', 'repeatable'],
       missionItemTypes: ['default', 'play', 'hidden'],
+      missionItemActionTypes: ['default', 'internal_web'],
     };
   },
   methods: {
@@ -91,6 +100,15 @@ export default {
         delete this.mission.item.type;
       } else {
         this.mission.item.type = selected;
+      }
+      console.log(this.mission);
+    },
+    setMissionItemActionType(selected) {
+      console.log('setMissionItemActionType : ', selected);
+      if (selected === 'default') {
+        delete this.mission.item.actionType;
+      } else {
+        this.mission.item.actionType = selected;
       }
       console.log(this.mission);
     },
