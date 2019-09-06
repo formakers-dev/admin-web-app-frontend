@@ -30,6 +30,10 @@
         <b-input v-model="mission.descriptionImageUrl"
                  placeholder="https://i.imgur.com/NBfLCwq.png"/>
       </b-field>
+      <b-field label="가이드 문구 (guide) *">
+        <b-input type="textarea" v-model="mission.guide"
+                 v-bind:placeholder="display.mission.guide"/>
+      </b-field>
       <img v-if="mission.descriptionImageUrl.length > 0"
         style="width: 500px" v-bind:src="mission.descriptionImageUrl"/>
       <b-field label="아이템 제목 (item.title) *">

@@ -250,6 +250,7 @@ export default {
         title: '',
         description: '',
         descriptionImageUrl: '',
+        guide: '',
         item: {
           order: 1,
           type: '',
