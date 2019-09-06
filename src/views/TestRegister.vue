@@ -252,6 +252,7 @@ export default {
         descriptionImageUrl: '',
         item: {
           order: 1,
+          type: '',
           title: '',
           actionType: '',
           action: '',

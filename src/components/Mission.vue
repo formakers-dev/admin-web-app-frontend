@@ -4,6 +4,17 @@
       <b-field label="순서 (order) *">
         <b-input type="number" v-model="mission.order"/>
       </b-field>
+      <b-field label="타입 (type) *">
+        <b-select v-model="display.mission.item.type"
+                  v-on:input="setMissionItemType">
+          <option
+            v-for="type in missionItemTypes"
+            :value="type"
+            :key="type">
+            {{ type }}
+          </option>
+        </b-select>
+      </b-field>
       <b-field label="제목 아이콘 (iconImageUrl) *">
         <b-input v-model="mission.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"/>
       </b-field>
@@ -57,10 +68,28 @@ export default {
   props: ['mission'],
   data() {
     return {
+      display: {
+        mission: {
+          item: {
+            type: '',
+          },
+        },
+      },
       missionItemOptionsSamples: ['mandatory', 'repeatable'],
+      missionItemTypes: ['default', 'play', 'hidden'],
     };
   },
-  methods: {},
+  methods: {
+    setMissionItemType(selected) {
+      console.log('setMissionItemType : ', selected);
+      if (selected === 'default') {
+        delete this.mission.item.type;
+      } else {
+        this.mission.item.type = selected;
+      }
+      console.log(this.mission);
+    },
+  },
 };
 </script>
 
