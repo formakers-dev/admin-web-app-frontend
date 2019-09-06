@@ -1,13 +1,25 @@
 <template>
   <div class="reward-item">
     <div class="box is-vertical">
-      <b-field label="순서 (order) *">
+      <b-field class="padding-bottom-10" label="순서 (order) *">
         <b-input type="number" v-model="reward.order"/>
       </b-field>
-      <b-field label="아이콘 (iconImageUrl) *">
-        <b-input v-model="reward.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"/>
+      <b-field class="padding-bottom-10" label="아이콘 (iconImageUrl) *">
+        <div>
+          <div class="padding-bottom-10 columns">
+            sample : <img class="padding-right-10 icon cursor-pointer"
+                 v-for="icon in Object.values(icons)"
+                 v-bind:key="icon"
+                 v-bind:src="icon"
+                 v-on:click="onClickIconSample"/>
+          </div>
+          <div class="columns">
+            <b-input class="padding-right-10" v-model="reward.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"/>
+            <img class="padding-right-10 icon" v-bind:src="reward.iconImageUrl"/>
+          </div>
+        </div>
       </b-field>
-      <b-field label="제목 (title) *">
+      <b-field class="padding-bottom-10" label="제목 (title) *">
         <b-input v-model="reward.title" placeholder="테스트 성실상 (30명)"/>
       </b-field>
       <b-field label="내용 (content) *">
@@ -28,9 +40,18 @@ export default {
   props: ['reward'],
   data() {
     return {
+      icons: {
+        pencil: 'https://i.imgur.com/btZZHRp.png',
+        silver: 'https://i.imgur.com/6RaZ7vI.png',
+        gold: 'https://i.imgur.com/ybuI732.png',
+      },
     };
   },
   methods: {
+    onClickIconSample(value) {
+      console.log(value.srcElement.src);
+      this.reward.iconImageUrl = value.srcElement.src;
+    },
   },
 };
 </script>
@@ -38,5 +59,23 @@ export default {
 <style scoped>
   .reward-item {
     width: 300px;
+  }
+  .padding-0 {
+    padding: 0;
+  }
+  .padding-left-10 {
+    padding-left: 10px;
+  }
+  .padding-right-10 {
+    padding-right: 10px;
+  }
+  .padding-bottom-10 {
+    padding-bottom: 10px;
+  }
+  .icon {
+    width: 30px;
+  }
+  .cursor-pointer {
+    cursor: pointer;
   }
 </style>
