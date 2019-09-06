@@ -58,7 +58,7 @@
       <br/>
 
       <b-field label="설명 (description)">
-        <b-input v-model="betaTest.description"></b-input>
+        <b-input type="textarea" v-model="betaTest.description"></b-input>
       </b-field>
 
       <br/>

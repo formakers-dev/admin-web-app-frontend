@@ -24,7 +24,8 @@
         <b-input v-model="mission.title" placeholder="1단계 미션"/>
       </b-field>
       <b-field label="내용 (description) *">
-        <b-input v-model="mission.description" placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요.]"/>
+        <b-input type="textarea" v-model="mission.description"
+                 placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요.]"/>
       </b-field>
       <b-field label="내용 이미지 (descriptionImageUrl)">
         <b-input v-model="mission.descriptionImageUrl"
