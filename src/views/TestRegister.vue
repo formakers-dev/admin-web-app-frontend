@@ -282,7 +282,7 @@ export default {
           title: '',
           actionType: '',
           action: '',
-          option: '',
+          options: '',
         },
       });
     },

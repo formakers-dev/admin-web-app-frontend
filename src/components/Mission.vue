@@ -56,14 +56,14 @@
           v-model="mission.item.action"
           placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"/>
       </b-field>
-      <b-field label="옵션 (option)">
+      <b-field label="옵션 (options)">
         <b-taginput
-          v-model="mission.item.option"
+          v-model="mission.item.options"
           :data="missionItemOptions"
           autocomplete
           field="user.first_name"
           icon="label"
-          placeholder="Add a option">
+          placeholder="미션 아이템의 옵션을 추가해주세요">
         </b-taginput>
       </b-field>
       <br/>
