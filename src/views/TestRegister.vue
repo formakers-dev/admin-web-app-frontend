@@ -107,35 +107,62 @@
       <br/>
 
       <div class="box">
-        <div>
-          <div class="subtitle"><strong>리워드 (reward) *</strong></div>
-          <button class="button is-black is-small" v-on:click="addRewardCard"><b>추가</b></button>
-        </div>
-        <br/>
-        <div class="columns is-multiline">
-          <RewardItem class="padding-right-10 padding-bottom-10"
-                      v-for="reward in betaTest.rewards.list"
-                      v-bind:key="reward"
-                      v-bind:reward="reward"
-                      v-on:remove-reward-item="removeRewardCard"/>
-        </div>
-      </div>
+        <div class="subtitle"><strong>테스트 종류</strong></div>
 
-      <br/>
+        <b-field style="padding-bottom: 20px">
+          <b-radio-button v-model="testType"
+                          native-value="default"
+                          type="is-black">
+            <span>자유선택</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
+                          native-value="simple"
+                          type="is-black">
+            <span>심플</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
+                          native-value="level2"
+                          type="is-black">
+            <span>2단계</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
+                          native-value="level3"
+                          type="is-black">
+            <span>3단계</span>
+          </b-radio-button>
+        </b-field>
 
-      <div class="box">
-        <div>
-          <div class="subtitle"><strong>미션 (missions) *</strong></div>
-          <button class="button is-black is-small" v-on:click="addMissionCard"><b>추가</b></button>
+        <div class="box">
+          <div>
+            <div class="subtitle"><strong>리워드 (reward) *</strong></div>
+            <button class="button is-black is-small" v-on:click="addRewardCard"><b>추가</b></button>
+          </div>
+          <br/>
+          <div class="columns is-multiline">
+            <RewardItem class="padding-right-10 padding-bottom-10"
+                        v-for="reward in betaTest.rewards.list"
+                        v-bind:key="reward"
+                        v-bind:reward="reward"
+                        v-on:remove-reward-item="removeRewardCard"/>
+          </div>
         </div>
+
         <br/>
-        <div class="columns is-multiline">
-          <Mission class="padding-right-10 padding-bottom-10"
-                   v-for="mission in betaTest.missions"
-                   v-bind:key="mission"
-                   v-bind:mission="mission"
-                   v-on:remove-mission="removeMissionCard"
-                   v-on:update-mission-title="updateMissionTitle"/>
+
+        <div class="box">
+          <div>
+            <div class="subtitle"><strong>미션 (missions) *</strong></div>
+            <button class="button is-black is-small" v-on:click="addMissionCard"><b>추가</b></button>
+          </div>
+          <br/>
+          <div class="columns is-multiline">
+            <Mission class="padding-right-10 padding-bottom-10"
+                     v-for="mission in betaTest.missions"
+                     v-bind:key="mission"
+                     v-bind:mission="mission"
+                     v-on:remove-mission="removeMissionCard"
+                     v-on:update-mission-title="updateMissionTitle"/>
+          </div>
         </div>
       </div>
 
@@ -197,6 +224,7 @@ export default {
       result: '',
       isLoading: true,
       isTargetToFomesMebers: true,
+      testType: 'simple',
       fomesMembersUserIds: [
         'google110897406327517511196',
         'google104451659553773678959',
