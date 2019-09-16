@@ -3,7 +3,7 @@
     <div class="box is-vertical">
       <b-field class="columns padding-bottom-10">
         <b-field class="column padding-0" label="순서 (order) *">
-          <b-input type="number" v-model="mission.order" v-on:input="onInputOrder"/>
+          <b-input type="number" v-model="mission.order" v-on:input="onInputOrder"></b-input>
         </b-field>
         <b-field class="column padding-0 padding-left-10" label="타입 (type) *">
           <b-select v-model="type"
@@ -27,7 +27,7 @@
                           v-on:click="onClickIconSample"/>
           </div>
           <div class="columns">
-            <b-input class="padding-right-10" style="width:300px" v-model="mission.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"/>
+            <b-input class="padding-right-10" style="width:300px" v-model="mission.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
             preview : <img v-if="mission.iconImageUrl.length > 0"
                  class="icon padding-left-10 padding-right-10"
                  v-bind:src="mission.iconImageUrl"/>
@@ -39,22 +39,22 @@
           <b-switch v-model="isDependencyWithOrder">
             순서와 연동 (order + "번째 미션")
           </b-switch>
-          <b-input v-model="mission.title" placeholder="1단계 미션"/>
+          <b-input v-model="mission.title" placeholder="1단계 미션"></b-input>
         </div>
       </b-field>
       <b-field class="padding-bottom-10" label="아이템 제목 (item.title) *">
-        <b-input v-model="mission.item.title" placeholder="의견을 작성하라!"/>
+        <b-input v-model="mission.item.title" placeholder="의견을 작성하라!"></b-input>
       </b-field>
       <b-field class="padding-bottom-10" label="내용 (description) *">
         <b-input type="textarea" v-model="mission.description"
-                 placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요."/>
+                 placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요."></b-input>
       </b-field>
       <b-field class="padding-bottom-10" label="내용 이미지 (descriptionImageUrl)">
         <b-input v-model="mission.descriptionImageUrl"
-                 placeholder="https://i.imgur.com/NBfLCwq.png"/>
+                 placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
       </b-field>
       <b-field class="padding-bottom-10" label="가이드 문구 (guide) *">
-        <b-input type="textarea" v-model="mission.guide"/>
+        <b-input type="textarea" v-model="mission.guide"></b-input>
       </b-field>
       <img v-if="mission.descriptionImageUrl.length > 0"
         style="width: 500px" v-bind:src="mission.descriptionImageUrl"/>
@@ -72,8 +72,24 @@
       <b-field class="padding-bottom-10" label="액션 (item.action) *">
         <b-input
           v-model="mission.item.action"
-          placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"/>
+          placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"></b-input>
       </b-field>
+
+      <div class="box" v-if="type === 'play'">
+        <div class="subtitle"><strong>플레이 완료 조건</strong></div>
+        <b-field class="padding-bottom-10" label="패키지명 (item.postCondition.packageName) *">
+          <b-input
+            v-model="mission.item.postCondition.packageName"
+            placeholder="com.formakers.fomes"></b-input>
+        </b-field>
+        <b-field label="플레이 시간 (item.postCondition.playTime) *">
+          <b-input type="number"
+            v-model="mission.item.postCondition.playTime"
+            placeholder="1800000 (단위: 밀리세컨드)"></b-input>
+        </b-field>
+      </div>
+      <br/>
+
       <b-field label="옵션 (options)">
         <b-taginput
           v-model="mission.item.options"
@@ -117,15 +133,19 @@ export default {
   methods: {
     setMissionItemType(selected) {
       console.log('setMissionItemType : ', selected);
+
       if (selected === 'default') {
         delete this.mission.item.type;
+        delete this.mission.item.postCondition;
         this.mission.iconImageUrl = this.icons.survey;
       } else {
         this.mission.item.type = selected;
         if (selected === 'play') {
           this.mission.iconImageUrl = this.icons.play;
+          this.mission.item.postCondition = {};
         } else {
           delete this.mission.iconImageUrl;
+          delete this.mission.item.postCondition;
         }
       }
       console.log(this.mission);
