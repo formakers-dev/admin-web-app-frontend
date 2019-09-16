@@ -112,23 +112,21 @@
         <b-field style="padding-bottom: 20px">
           <b-radio-button v-model="testType"
                           native-value="default"
+                          v-on:input="setTestTemplateByTestType"
                           type="is-black">
             <span>자유선택</span>
           </b-radio-button>
           <b-radio-button v-model="testType"
                           native-value="simple"
+                          v-on:input="setTestTemplateByTestType"
                           type="is-black">
-            <span>심플</span>
+            <span>간단 설문형</span>
           </b-radio-button>
           <b-radio-button v-model="testType"
-                          native-value="level2"
+                          native-value="normal"
+                          v-on:input="setTestTemplateByTestType"
                           type="is-black">
-            <span>2단계</span>
-          </b-radio-button>
-          <b-radio-button v-model="testType"
-                          native-value="level3"
-                          type="is-black">
-            <span>3단계</span>
+            <span>일반 설문형</span>
           </b-radio-button>
         </b-field>
 
@@ -254,6 +252,9 @@ export default {
       },
     };
   },
+  created() {
+    this.setTestTemplateByTestType();
+  },
   methods: {
     prepareDataToRegister() {
       if (this.isTargetToFomesMebers) {
@@ -341,6 +342,114 @@ export default {
         message: toastMessage,
         type: 'is-danger',
       });
+    },
+    setTestTemplateByTestType() {
+      console.log('setTestTemplateByTestType: ', this.testType);
+
+      switch (this.testType) {
+        case 'simple':
+          this.betaTest.rewards.list = [{
+            order: 1,
+            iconImageUrl: 'https://i.imgur.com/ybuI732.png',
+            title: '테스트 수석',
+            content: '문화상품권 5천원 (1명 선정)',
+          }, {
+            order: 2,
+            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
+            title: '테스트 성실상',
+            content: '문화상품권 1천원 (20명 선정)',
+          }];
+
+          this.betaTest.missions = [{
+            order: 1,
+            iconImageUrl: '',
+            title: '',
+            description: '',
+            descriptionImageUrl: '',
+            guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
+            item: {
+              order: 1,
+              type: 'play',
+              title: '게임 플레이',
+              actionType: '',
+              action: '',
+              options: '',
+            },
+          }, {
+            order: 2,
+            iconImageUrl: '',
+            title: '',
+            description: '',
+            descriptionImageUrl: '',
+            guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
+            item: {
+              order: 1,
+              type: '',
+              title: '플레이 후 소감 작성',
+              actionType: '',
+              action: '',
+              options: [
+                'mandatory',
+                'repeatable',
+              ],
+            },
+          }];
+          break;
+        case 'normal':
+          this.betaTest.rewards.list = [{
+            order: 1,
+            iconImageUrl: 'https://i.imgur.com/ybuI732.png',
+            title: '테스트 수석',
+            content: '문화상품권 3만원 (1명 선정)',
+          }, {
+            order: 2,
+            iconImageUrl: 'https://i.imgur.com/6RaZ7vI.png',
+            title: '테스트 차석',
+            content: '문화상품권 5천원 (5명 선정)',
+          }, {
+            order: 3,
+            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
+            title: '테스트 성실상',
+            content: '문화상품권 1천원 (참여자 전원)',
+          }];
+
+          this.betaTest.missions = [{
+            order: 1,
+            iconImageUrl: '',
+            title: '',
+            description: '',
+            descriptionImageUrl: '',
+            guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
+            item: {
+              order: 1,
+              type: 'play',
+              title: '게임 플레이',
+              actionType: '',
+              action: '',
+              options: '',
+            },
+          }, {
+            order: 2,
+            iconImageUrl: '',
+            title: '',
+            description: '',
+            descriptionImageUrl: '',
+            guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
+            item: {
+              order: 1,
+              type: '',
+              title: '플레이 후 소감 작성',
+              actionType: '',
+              action: '',
+              options: [
+                'mandatory',
+                'repeatable',
+              ],
+            },
+          }];
+          break;
+        default: // Do nothing
+      }
     },
   },
 };

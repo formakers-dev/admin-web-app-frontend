@@ -111,7 +111,7 @@ export default {
     };
   },
   created() {
-    this.setMissionItemType('default');
+    this.setMissionItemType(this.mission.item.type || 'default');
     this.onInputOrder(this.mission.order);
   },
   methods: {
