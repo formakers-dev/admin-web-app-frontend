@@ -75,19 +75,12 @@
           placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"></b-input>
       </b-field>
 
-      <div class="box" v-if="type === 'play'">
-        <div class="subtitle"><strong>플레이 완료 조건</strong></div>
-        <b-field class="padding-bottom-10" label="패키지명 (item.postCondition.packageName) *">
-          <b-input
-            v-model="mission.item.postCondition.packageName"
-            placeholder="com.formakers.fomes"></b-input>
-        </b-field>
-        <b-field label="플레이 시간 (item.postCondition.playTime) *">
-          <b-input type="number"
-            v-model="mission.item.postCondition.playTime"
-            placeholder="1800000 (단위: 밀리세컨드)"></b-input>
-        </b-field>
-      </div>
+      <b-field v-if="type === 'play'" class="padding-bottom-10"
+               label="패키지명 (item.packageName) *">
+        <b-input
+          v-model="mission.item.packageName"
+          placeholder="com.formakers.fomes"></b-input>
+      </b-field>
       <br/>
 
       <b-field label="옵션 (options)">
@@ -136,16 +129,13 @@ export default {
 
       if (selected === 'default') {
         delete this.mission.item.type;
-        delete this.mission.item.postCondition;
         this.mission.iconImageUrl = this.icons.survey;
       } else {
         this.mission.item.type = selected;
         if (selected === 'play') {
           this.mission.iconImageUrl = this.icons.play;
-          this.mission.item.postCondition = {};
         } else {
           delete this.mission.iconImageUrl;
-          delete this.mission.item.postCondition;
         }
       }
       console.log(this.mission);
