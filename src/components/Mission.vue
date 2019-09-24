@@ -2,9 +2,11 @@
   <div class="mission">
     <div class="box is-vertical">
       <b-field class="columns padding-bottom-10">
+
         <b-field class="column padding-0" label="순서 (order) *">
           <b-input type="number" v-model="mission.order" v-on:input="onInputOrder"></b-input>
         </b-field>
+
         <b-field class="column padding-0 padding-left-10" label="타입 (type) *">
           <b-select v-model="type"
                     v-on:input="setMissionItemType">
@@ -17,6 +19,15 @@
           </b-select>
         </b-field>
       </b-field>
+
+      <b-field v-if="type === 'play'" class="padding-bottom-10"
+               label="플레이 할 게임의 패키지명 (item.packageName) *">
+        <b-input
+          v-model="mission.item.packageName"
+          placeholder="com.formakers.fomes"
+          v-on:input="setPlayTypeAction"></b-input>
+      </b-field>
+
       <b-field class="padding-bottom-10" label="제목 아이콘 (iconImageUrl) *">
         <div>
           <div class="padding-bottom-10 columns">
@@ -34,6 +45,7 @@
           </div>
         </div>
       </b-field>
+
       <b-field class="padding-bottom-10" label="제목 (title) *">
         <div>
           <b-switch v-model="isDependencyWithOrder">
@@ -42,22 +54,27 @@
           <b-input v-model="mission.title" placeholder="1단계 미션"></b-input>
         </div>
       </b-field>
+
       <b-field class="padding-bottom-10" label="아이템 제목 (item.title) *">
         <b-input v-model="mission.item.title" placeholder="의견을 작성하라!"></b-input>
       </b-field>
+
       <b-field class="padding-bottom-10" label="내용 (description) *">
         <b-input type="textarea" v-model="mission.description"
                  placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요."></b-input>
       </b-field>
+
       <b-field class="padding-bottom-10" label="내용 이미지 (descriptionImageUrl)">
         <b-input v-model="mission.descriptionImageUrl"
                  placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
       </b-field>
+
       <b-field class="padding-bottom-10" label="가이드 문구 (guide) *">
         <b-input type="textarea" v-model="mission.guide"></b-input>
       </b-field>
       <img v-if="mission.descriptionImageUrl.length > 0"
         style="width: 500px" v-bind:src="mission.descriptionImageUrl"/>
+
       <b-field class="padding-bottom-10" label="액션 타입 (item.actionType)">
         <b-select v-model="actionType"
                   v-on:input="setMissionItemActionType">
@@ -69,19 +86,19 @@
           </option>
         </b-select>
       </b-field>
-      <b-field class="padding-bottom-10" label="액션 (item.action) *">
-        <b-input
-          v-model="mission.item.action"
-          placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"></b-input>
-      </b-field>
 
-      <b-field v-if="type === 'play'" class="padding-bottom-10"
-               label="패키지명 (item.packageName) *">
-        <b-input
-          v-model="mission.item.packageName"
-          placeholder="com.formakers.fomes"></b-input>
+      <b-field class="padding-bottom-10" label="액션 (item.action) *">
+        <div>
+          <b-switch v-if="type === 'play'"
+                    v-model="isGooglePlayUrl"
+                    v-on:input="setPlayTypeAction()">
+            구글플레이 기본 마켓 URL 사용하기
+          </b-switch>
+          <b-input
+            v-model="mission.item.action"
+            placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"></b-input>
+        </div>
       </b-field>
-      <br/>
 
       <b-field label="옵션 (options)">
         <b-taginput
@@ -92,7 +109,9 @@
           placeholder="미션 아이템의 옵션을 추가해주세요">
         </b-taginput>
       </b-field>
+
       <br/>
+
       <b-button class="button is-fullwidth"
                 type="is-danger"
                 @click="$emit('remove-mission', mission.order)"
@@ -107,6 +126,7 @@ export default {
   props: ['mission'],
   data() {
     return {
+      isGooglePlayUrl: true,
       isDependencyWithOrder: true,
       actionType: this.mission.item.actionType.length > 0 ? this.mission.item.actionType : 'default',
       type: this.mission.item.type.length > 0 ? this.mission.item.type : 'default',
@@ -134,6 +154,8 @@ export default {
         this.mission.item.type = selected;
         if (selected === 'play') {
           this.mission.iconImageUrl = this.icons.play;
+          this.mission.item.actionType = 'default';
+          this.setPlayTypeAction();
         } else {
           delete this.mission.iconImageUrl;
         }
@@ -148,6 +170,13 @@ export default {
         this.mission.item.actionType = selected;
       }
       console.log(this.mission);
+    },
+    setPlayTypeAction() {
+      if (this.isGooglePlayUrl) {
+        this.mission.item.action = `https://play.google.com/store/apps/details?id=${this.mission.item.packageName}`;
+      } else {
+        delete this.mission.item.action;
+      }
     },
     onInputOrder(order) {
       console.log(this.isDependencyWithOrder);
