@@ -237,7 +237,7 @@ export default {
         'google115909938647516500511',
       ],
       betaTest: {
-        title: '',
+        title: '[게임명] 게임 테스트',
         description: '',
         tags: [],
         purpose: '',
@@ -374,8 +374,8 @@ export default {
             order: 1,
             iconImageUrl: '',
             title: '',
-            description: '',
-            descriptionImageUrl: '',
+            description: '[게임명] 게임을 플레이해주세요. (10분 이상 권장)',
+            descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
             item: {
               order: 1,
@@ -389,8 +389,8 @@ export default {
             order: 2,
             iconImageUrl: '',
             title: '',
-            description: '',
-            descriptionImageUrl: '',
+            description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
+            descriptionImageUrl: 'https://i.imgur.com/XfqTB0K.png',
             guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
             item: {
               order: 1,
@@ -427,8 +427,8 @@ export default {
             order: 1,
             iconImageUrl: '',
             title: '',
-            description: '',
-            descriptionImageUrl: '',
+            description: '[게임명] 게임을 플레이해주세요.(30분 이상 권장)',
+            descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
             item: {
               order: 1,
@@ -442,8 +442,8 @@ export default {
             order: 2,
             iconImageUrl: '',
             title: '',
-            description: '',
-            descriptionImageUrl: '',
+            description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
+            descriptionImageUrl: 'https://i.imgur.com/XfqTB0K.png',
             guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
             item: {
               order: 1,

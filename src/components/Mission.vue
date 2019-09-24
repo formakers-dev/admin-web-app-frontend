@@ -68,12 +68,12 @@
         <b-input v-model="mission.descriptionImageUrl"
                  placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
       </b-field>
+      <img v-if="mission.descriptionImageUrl.length > 0"
+           style="width: 500px" v-bind:src="mission.descriptionImageUrl"/>
 
       <b-field class="padding-bottom-10" label="가이드 문구 (guide) *">
         <b-input type="textarea" v-model="mission.guide"></b-input>
       </b-field>
-      <img v-if="mission.descriptionImageUrl.length > 0"
-        style="width: 500px" v-bind:src="mission.descriptionImageUrl"/>
 
       <b-field class="padding-bottom-10" label="액션 타입 (item.actionType)">
         <b-select v-model="actionType"
