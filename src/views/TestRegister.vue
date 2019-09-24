@@ -80,6 +80,13 @@
       </b-field>
 
       <br/>
+
+      <b-field label="버그리포트 설문 URL (bugReport.url)">
+        <b-input v-model="betaTest.bugReport.url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"></b-input>
+      </b-field>
+
+      <br/>
+
       <div class="box">
         <div class="subtitle"><strong>의뢰 게임 정보</strong></div>
         <div class="columns">
@@ -182,11 +189,6 @@
                    placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."></b-input>
         </b-field>
       </div>
-      <br/>
-
-      <b-field label="버그리포트 설문 URL (bugReport.url)">
-        <b-input v-model="betaTest.bugReport.url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"></b-input>
-      </b-field>
 
       <br/>
 
