@@ -129,7 +129,7 @@ export default {
       const msg = '<textarea class="box" style="width: 100%; height: 400px; resize: none;" readonly>'
         .concat(JSON.stringify(rowData, null, 4))
         .concat('</textarea>');
-      console.log(msg)
+      console.log(msg);
       this.$dialog.alert({
         title: 'Row Data 확인해보기',
         message: msg,
