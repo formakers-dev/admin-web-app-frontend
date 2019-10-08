@@ -127,13 +127,25 @@
                           native-value="simple"
                           v-on:input="setTestTemplateByTestType"
                           type="is-black">
-            <span>간단 설문형</span>
+            <span>간단설문형</span>
           </b-radio-button>
           <b-radio-button v-model="testType"
                           native-value="normal"
                           v-on:input="setTestTemplateByTestType"
                           type="is-black">
-            <span>일반 설문형</span>
+            <span>일반설문형</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
+                          native-value="application+simple"
+                          v-on:input="setTestTemplateByTestType"
+                          type="is-black">
+            <span>간단설문형 + 참가신청</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
+                          native-value="application+normal"
+                          v-on:input="setTestTemplateByTestType"
+                          type="is-black">
+            <span>일반설문형 + 참가신청</span>
           </b-radio-button>
         </b-field>
 
@@ -356,75 +368,78 @@ export default {
     setTestTemplateByTestType() {
       console.log('setTestTemplateByTestType: ', this.testType);
 
+      // Set rewards
+      const rewardList = [];
       switch (this.testType) {
         case 'simple':
-          this.betaTest.rewards.list = [{
-            order: 1,
+        case 'application+simple':
+          rewardList.push({
+            order: rewardList.length + 1,
             iconImageUrl: 'https://i.imgur.com/ybuI732.png',
             title: '테스트 수석',
             content: '문화상품권 5천원 (1명 선정)',
-          }, {
-            order: 2,
+          });
+          rewardList.push({
+            order: rewardList.length + 1,
             iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
             title: '테스트 성실상',
             content: '문화상품권 1천원 (20명 선정)',
-          }];
-
-          this.betaTest.missions = [{
-            order: 1,
-            iconImageUrl: '',
-            title: '',
-            description: '[게임명] 게임을 플레이해주세요. (10분 이상 권장)',
-            descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
-            guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
-            item: {
-              order: 1,
-              type: 'play',
-              title: '게임 플레이',
-              actionType: '',
-              action: '',
-              options: '',
-            },
-          }, {
-            order: 2,
-            iconImageUrl: '',
-            title: '',
-            description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
-            descriptionImageUrl: 'https://i.imgur.com/XfqTB0K.png',
-            guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
-            item: {
-              order: 1,
-              type: '',
-              title: '플레이 후 소감 작성',
-              actionType: '',
-              action: '',
-              options: [
-                'mandatory',
-                'repeatable',
-              ],
-            },
-          }];
+          });
           break;
+
         case 'normal':
-          this.betaTest.rewards.list = [{
-            order: 1,
+        case 'application+normal':
+          rewardList.push({
+            order: rewardList.length + 1,
             iconImageUrl: 'https://i.imgur.com/ybuI732.png',
             title: '테스트 수석',
             content: '문화상품권 3만원 (1명 선정)',
-          }, {
-            order: 2,
+          });
+          rewardList.push({
+            order: rewardList.length + 1,
             iconImageUrl: 'https://i.imgur.com/6RaZ7vI.png',
             title: '테스트 차석',
             content: '문화상품권 5천원 (5명 선정)',
-          }, {
-            order: 3,
+          });
+          rewardList.push({
+            order: rewardList.length + 1,
             iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
             title: '테스트 성실상',
             content: '문화상품권 1천원 (참여자 전원)',
-          }];
+          });
+          break;
 
-          this.betaTest.missions = [{
-            order: 1,
+        default: // Do nothing
+      }
+      this.betaTest.rewards.list = rewardList;
+
+      // Set missions
+      const missions = [];
+      switch (this.testType) {
+        case 'application+simple':
+        case 'application+normal':
+          missions.push({
+            order: missions.length + 1,
+            iconImageUrl: '',
+            title: '',
+            description: '[게임명] 클로즈드 베타 테스터 참여 신청',
+            descriptionImageUrl: 'https://i.imgur.com/F3EJAOs.png',
+            guide: '• 참여 신청 후 설치권한 부여까지 약 1일이 소요됩니다.',
+            item: {
+              order: 1,
+              type: '',
+              title: '참여 신청',
+              actionType: '',
+              action: '',
+              options: ['mandatory'],
+            },
+          });
+
+        // eslint-disable-next-line no-fallthrough
+        case 'simple':
+        case 'normal':
+          missions.push({
+            order: missions.length + 1,
             iconImageUrl: '',
             title: '',
             description: '[게임명] 게임을 플레이해주세요.(30분 이상 권장)',
@@ -438,8 +453,9 @@ export default {
               action: '',
               options: '',
             },
-          }, {
-            order: 2,
+          });
+          missions.push({
+            order: missions.length + 1,
             iconImageUrl: '',
             title: '',
             description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
@@ -456,10 +472,12 @@ export default {
                 'repeatable',
               ],
             },
-          }];
+          });
           break;
+
         default: // Do nothing
       }
+      this.betaTest.missions = missions;
     },
   },
 };
