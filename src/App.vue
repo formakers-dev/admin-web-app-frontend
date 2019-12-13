@@ -5,6 +5,7 @@
       <router-link to="/">홈</router-link> |
       <router-link to="/test/register">테스트 등록하기</router-link> |
       <router-link to="/test/list">테스트 목록</router-link> |
+      <router-link to="/users">유저정보</router-link> |
       <router-link to="/noti-sender">알림 보내기</router-link> |
       <router-link to="/reserved-noti">예약된 알림</router-link> |
       <router-link to="/events">이벤트 배너</router-link> |

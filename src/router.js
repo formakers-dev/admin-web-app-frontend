@@ -6,6 +6,7 @@ import ReservedNoti from './views/ReservedNoti.vue';
 import Events from './views/Events.vue';
 import TestRegister from './views/TestRegister.vue';
 import TestList from './views/TestList.vue';
+import Users from './views/Users.vue';
 
 Vue.use(Router);
 
@@ -27,6 +28,11 @@ export default new Router({
       path: '/test/list',
       name: 'test-list',
       component: TestList,
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Users,
     },
     {
       path: '/noti-sender',
