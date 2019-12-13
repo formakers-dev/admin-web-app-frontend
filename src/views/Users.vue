@@ -43,19 +43,19 @@ export default {
       result: '',
     };
   },
-  created() {
-    this.getAllPosts();
-  },
   methods: {
     getNickName() {
       request.get(`/users/${this.email}/nick-name`)
         .then((res) => {
-          console.log(res.data);
-          this.nickName = res.data;
+          if (res.status === 204) {
+            this.showErrorToast('존재하지 않는 유저입니다! 이메일 주소를 다시 확인해보세요!');
+          } else {
+            this.nickName = res.data.nickName;
+          }
         })
         .catch((err) => {
           this.result = err;
-          this.showErrorToast();
+          this.showErrorToast('실패! 로그를 확인하시오!');
         });
     },
     showSuccessToast(toastMessage) {
@@ -65,10 +65,10 @@ export default {
         type: 'is-success',
       });
     },
-    showErrorToast() {
+    showErrorToast(errorMessage) {
       this.$toast.open({
         duration: 4000,
-        message: '실패! 로그를 확인하시오!',
+        message: errorMessage,
         type: 'is-danger',
       });
     },
