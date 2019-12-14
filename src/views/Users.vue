@@ -18,7 +18,7 @@
                   v-on:click="getNickName"><b>>></b></button>
         </div>
         <b-field class="column" label="닉네임">
-          <b-input v-model="nickName"></b-input>
+          {{nickName}}
         </b-field>
       </div>
     </div>
@@ -42,6 +42,11 @@ export default {
       nickName: '',
       result: '',
     };
+  },
+  watch: {
+    email() {
+      this.nickName = '';
+    },
   },
   methods: {
     getNickName() {
