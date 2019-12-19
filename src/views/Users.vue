@@ -40,8 +40,10 @@
           <b-field class="column" label="결과 리스트">
             엑셀에 복붙해보세요ㅎㅎㅎㅎ
             <b-table
+              v-if="this.nickNames.length > 0"
               :data="nickNames"
-              :loading="isLoading">
+              :loading="isLoading"
+              :bordered="true">
 
               <template slot-scope="props">
                 <b-table-column field="email" label="이메일" centered>
@@ -115,10 +117,8 @@ export default {
       });
     },
     getNickName() {
-      this.isLoading = true;
       request.get(`/users/${this.email}/nick-name`)
         .then((res) => {
-          this.isLoading = false;
           if (res.status === 204) {
             this.showErrorToast('존재하지 않는 유저입니다! 이메일 주소를 다시 확인해보세요!');
           } else {
@@ -126,7 +126,6 @@ export default {
           }
         })
         .catch((err) => {
-          this.isLoading = false;
           this.result = err;
           this.showErrorToast('실패! 로그를 확인하시오!');
         });
