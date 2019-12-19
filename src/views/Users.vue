@@ -29,7 +29,8 @@
         <div class="subtitle"><strong>✌🏻여러명 검색하기</strong></div>
         mongoDB 특성상 결과값 순서가 랜덤으로 나오게 됩니다ㅎㅎㅎㅎㅎㅎㅎ.......
         <div class="columns">
-          <b-field class="column" label="이메일을 1개 이상 입력해주세요 (쉼표(,)나 엔터로 구분해주세다)">
+          <b-field class="column" label="이메일을 1개 이상 입력해주세요">
+            각 이메일들은 쉼표(,)나 엔터로 구분해주세요!
             <b-input v-model="emails" type="textarea"></b-input>
           </b-field>
           <div class="buttons are-medium">
