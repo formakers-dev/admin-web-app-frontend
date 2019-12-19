@@ -38,6 +38,7 @@
                     v-on:click="getNickNames"><b>>></b></button>
           </div>
           <b-field class="column" label="결과 리스트">
+            엑셀에 복붙해보세요ㅎㅎㅎㅎ
             <b-table
               :data="nickNames"
               :loading="isLoading">
