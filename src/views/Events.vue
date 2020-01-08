@@ -194,7 +194,10 @@
                      placeholder="https://www.notion.so/formakers/in-PlayX4-98aa3653d83843ecb96f55a5993c7987"></b-input>
           </span>
           <span v-else>
-            아래의 URL이 앱 내에서 로딩됩니다 :
+            아래의 URL이 앱 내에서 로딩됩니다 : <br/>
+            <div style="font-size: 0.8rem; color: grey">
+              * 외부 브라우저로 로딩하고 싶으시다면 Deeplink 메뉴를 클릭해주세요!
+            </div>
             <b-input v-model="contents"
                      placeholder="https://www.notion.so/formakers/in-PlayX4-98aa3653d83843ecb96f55a5993c7987"></b-input>
           </span>
