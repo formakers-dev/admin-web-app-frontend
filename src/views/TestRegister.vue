@@ -280,7 +280,7 @@ export default {
   methods: {
     prepareDataToRegister() {
       if (this.isTargetToFomesMebers) {
-        this.betaTest.targetUserIds.push(this.fomesMembersUserIds);
+        this.betaTest.targetUserIds.concat(this.fomesMembersUserIds);
       }
     },
     registerBetaTest() {
