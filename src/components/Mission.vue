@@ -130,7 +130,7 @@ export default {
       isDependencyWithOrder: true,
       actionType: this.mission.item.actionType.length > 0 ? this.mission.item.actionType : 'default',
       type: this.mission.item.type.length > 0 ? this.mission.item.type : 'default',
-      missionItemOptions: ['mandatory', 'repeatable'],
+      missionItemOptions: ['mandatory', 'repeatable', 'recheckable'],
       missionItemTypes: ['default', 'play', 'hidden'],
       missionItemActionTypes: ['default', 'internal_web'],
       icons: {
