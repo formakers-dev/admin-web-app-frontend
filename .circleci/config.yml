@@ -41,10 +41,14 @@ aliases:
       sleep 5
       heroku restart
 
-  - &filter
+  - &filter-master-branch
     branches:
       only:
         - master
+  - &filter-release-branch
+    branches:
+      only:
+        - release
 
 defaults: &defaults
     working_directory: ~/fomes-admin-frontend # directory where steps will run
@@ -90,6 +94,28 @@ jobs:
           name: check dist directory
           command: pwd; ls; ls dist
 
+  stg-build:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace: *attach-workspace
+      - run: *update-npm
+      - restore_cache: *restore-npm-cache
+      - run: *install-dependencies
+      - save_cache: *save-npm-cache
+      - run:
+          name: set environment variables at Runtime
+          command: |
+            echo 'export BASE_URL=$DEV_BASE_URL' >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Build in Production Mode
+          command: npm run build
+      - persist_to_workspace: *delivery-dist
+      - run:
+          name: check dist directory
+          command: pwd; ls; ls dist
+
   prd-build:
     <<: *defaults
     steps:
@@ -125,6 +151,17 @@ jobs:
     - run: *deploy-to-heroku
     - persist_to_workspace: *delivery-dist
 
+  stg-deploy:
+    <<: *defaults
+    environment:
+      - HEROKU_APP: fomes-admin-frontend-stg
+    steps:
+      - checkout
+      - attach_workspace: *attach-workspace
+      - run: *setup-heroku
+      - run: *setup-branch-and-commit
+      - run: *deploy-to-heroku
+
   prd-deploy:
     <<: *defaults
     environment:
@@ -141,21 +178,30 @@ workflows:
   build-deploy:
     jobs:
       - test:
-          filters: *filter
       - dev-build:
           requires:
             - test
+          filters: *filter-master-branch
       - dev-deploy:
           requires:
             - test
             - dev-build
-          filters: *filter
+          filters: *filter-master-branch
+      - stg-build:
+          requires:
+            - test
+          filters: *filter-master-branch
+      - stg-deploy:
+          requires:
+            - test
+            - stg-build
+          filters: *filter-master-branch
       - prd-build:
           requires:
             - test
-            - dev-deploy
+          filters: *filter-release-branch
       - prd-deploy:
           requires:
             - test
             - prd-build
-          filters: *filter
+          filters: *filter-release-branch
