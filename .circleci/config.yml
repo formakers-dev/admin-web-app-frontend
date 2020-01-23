@@ -177,7 +177,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - test:
+      - test
       - dev-build:
           requires:
             - test
