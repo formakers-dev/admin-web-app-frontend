@@ -4,5 +4,8 @@
   "private": true,
   "scripts": {
     "postinstall": "npm install express"
+  },
+  "engines": {
+    "node": "12.13.0"
   }
 }

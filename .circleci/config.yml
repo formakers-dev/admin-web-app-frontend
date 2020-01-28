@@ -37,7 +37,7 @@ aliases:
     name: Deploy to Heroku
     command: |
       ls; ls dist
-      git push heroku master
+      git push -v heroku `git subtree split --prefix=dist -b heroku-$HEROKU_APP-deploy`:master --force
       sleep 5
       heroku restart
 
@@ -45,6 +45,7 @@ aliases:
     branches:
       only:
         - master
+
   - &filter-release-branch
     branches:
       only:
@@ -109,8 +110,8 @@ jobs:
             echo 'export BASE_URL=$DEV_BASE_URL' >> $BASH_ENV
             source $BASH_ENV
       - run:
-          name: Build in Production Mode
-          command: npm run build
+          name: Build in Staging Mode
+          command: npm run build-stg
       - persist_to_workspace: *delivery-dist
       - run:
           name: check dist directory
@@ -190,6 +191,7 @@ workflows:
       - stg-build:
           requires:
             - test
+            - dev-deploy
           filters: *filter-master-branch
       - stg-deploy:
           requires:
