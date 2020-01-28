@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
+      <div class="sub_title" id="version">버전 : {{ version }}</div>
       <div id="title">ADMIN <b>{{ buildType.toUpperCase() }}</b></div>
       <router-link to="/">홈</router-link> |
       <router-link to="/test/register">테스트 등록하기</router-link> |
@@ -16,10 +17,13 @@
 </template>
 
 <script>
+const packageJson = require('../package.json');
+
 export default {
   data() {
     return {
       buildType: process.env.NODE_ENV,
+      version: JSON.stringify(packageJson.version).replace(/"/g, ''),
     };
   },
 };
@@ -53,6 +57,12 @@ export default {
 
 #nav a.router-link-exact-active {
   color: #00BFBA;
+}
+
+.sub_title {
+  font-size: 10px;
+  color: #ffffff;
+  text-align: right;
 }
 </style>
 
