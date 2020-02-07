@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port ${VUE_APP_PORT}",
+    "serve-window": "vue-cli-service serve --port %VUE_APP_PORT%",
     "build": "vue-cli-service build",
     "build-dev": "vue-cli-service build --mode development",
     "build-stg": "vue-cli-service build --mode staging",
