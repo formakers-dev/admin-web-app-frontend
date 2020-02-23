@@ -19,11 +19,8 @@
         <b-navbar-item tag="router-link" to="/users">
           사용자 정보 조회
         </b-navbar-item>
-        <b-navbar-item tag="router-link" to="/noti-sender">
-          알림 보내기
-        </b-navbar-item>
-        <b-navbar-item tag="router-link" to="/reserved-noti">
-          예약된 알림
+        <b-navbar-item tag="router-link" to="/notification">
+          알림 관리
         </b-navbar-item>
         <b-navbar-item tag="router-link" to="events">
           이벤트 배너
@@ -47,7 +44,11 @@ export default {
     color: #00BFBA;
     font-weight: bold;
   }
+  .navbar.is-black{
+    background-color: #12121c;
+  }
   nav{
     padding: 0 32px;
+    margin-bottom: 30px;
   }
 </style>

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
+import Home from './home/views/Home.vue';
 import NotificationManagement from './notification/views/NotificationManagement.vue';
 import Events from './views/Events.vue';
 import TestRegister from './views/TestRegister.vue';

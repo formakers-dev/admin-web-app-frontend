@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Headers from './components/Headers.vue';
+import Headers from './common/components/Headers.vue';
 
 const packageJson = require('../package.json');
 
