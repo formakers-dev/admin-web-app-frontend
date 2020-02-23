@@ -8,6 +8,9 @@ import axios from 'axios';
 import App from './App.vue';
 import router from './router';
 
+
+Vue.use(Buefy);
+
 moment.locale('ko', {
   weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
   weekdaysShort: ['일', '월', '화', '수', '목', '금', '토'],
@@ -19,9 +22,6 @@ moment.locale('ko', {
 // });
 Vue.prototype.$http = axios;
 Vue.config.productionTip = false;
-
-Vue.use(Buefy);
-
 new Vue({
   router,
   render: h => h(App),
