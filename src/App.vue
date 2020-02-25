@@ -1,7 +1,10 @@
 <template>
   <div>
     <header-nav></header-nav>
-    <router-view class="container is-fluid"/>
+    <p style="text-align: right; color:darkgray">
+      {{buildType}}-{{version}}
+    </p>
+    <router-view class="container is-fluid" style="padding-top: 30px"/>
   </div>
 </template>
 
@@ -51,7 +54,7 @@ export default {
     height: 1px;
     margin: 20px 0;
   }
-  .is-divider-vertical {
+  .is-vertical-divider {
     width: 1px;
     background: lightgray;
     margin: 0 20px;

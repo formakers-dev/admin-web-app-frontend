@@ -5,186 +5,216 @@
         <p><font color="red">필수 값 *</font></p>
       </header>
       <section class="modal-card-body">
-        <b-field horizontal v-if="type==='modify'" label="전송 상태">
-          <div v-if="data.failResult.count > 0">
-            <strong class="tag is-danger">실패</strong>
-            <br>
-            <b-message type="is-danger">
-              <ul>
-                <li>실패 횟수 : {{data.failResult.count}}</li>
-                <li>실패 원인 : {{data.failResult.reason}}</li>
-                <li>실패 시간 : {{data.failResult.at}}</li>
-              </ul>
-            </b-message>
+        <div class="columns" style="width: 100%; height: max-content">
+          <div class="column">
+            <b-field  v-if="type==='modify'" label="전송 상태">
+              <div v-if="data.failResult.count > 0">
+                <strong class="tag is-danger">실패</strong>
+                <br>
+                <b-message type="is-danger">
+                  <ul>
+                    <li>실패 횟수 : {{data.failResult.count}}</li>
+                    <li>실패 원인 : {{data.failResult.reason}}</li>
+                    <li>실패 시간 : {{data.failResult.at}}</li>
+                  </ul>
+                </b-message>
+              </div>
+              <strong v-else class="tag is-black">대기중</strong>
+            </b-field>
+            <b-field >
+              <template slot="label">
+                <span class="has-text-danger">*</span> 채널
+              </template>
+              <b-field>
+                <b-radio-button v-for="channel in channelList"
+                                :key="channel.key"
+                                v-model="data.noti.channel"
+                                :native-value="channel.value">
+                  <span>{{channel.key}}</span>
+                </b-radio-button>
+              </b-field>
+            </b-field>
+            <b-field >
+              <template slot="label">
+                <span class="has-text-danger">*</span> 제목
+              </template>
+              <b-input v-model="data.noti.title"
+                       validation-message="필수 입력 값입니다."
+                       required
+              ></b-input>
+            </b-field>
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 내용
+                <b-tooltip type="is-dark"
+                           label="알림에 기본적으로 보여지는 문구입니다."
+                           position="is-right"
+                           >
+                  <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded>
+                    <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+                  </b-button>
+                </b-tooltip>
+              </template>
+              <b-input v-model="data.noti.subTitle"
+                       placeholder="알림에 기본적으로 보여지는 문구입니다."
+                       type="textarea"
+                       required
+                       validation-message="필수 입력 값입니다."></b-input>
+            </b-field>
+
+            <b-field :type="{'is-danger' : error.message}" :message="{'30자 이상 입력해주세요.' : error.message}">
+              <template slot="label">
+                <b-checkbox v-model="isExistedMessage" size="is-small"></b-checkbox>
+                접힌 알림을 펼쳤을 때 보여지는 내용
+                <b-tooltip type="is-dark"
+                           label="접힌 알림을 펼쳤을 때 보여질 문구입니다. 입력하지 않으면 `내용`에 적은 문구가 보여집니다. 30자 이상 적어주세요!"
+                           position="is-right"
+                           multilined>
+                  <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded>
+                    <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+                  </b-button>
+                </b-tooltip>
+              </template>
+              <b-input v-if="isExistedMessage"
+                       :value="data.noti.message || ''"
+                       @input="data.noti.message = ($event === '' ? null : $event)"
+                       minlength="30"
+                       maxlength="10000"
+                       placeholder="접힌 알림을 펼쳤을 때 보여질 문구입니다. 입력하지 않으면 `내용`에 적은 문구가 보여집니다. 30자 이상 적어주세요!"
+                       type="textarea"></b-input>
+            </b-field>
+            <b-field >
+              <template slot="label">
+                딥링크
+                <b-tooltip type="is-dark"
+                           label="알림 클릭시에 수행될 액션입니다. 미입력시에는 포메스 메인화면으로 이동합니다. Deeplink 포맷에 대한 자세한 내용은 클릭하여 도움말을 살펴보세요."
+                           position="is-right"
+                           multilined>
+                  <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded
+                            tag="a"
+                            href="https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7"
+                            target="_blank">
+                    <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+                  </b-button>
+                </b-tooltip>
+              </template>
+              <b-input v-bind:value="data.noti.deeplink || ''"
+                       v-on:input="data.noti.deeplink = ($event === '' ? null : $event)"
+                       placeholder="ex) http://www.naver.com 혹은 fomes://launch?action=main"></b-input>
+            </b-field>
           </div>
-          <strong v-else class="tag is-black">대기중</strong>
-        </b-field>
+          <div class="is-vertical-divider"></div>
+          <div class="column">
+            <b-field label="발송 예약 시각">
+              <b-field>
+                <b-datetimepicker
+                  v-model="data.when"
+                  rounded
+                  placeholder="예약할 시각을 선택하세요"
+                  icon="calendar-today"
+                >
+                </b-datetimepicker>
+                <b-button type="is-primary"
+                          @click="data.when = null"
+                          style="border-radius: 0;">초기화(예약취소)</b-button>
+              </b-field>
+            </b-field>
 
-        <b-field horizontal>
-          <template slot="label">
-            제목 <span class="has-text-danger">*</span>
-          </template>
-          <b-input v-model="data.noti.title"
-                   validation-message="필수 입력 값입니다."
-                   required
-          ></b-input>
-        </b-field>
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 전송 대상
+              </template>
+              <b-field>
+                <b-radio-button v-for="notiType in notiTypeList"
+                                :key="notiType.key"
+                                v-model="data.notiType"
+                                :native-value="notiType.value" required>
+                  <span>{{notiType.key}}</span>
+                </b-radio-button>
+              </b-field>
+            </b-field>
+            <b-field  v-if="data.notiType === 'individual'">
+              <template slot="label">
+                <span class="has-text-danger">*</span> 전송 대상자 타입
+              </template>
+              <b-field>
+                <b-radio-button v-for="receiversType in receiversTypes"
+                                :key="receiversType.key"
+                                v-model="data.receiversType"
+                                :native-value="receiversType.value" required>
+                  <span>{{receiversType.key}}</span>
+                </b-radio-button>
+              </b-field>
+            </b-field>
 
-        <b-field horizontal>
-          <template slot="label">
-            내용 <span class="has-text-danger">*</span>
-          </template>
-          <b-input v-model="data.noti.subTitle"
-                   placeholder="알림에 기본적으로 보여지는 문구입니다."
-                   type="textarea"
-                   required
-                   validation-message="필수 입력 값입니다."></b-input>
-        </b-field>
+            <b-field v-if="data.notiType === 'individual'" label="전송 옵션">
+              <div>
+                <b-checkbox v-model="data.isExcluded">
+                  아래 사용자들을 제외한 모두에게 보내기
+                </b-checkbox>
+              </div>
+            </b-field>
 
-        <b-field horizontal label="알림이 펼쳐져있을 때 보여질 내용">
-          <b-input :value="data.noti.message || ''"
-                   @input="data.noti.message = ($event === '' ? null : $event)"
-                   minlength="30"
-                   maxlength="10000"
-                   placeholder="접힌 알림을 펼쳤을 때 보여질 문구입니다. 입력하지 않으면 `내용`에 적은 문구가 보여집니다. 30자 이상 적어주세요!"
-                   type="textarea"></b-input>
-        </b-field>
+            <b-field v-if="data.notiType === 'test'">
+              <template slot="label">
+                <span class="has-text-danger">*</span> 테스터
+              </template>
+              <div style="padding-top: 0.375em;">
+                <b-tooltip style="margin-right:10px"
+                           v-for="tester in test.members"
+                           type="is-dark"
+                           :label="tester.email"
+                           :key="tester.name"
+                           position="is-right">
+                  <b-checkbox v-model="test.receivers"
+                              :native-value="tester.email">
+                    {{tester.name}}
+                  </b-checkbox>
+                </b-tooltip>
+              </div>
+            </b-field>
 
-        <b-field horizontal label="그룹화 시킬 때의 알림 내용">
-          <b-input v-bind:value="data.noti.summarySubText || ''"
-                   v-on:input="data.noti.summarySubText = ($event === '' ? null : $event)"
-                   placeholder="알림이 여러개 보내져있을 때, 알림을 합칠 수 있는 옵션입니다.(그룹화)"
-                   type="textarea"></b-input>
-        </b-field>
+            <b-field v-if="data.notiType === 'individual'">
+              <template slot="label">
+                <span class="has-text-danger">*</span> 대상자들의 {{data.receiversType === 'email' ? "이메일" : "유저 아이디"}}
+                <b-tooltip type="is-dark"
+                           label="엔터(\n)와 쉼표(,)로 구분합니다."
+                           position="is-right"
+                           multilined>
+                  <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded>
+                    <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+                  </b-button>
+                </b-tooltip>
+              </template>
+              <b-input v-model="data.receivers"
+                       type="textarea"
+                       required
+                       placeholder="엔터(\n)와 쉼표(,)로 구분합니다."
+                       validation-message="필수 입력 값입니다."></b-input>
+            </b-field>
 
-        <b-field horizontal>
-          <template slot="label">
-            딥링크
-            <b-tooltip type="is-dark" label="클릭하시면 도움말로 이동합니다." position="is-right">
-              <b-button class="is-white"
-                        style="margin-left: -15px; background: transparent;"
-                        rounded
-                        tag="a"
-                        href="https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7"
-                        target="_blank">
-                <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
-              </b-button>
-            </b-tooltip>
-          </template>
-          <b-input v-bind:value="data.noti.deeplink || ''"
-                   v-on:input="data.noti.deeplink = ($event === '' ? null : $event)"
-                   placeholder="ex) http://www.naver.com 혹은 fomes://launch?action=main"></b-input>
-        </b-field>
-
-        <b-field horizontal label="발송 예약 시각">
-          <b-field>
-            <b-datetimepicker
-              v-model="data.when"
-              rounded
-              placeholder="예약할 시각을 선택하세요"
-              icon="calendar-today"
-            >
-            </b-datetimepicker>
-            <b-button type="is-primary"
-                      @click="data.when = null"
-                      style="border-radius: 0;">초기화(예약취소)</b-button>
-          </b-field>
-        </b-field>
-
-        <b-field horizontal>
-          <template slot="label">
-            채널 <span class="has-text-danger">*</span>
-          </template>
-          <b-field>
-            <b-radio-button v-for="channel in channelList"
-                            :key="channel.key"
-                            v-model="data.noti.channel"
-                            :native-value="channel.value">
-              <span>{{channel.key}}</span>
-            </b-radio-button>
-          </b-field>
-        </b-field>
-
-        <b-field horizontal>
-          <template slot="label">
-            전송 대상 <span class="has-text-danger">*</span>
-          </template>
-          <b-field>
-            <b-radio-button v-for="notiType in notiTypeList"
-                            :key="notiType.key"
-                            v-model="data.notiType"
-                            :native-value="notiType.value" required>
-              <span>{{notiType.key}}</span>
-            </b-radio-button>
-          </b-field>
-        </b-field>
-        <b-field horizontal v-if="data.notiType === 'individual'">
-          <template slot="label">
-            전송 대상자 타입 <span class="has-text-danger">*</span>
-          </template>
-          <b-field>
-            <b-radio-button v-for="receiversType in receiversTypes"
-                            :key="receiversType.key"
-                            v-model="data.receiversType"
-                            :native-value="receiversType.value" required>
-              <span>{{receiversType.key}}</span>
-            </b-radio-button>
-          </b-field>
-        </b-field>
-
-        <b-field v-if="data.notiType === 'individual'"  horizontal label="전송 옵션">
-          <div>
-            <b-checkbox v-model="test.mode">
-              테스트 모드
-            </b-checkbox>
-            <b-checkbox v-if='!test.mode' v-model="data.isExcluded">
-              아래 사용자들을 제외한 모두에게 보내기
-            </b-checkbox>
+            <b-field v-if="data.notiType === 'topic'">
+              <template slot="label">
+                <span class="has-text-danger">*</span> 토픽
+              </template>
+              <b-radio style="padding-top: 0.375em;"
+                       v-for="topic in topicList"
+                       :key="topic.key"
+                       v-model="data.topic"
+                       :native-value="topic.value" required>
+                <span>{{topic.key}}</span>
+              </b-radio>
+            </b-field>
           </div>
-        </b-field>
-
-        <b-field v-if="test.mode && data.notiType === 'individual'" horizontal label="테스터">
-          <div style="padding-top: 0.375em;">
-            <b-tooltip style="margin-right:10px"
-                       v-for="tester in test.members"
-                       type="is-dark"
-                       :label="tester.email"
-                       :key="tester.name"
-                       position="is-right">
-              <b-checkbox v-model="test.receivers"
-                          :native-value="tester.email">
-                {{tester.name}}
-              </b-checkbox>
-            </b-tooltip>
-          </div>
-        </b-field>
-
-        <b-field horizontal v-if="data.notiType === 'individual' && !test.mode">
-          <template v-if="data.receiversType === 'email'" slot="label">
-            대상자들의 이메일 <span class="has-text-danger">*</span>
-          </template>
-          <template v-if="(data.receiversType === 'userId')" slot="label">
-            대상자들의 유저 아이디 <span class="has-text-danger">*</span>
-          </template>
-          <b-input v-model="data.receivers"
-                   type="textarea"
-                   required
-                   placeholder="엔터(\n)와 쉼표(,)로 구분합니다."
-                   validation-message="필수 입력 값입니다."></b-input>
-        </b-field>
-
-        <b-field horizontal v-if="data.notiType === 'topic'">
-          <template slot="label">
-            토픽 <span class="has-text-danger">*</span>
-          </template>
-          <b-radio style="padding-top: 0.375em;"
-                   v-for="topic in topicList"
-                   :key="topic.key"
-                   v-model="data.topic"
-                   :native-value="topic.value" required>
-            <span>{{topic.key}}</span>
-          </b-radio>
-        </b-field>
+        </div>
       </section>
       <footer class="modal-card-foot">
         <button class="button" type="button" @click="$emit('close')">닫기</button>
@@ -195,6 +225,10 @@
 
           <button class="button is-primary" v-if="data.notiType === 'topic'"
                   @click="send"><b>단체 전송 예약</b></button>
+
+          <button class="button is-primary"
+                  v-if="data.notiType === 'test'"
+                  @click="send"><b>테스트 전송 예약</b></button>
         </div>
         <div v-else>
           <button class="button is-primary"
@@ -204,6 +238,10 @@
           <button class="button is-primary"
                   v-if="data.notiType === 'topic'"
                   @click="send"><b>단체 전송</b></button>
+
+          <button class="button is-primary"
+                  v-if="data.notiType === 'test'"
+                  @click="send"><b>테스트 전송</b></button>
         </div>
       </footer>
     </div>
@@ -238,7 +276,8 @@ export default {
         { key: '기본', value: 'channel_default' }],
       notiTypeList: [
         { key: '개별', value: 'individual' },
-        { key: '단체', value: 'topic' }],
+        { key: '단체', value: 'topic' },
+        { key: '테스트(개별)', value: 'test' }],
       topicList: [
         { key: 'notice-all', value: 'notice-all' }],
       receiversTypes: [
@@ -254,7 +293,11 @@ export default {
           { name: 'Formakers.Dev', email: 'formakers.dev@gmail.com' }],
         receivers: [],
       },
+      error: {
+        message: false,
+      },
       disabled: false,
+      isExistedMessage: false,
       data: {
         id: '',
         isReserved: false,
@@ -263,8 +306,6 @@ export default {
           title: '',
           subTitle: '',
           message: '',
-          isSummary: false,
-          summarySubText: '',
           deeplink: '',
         },
         when: null,
@@ -286,29 +327,48 @@ export default {
     // modal type
     if (this.type === 'modify') {
       this.data = Object.assign({}, this.value);
+    } else {
+      this.data.notiType = 'test';
+    }
+    if (this.data.noti.message && this.data.noti.message.length > 0) {
+      this.isExistedMessage = true;
     }
   },
   watch: {
-    'data.noti.summarySubText': {
+    'data.notiType': {
       handler(after) {
-        this.data.noti.isSummary = after != null && after.length > 0;
+        this.test.mode = (after === 'test');
+      },
+      deep: true,
+    },
+    isExistedMessage: {
+      handler(after) {
+        if (!after) {
+          this.data.noti.message = '';
+        }
+      },
+    },
+    'data.noti.message': {
+      handler(after) {
+        this.error.message = (after.length < 30 && after.length > 0);
       },
       deep: true,
     },
   },
   methods: {
     validate() {
+      console.log(this.data.noti.message.length);
       if (this.data.noti.title === '' || this.data.noti.subTitle === '') {
         return false;
       }
-      if (this.data.noti.message
-        && this.data.noti.message.length > 0
-        && this.date.noti.message.length < 30) {
+      const messageLength = this.data.noti.message.length;
+      if (this.isExistedMessage && (messageLength > 0 && messageLength < 30)) {
         return false;
       }
-      if (!this.test.mode
-        && this.data.notiType === 'individual'
-        && this.data.receivers.length === 0) {
+      if (this.data.notiType === 'individual' && this.data.receivers.length === 0) {
+        return false;
+      }
+      if (this.test.mode && this.test.receivers.length === 0) {
         return false;
       }
       return true;
@@ -321,7 +381,7 @@ export default {
         });
         return;
       }
-      if (this.data.notiType === 'individual') {
+      if (this.data.notiType === 'individual' || this.test.mode) {
         this.sendNoti();
       } else {
         this.sendNotiByTopic();
@@ -343,7 +403,7 @@ export default {
           isExcluded: this.data.isExcluded,
         },
         when: this.data.when,
-        notiType: this.data.notiType,
+        notiType: 'individual',
       };
 
       console.log(body);
@@ -426,5 +486,13 @@ export default {
    }
   .white-space-pre {
     white-space: pre-wrap;
+  }
+  .noti-info-container .field{
+    margin-bottom:1rem;
+  }
+  .modal-card-body{
+    display: flex;
+    align-content: center;
+    justify-content: center;
   }
 </style>
