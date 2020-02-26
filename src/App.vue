@@ -1,8 +1,8 @@
 <template>
   <div>
     <header-nav></header-nav>
-    <p style="text-align: right; color:darkgray">
-      {{buildType}}-{{version}}
+    <p class="version">
+      {{buildType}}-v{{version}}
     </p>
     <router-view class="container is-fluid" style="padding-top: 30px"/>
   </div>
@@ -45,6 +45,13 @@ export default {
     height: 90%;
     width: 90%;
     box-shadow: 0px 0px 55px 0px rgba(0,0,0,0.6);
+  }
+  .version{
+    margin-right:10px;
+    margin-top:-20px;
+    font-size: 11px;
+    text-align: right;
+    color:darkgray;
   }
   .message{
     margin : 10px 0;
