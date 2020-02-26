@@ -111,7 +111,19 @@
           </div>
           <div class="is-vertical-divider"></div>
           <div class="column">
-            <b-field label="발송 예약 시각">
+            <b-field>
+              <template slot="label">
+                발송 예약 시각
+                <b-tooltip type="is-dark"
+                           label="미입력 시에는 알림이 바로 전송됩니다."
+                           position="is-right">
+                    <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded>
+                      <b-icon size="is-small" icon="help-circle-outline"></b-icon>
+                    </b-button>
+                </b-tooltip>
+              </template>
               <b-field>
                 <b-datetimepicker
                   v-model="data.when"
