@@ -3,10 +3,13 @@
     <b-navbar type="is-black">
       <template slot="brand">
         <b-navbar-item tag="router-link" to="/">
-          <img
-            src="https://contents.sixshop.com/uploadedFiles/107454/default/image_1572923068659.png"
-            alt=""
-          >
+          <div>
+            <img
+              src="https://contents.sixshop.com/uploadedFiles/107454/default/image_1572923068659.png"
+              alt=""
+            >
+            <div class="build-type">{{buildType}}</div>
+          </div>
         </b-navbar-item>
       </template>
       <template slot="start">
@@ -33,6 +36,11 @@
 <script>
 export default {
   name: 'Headers',
+  data() {
+    return {
+      buildType: process.env.NODE_ENV,
+    };
+  },
 };
 </script>
 
@@ -50,5 +58,12 @@ export default {
   nav{
     padding: 0 32px;
     margin-bottom: 30px;
+  }
+  .build-type{
+    font-size:10px;
+    text-align: center;
+    margin-top: -10px;
+    color: white;
+    font-weight: bold;
   }
 </style>
