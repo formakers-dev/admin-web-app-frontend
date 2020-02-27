@@ -173,9 +173,9 @@ jobs:
     - run: *setup-heroku
     - run: *setup-branch-and-commit
     - run: *deploy-to-heroku
-        - run:
-            name: Archive and Delivery to Slack
-            command: bash .circleci/delivery-to-slack.sh
+    - run:
+        name: Archive and Delivery to Slack
+        command: bash .circleci/delivery-to-slack.sh
 
 workflows:
   version: 2
