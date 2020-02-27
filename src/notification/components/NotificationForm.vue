@@ -300,7 +300,7 @@ export default {
         members: [
           { name: 'Eve', email: 'bolim.lee@formakers.net' },
           { name: 'Yenarue', email: 'yenarue@gmail.com' },
-          { name: 'Jason', email: 'copyx00@gmail.com' },
+          { name: 'Jason', email: 'sryu99@gmail.com' },
           { name: 'Jake', email: 'jingi.kim@formakers.net' },
           { name: 'Formakers.Dev', email: 'formakers.dev@gmail.com' }],
         receivers: [],
