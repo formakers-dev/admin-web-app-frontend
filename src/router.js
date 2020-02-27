@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
-import NotiSender from './views/NotiSender.vue';
-import ReservedNoti from './views/ReservedNoti.vue';
+import Home from './home/views/Home.vue';
+import NotificationManagement from './notification/views/NotificationManagement.vue';
 import Events from './views/Events.vue';
 import TestRegister from './views/TestRegister.vue';
 import TestList from './views/TestList.vue';
@@ -35,14 +34,9 @@ export default new Router({
       component: Users,
     },
     {
-      path: '/noti-sender',
-      name: 'noti-sender',
-      component: NotiSender,
-    },
-    {
-      path: '/reserved-noti',
-      name: 'reserved-noti',
-      component: ReservedNoti,
+      path: '/notification',
+      name: 'notification-management',
+      component: NotificationManagement,
     },
     {
       path: '/events',

@@ -1,25 +1,22 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <div class="sub_title" id="version">버전 : {{ version }}</div>
-      <div id="title">ADMIN <b>{{ buildType.toUpperCase() }}</b></div>
-      <router-link to="/">홈</router-link> |
-      <router-link to="/test/register">테스트 등록하기</router-link> |
-      <router-link to="/test/list">테스트 목록</router-link> |
-      <router-link to="/users">유저정보</router-link> |
-      <router-link to="/noti-sender">알림 보내기</router-link> |
-      <router-link to="/reserved-noti">예약된 알림</router-link> |
-      <router-link to="/events">이벤트 배너</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+  <div>
+    <header-nav></header-nav>
+    <p class="version">
+      {{buildType}}-v{{version}}
+    </p>
+    <router-view class="container is-fluid" style="padding-top: 30px"/>
   </div>
 </template>
 
 <script>
+import Headers from './common/components/Headers.vue';
+
 const packageJson = require('../package.json');
 
 export default {
+  components: {
+    'header-nav': Headers,
+  },
   data() {
     return {
       buildType: process.env.NODE_ENV,
@@ -30,40 +27,48 @@ export default {
 </script>
 
 <style>
-* { margin: 0 !important; }
+  html{
+    width: 100%;
+    height: 100%;
+    background-color : #f4f7fa !important;
+    word-break: keep-all;
+  }
+  .container{
+    margin: 0 auto !important;
+    width: 85% !important;
+  }
+  .modal > .modal-background{
+    background-color: transparent;
+  }
+  .modal > .animation-content{
+    z-index: 99;
+    height: 90%;
+    width: 90%;
+    box-shadow: 0px 0px 55px 0px rgba(0,0,0,0.6);
+  }
+  .version{
+    margin-right:10px;
+    margin-top:-20px;
+    font-size: 11px;
+    text-align: right;
+    color:darkgray;
+  }
+  .message{
+    margin : 10px 0;
+  }
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #505050;
-}
-
-#nav {
-  padding: 10px;
-  background-color: #505050;
-}
-
-#nav #title {
-  font-size: 30px;
-  color: #ffffff;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #808080;
-}
-
-#nav a.router-link-exact-active {
-  color: #00BFBA;
-}
-
-.sub_title {
-  font-size: 10px;
-  color: #ffffff;
-  text-align: right;
-}
+  .is-divider{
+    height: 1px;
+    margin: 20px 0;
+  }
+  .is-vertical-divider {
+    width: 1px;
+    background: lightgray;
+    margin: 0 20px;
+  }
+  .datepicker{
+    width: 290px;
+  }
 </style>
 
 <style lang="scss">
