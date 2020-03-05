@@ -42,7 +42,7 @@ export default {
   }
   .modal > .animation-content{
     z-index: 99;
-    height: 90%;
+    height: auto;
     width: 90%;
     box-shadow: 0px 0px 55px 0px rgba(0,0,0,0.6);
   }
@@ -68,6 +68,23 @@ export default {
   }
   .datepicker{
     width: 290px;
+  }
+  .modal-card {
+    width: auto;
+  }
+  .white-space-pre {
+    white-space: pre-wrap;
+  }
+  .modal-card .field{
+    margin-bottom:1rem;
+  }
+  .modal-card-body{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+  }
+  .table td, .table th{
+    vertical-align: middle !important;
   }
 </style>
 
