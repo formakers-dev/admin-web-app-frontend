@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './home/views/Home.vue';
 import NotificationManagement from './notification/views/NotificationManagement.vue';
-import Events from './views/Events.vue';
+import Events from './event/views/EventBannerManagement.vue';
 import TestRegister from './views/TestRegister.vue';
 import TestList from './views/TestList.vue';
 import Users from './views/Users.vue';
