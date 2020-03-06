@@ -103,7 +103,10 @@
           </b-checkbox>
         </b-field>
         <b-field v-if="contentType != 'deeplink'">
-            <b-input v-model="data.contents"
+           <textarea v-if="contentType === 'html'"
+                     v-model="data.contents" style="margin: 0px; height: 270px; width: 415px; resize: vertical;"
+           ></textarea>
+            <b-input v-else v-model="data.contents"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
@@ -126,11 +129,12 @@
 </template>
 
 <script>
-import moment from 'moment';
 import request from '../../common/http';
 
 export default {
   name: 'EventBannerForm.vue',
+  components: {
+  },
   props: {
     value: {
       type: Object,
