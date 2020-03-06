@@ -220,11 +220,22 @@ export default {
       return `<img style='width: 100%; object-fit: contain' src='${imageUrl}' title='source: imgur.com' />`;
     },
     validate() {
-      return true;
+      if (this.data.coverImageUrl && this.data.title) {
+        if (this.contentType === 'deeplink' && this.data.deeplink) {
+          return true;
+        }
+        if (this.checkedExternalBrowser && this.data.contents) {
+          return true;
+        }
+        if (this.contentType !== 'deeplink' && this.data.contents) {
+          return true;
+        }
+      }
+      return false;
     },
     submit() {
       if (!this.validate()) {
-        this.showErrorToast('입력 값들을 다시 한번 확인해주세요.');
+        this.showErrorToast('입력 값들을 다시 한번 확인해주세요.', '필수 값을 입력해주세요');
         return;
       }
       const body = {
