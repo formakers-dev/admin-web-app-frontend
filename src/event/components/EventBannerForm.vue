@@ -178,14 +178,18 @@ export default {
     // modal type
     if (this.type === 'modify') {
       if (this.value.deeplink) {
-        this.contentType = 'deeplink';
+        if (this.value.deeplink.toLocaleLowerCase().startsWith('fomes://web/external?url=')) {
+          this.value.contents = this.value.deeplink;
+          this.contentType = 'url';
+          this.checkedExternalBrowser = true;
+          this.value.deeplink = null;
+        } else {
+          this.contentType = 'deeplink';
+        }
       } else if (this.value.contents.startsWith('<img')) {
         this.contentType = 'image';
       } else if (this.value.contents.toLocaleLowerCase().startsWith('http')) {
         this.contentType = 'url';
-      } else if (this.value.contents.toLocaleLowerCase().startsWith('fomes://web/external?url=')) {
-        this.contentType = 'url';
-        this.checkedExternalBrowser = true;
       } else if (this.value.contents.startsWith('<')) {
         this.contentType = 'html';
       }
@@ -210,7 +214,7 @@ export default {
     getExternalBrowserUrl(value) {
       const str = 'fomes://web/external?url=';
       const firstIndex = value.indexOf(str) + str.length;
-      return value.substring(firstIndex, str.length - 1);
+      return value.substring(firstIndex, value.length);
     },
     mergeWithHtml(imageUrl) {
       return `<img style='width: 100%; object-fit: contain' src='${imageUrl}' title='source: imgur.com' />`;
@@ -239,12 +243,15 @@ export default {
         body.contents = this.data.contents;
       } else if (this.contentType === 'deeplink') {
         body.deeplink = this.data.deeplink;
-      } else if (this.contentType === 'html') {
+      } else if (this.contentType === 'url') {
         if (this.checkedExternalBrowser) {
           body.deeplink = `fomes://web/external?url=${this.data.contents}`;
         } else {
           body.contents = this.data.contents;
         }
+      } else {
+        this.showErrorToast('잘못된 내용 입니다.', '');
+        return;
       }
       const url = this.type === 'modify' ? `/posts/${this.data._id}` : '/posts';
       request({
