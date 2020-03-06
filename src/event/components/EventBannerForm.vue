@@ -103,7 +103,10 @@
           </b-checkbox>
         </b-field>
         <b-field v-if="contentType != 'deeplink'">
-            <b-input v-model="data.contents"
+           <textarea v-if="contentType === 'html'"
+                     v-model="data.contents" style="margin: 0px; height: 270px; width: 415px; resize: vertical;"
+           ></textarea>
+            <b-input v-else v-model="data.contents"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
@@ -126,11 +129,12 @@
 </template>
 
 <script>
-import moment from 'moment';
 import request from '../../common/http';
 
 export default {
   name: 'EventBannerForm.vue',
+  components: {
+  },
   props: {
     value: {
       type: Object,
@@ -220,11 +224,22 @@ export default {
       return `<img style='width: 100%; object-fit: contain' src='${imageUrl}' title='source: imgur.com' />`;
     },
     validate() {
-      return true;
+      if (this.data.coverImageUrl && this.data.title) {
+        if (this.contentType === 'deeplink' && this.data.deeplink) {
+          return true;
+        }
+        if (this.checkedExternalBrowser && this.data.contents) {
+          return true;
+        }
+        if (this.contentType !== 'deeplink' && this.data.contents) {
+          return true;
+        }
+      }
+      return false;
     },
     submit() {
       if (!this.validate()) {
-        this.showErrorToast('입력 값들을 다시 한번 확인해주세요.');
+        this.showErrorToast('입력 값들을 다시 한번 확인해주세요.', '필수 값을 입력해주세요');
         return;
       }
       const body = {
