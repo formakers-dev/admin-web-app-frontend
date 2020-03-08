@@ -19,7 +19,7 @@
         <b-button type="is-primary"
                   size="is-medium"
                   icon-left="bell-ring"
-                  @click="openNotificationForm(null, 'create')"
+                  @click="openNotificationForm(null, 'add')"
         >알람 전송/예약</b-button>
       </div>
     </div>

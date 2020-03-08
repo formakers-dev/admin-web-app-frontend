@@ -16,6 +16,7 @@
           <b-button type="is-info"
                     size="is-medium"
                     @click="updateOrder"
+                    :disabled="disabled.order"
           >
             순서 저장
           </b-button>
@@ -39,6 +40,11 @@
         :checked-rows.sync="checkedRows"
         :bordered="false"
         :hoverable="true"
+        :paginated="true"
+        per-page="10"
+        current-page.sync="1"
+        :pagination-simple="false"
+        pagination-position="both"
         default-sort="order"
         @select="showDetail"
         draggable
@@ -63,18 +69,18 @@
             {{ props.row.title }}
           </b-table-column>
 
-          <b-table-column field="openDate" label="오픈 날짜" centered sortable>
+          <b-table-column field="openDate" label="오픈 시각" centered sortable>
             {{ convertDateTime(props.row.openDate) }}
           </b-table-column>
 
-          <b-table-column field="closeDate" label="종료 날짜" centered sortable >
+          <b-table-column field="closeDate" label="종료 시각" centered sortable >
             {{ convertDateTime(props.row.closeDate) }}
           </b-table-column>
 
-          <b-table-column field="status" label="상태" sortable centered>
-            <strong v-if="getStatus(props.row.openDate, props.row.closeDate)" class="tag is-warning">오픈</strong>
-            <strong v-else-if="getStatus(props.row.openDate, props.row.closeDate)" class="tag is-primary">대기</strong>
-            <strong v-else class="tag is-warning">종료</strong>
+          <b-table-column field="status" label="상태" centered sortable>
+            <strong v-if="props.row.status === 1" class="tag is-danger">오픈</strong>
+            <strong v-else-if="props.row.status === 2" class="tag is-warning">대기</strong>
+            <strong v-else class="tag is-black">종료</strong>
           </b-table-column>
         </template>
 
@@ -104,11 +110,21 @@ export default {
   name: 'EventBannerManagement',
   data() {
     return {
+      disabled: {
+        order: true,
+      },
+      openedBannerCount: 0,
+      standbyBannerCount: 0,
       postList: [],
       isLoading: true,
       checkedRows: [],
       draggingRow: null,
       draggingRowIndex: null,
+      counts: {
+        open: 0,
+        close: 0,
+        ready: 0,
+      },
     };
   },
   created() {
@@ -121,33 +137,48 @@ export default {
       payload.event.dataTransfer.effectAllowed = 'copy';
     },
     dragover(payload) {
-      payload.event.dataTransfer.dropEffect = 'copy';
-      payload.event.target.closest('tr').classList.add('is-selected');
-      payload.event.preventDefault();
+      if (this.draggingRow.status < 3) {
+        payload.event.dataTransfer.dropEffect = 'copy';
+        payload.event.target.closest('tr').classList.add('is-selected');
+        payload.event.preventDefault();
+      }
     },
     dragleave(payload) {
-      payload.event.target.closest('tr').classList.remove('is-selected');
-      payload.event.preventDefault();
+      if (this.draggingRow.status < 3) {
+        payload.event.target.closest('tr').classList.remove('is-selected');
+        payload.event.preventDefault();
+      }
     },
     drop(payload) {
-      payload.event.target.closest('tr').classList.remove('is-selected');
-      const newIndex = payload.index; // result index
-      const oldIndex = this.draggingRowIndex;
-      const posts = this.postList;
-      const post = posts[oldIndex];
-      if (newIndex > oldIndex) {
-        for (let i = oldIndex; i < newIndex; i++) {
-          posts[i] = posts[i + 1];
-        }
-      } else {
-        for (let i = oldIndex; i > newIndex; i--) {
-          posts[i] = posts[i - 1];
-        }
+      if (payload.row.status < 3) {
+        this.showErrorToast('종료된 배너와 순서를 변경할 수 없습니다.', '');
       }
-      posts[newIndex] = post;
-      posts.forEach((el, i) => {
-        el.order = i + 1;
-      });
+      if (this.draggingRow.status < 3) {
+        payload.event.target.closest('tr').classList.remove('is-selected');
+        const newIndex = payload.index; // result index
+        const oldIndex = this.draggingRowIndex;
+        const posts = this.postList;
+        const post = posts[oldIndex];
+        if (newIndex > oldIndex) {
+          for (let i = oldIndex; i < newIndex; i++) {
+            posts[i] = posts[i + 1];
+          }
+        } else {
+          for (let i = oldIndex; i > newIndex; i--) {
+            posts[i] = posts[i - 1];
+          }
+        }
+        posts[newIndex] = post;
+        posts.forEach((el, i) => {
+          if (el.status < 3) {
+            el.order = i + 1;
+          }
+        });
+        this.postList = Object.assign([], posts);
+        this.disabled = false;
+      } else {
+        this.showErrorToast('종료된 배너의 경우 순서를 변경할 수 없습니다.', '');
+      }
     },
     updateOrder() {
       this.isLoading = true;
@@ -168,12 +199,12 @@ export default {
     getStatus(openDate, closeDate) {
       const current = moment();
       if (current.isBetween(openDate, closeDate)) {
-        return true;
+        return 1;
       }
       if (current.isBefore(openDate)) {
-        return true;
+        return 2;
       }
-      return true;
+      return 3;
     },
     convertDateTime(date) {
       return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
@@ -185,7 +216,22 @@ export default {
           console.log('response', res.data);
           if (res.status === 200) {
             res.data.forEach((element, index) => {
-              element.order = index + 1;
+              element.status = this.getStatus(element.openDate, element.closeDate);
+              if (element.status === 1) {
+                this.counts.open = this.counts.open + 1;
+              } else if (element.status === 2) {
+                this.counts.ready = this.counts.ready + 1;
+              } else {
+                // 종료
+                element.order = 99999;
+                this.counts.close = this.counts.close + 1;
+              }
+            });
+            res.data.sort((a, b) => a.order - b.order);
+            res.data.forEach((element, index) => {
+              if (element.order < 99999) {
+                element.order = index + 1;
+              }
             });
             this.postList = res.data;
           } else {
@@ -221,20 +267,25 @@ export default {
           });
       }
     },
+    closeForm(refresh) {
+      if (refresh) {
+        this.getAllPosts();
+      }
+    },
     openForm(value, type) {
       this.$buefy.modal.open({
         parent: this,
         props: {
           value,
           type,
-          length: this.postList.length,
+          counts: this.counts,
         },
         component: EventBannerForm,
         hasModalCard: true,
         trapFocus: true,
         canCancel: false,
         events: {
-          close: () => this.getAllPosts(),
+          close: (options) => { this.closeForm(options); },
         },
       });
     },
