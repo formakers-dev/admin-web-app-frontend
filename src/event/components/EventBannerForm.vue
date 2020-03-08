@@ -16,7 +16,8 @@
         </div>
         <div v-else-if="data.contents && contentType==='html'" v-html="data.contents"></div>
         <div v-else-if="data.contents && contentType==='url'">
-          <iframe class="iframe-url" :src="data.contents"></iframe>
+          <strong>아래의 링크를 클릭하여 확인해주세요.</strong><br>
+          <a :href="data.contents" target="_blank">{{data.contents}}</a>
         </div>
         <div v-else-if="data.contents && contentType==='image'">
           <img :src="data.contents"/>
@@ -117,11 +118,12 @@
                    required
           ></b-input>
         </b-field>
+        <strong v-if="contentType==='url'" class="has-text-danger">* 이미지 파일의 경우 Image URL 을 선택해주세요.</strong>
       </div>
     </div>
   </section>
   <footer class="modal-card-foot">
-    <button class="button" type="button" @click="$emit('close')">닫기</button>
+    <button class="button" type="button" @click="close">닫기</button>
     <button v-if="type==='add'" class="button  is-primary" type="button" @click="submit">이벤트 배너 추가</button>
     <button v-else class="button  is-primary" type="button" @click="submit">이벤트 배너 수정</button>
   </footer>
@@ -129,6 +131,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import request from '../../common/http';
 
 export default {
@@ -148,10 +151,10 @@ export default {
         return 'add';
       },
     },
-    length: {
-      type: Number,
+    counts: {
+      type: Object,
       default() {
-        return 0;
+        return Object.assign({}, { open: 0, close: 0, ready: 0 });
       },
     },
   },
@@ -235,12 +238,32 @@ export default {
           return true;
         }
       }
+      const open = moment(this.data.openDate);
+      const close = moment(this.data.closeDate);
+      if (!open.isSameOrBefore(close)) {
+        this.showErrorToast('오픈 시각과 종료 시각을 다시 한번 확인해주세요.', '');
+      } else {
+        return true;
+      }
       return false;
+    },
+    close() {
+      this.$emit('close', false);
     },
     submit() {
       if (!this.validate()) {
         this.showErrorToast('입력 값들을 다시 한번 확인해주세요.', '필수 값을 입력해주세요');
         return;
+      }
+      const status = this.getStatus(this.data.openDate, this.data.closeDate);
+      if (this.type === 'add') {
+        if (status === 1) {
+          this.data.order = this.counts.open + 1;
+        } else if (status === 2) {
+          this.data.order = this.counts.open + this.counts.close + 1;
+        } else {
+          this.data.order = 99999;
+        }
       }
       const body = {
         order: this.data.order,
@@ -276,6 +299,7 @@ export default {
       }).then((res) => {
         if (res.status === 200) {
           this.showSuccessToast('이벤트 배너를 정상적으로 등록하였습니다.');
+          this.$emit('close', true);
         } else {
           this.showErrorToast('이벤트 배너 등록에 실패하였습니다.', res);
         }
@@ -295,6 +319,16 @@ export default {
         type: 'is-danger',
       });
       console.log(err);
+    },
+    getStatus(openDate, closeDate) {
+      const current = moment();
+      if (current.isBetween(openDate, closeDate)) {
+        return 1; // open
+      }
+      if (current.isBefore(openDate)) {
+        return 2; // ready
+      }
+      return 3; // close
     },
   },
 };
