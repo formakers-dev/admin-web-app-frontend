@@ -150,11 +150,12 @@ export default {
       }
     },
     drop(payload) {
-      if (payload.row.status < 3) {
+      payload.event.target.closest('tr').classList.remove('is-selected');
+      if (payload.row.status > 2) {
         this.showErrorToast('종료된 배너와 순서를 변경할 수 없습니다.', '');
+        return;
       }
       if (this.draggingRow.status < 3) {
-        payload.event.target.closest('tr').classList.remove('is-selected');
         const newIndex = payload.index; // result index
         const oldIndex = this.draggingRowIndex;
         const posts = this.postList;
@@ -196,15 +197,17 @@ export default {
           this.isLoading = false;
         });
     },
-    getStatus(openDate, closeDate) {
-      const current = moment();
-      if (current.isBetween(openDate, closeDate)) {
+    getStatus(open, close) {
+      const current = new Date().getTime();
+      const openDate = new Date(open).getTime();
+      const closeDate = new Date(close).getTime();
+      if(openDate <= current && closeDate >= current){
         return 1;
       }
-      if (current.isBefore(openDate)) {
-        return 2;
+      if(closeDate < current){
+        return 3;
       }
-      return 3;
+      return 2;
     },
     convertDateTime(date) {
       return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
