@@ -13,13 +13,18 @@
           >
             {{ checkedRows.length > 0 ? checkedRows.length + '개' : '' }} 삭제
           </b-button>
-          <b-button type="is-info"
-                    size="is-medium"
-                    @click="updateOrder"
-                    :disabled="disabled.order"
-          >
-            순서 저장
-          </b-button>
+          <b-tooltip type="is-info"
+                     label="Drag & Drop 으로 이벤트 배너의 순서를 변경해보세요!"
+                     position="is-bottom"
+                     multilined>
+            <b-button type="is-info"
+                      size="is-medium"
+                      @click="updateOrder"
+                      :disabled="disabled.order"
+            >
+              순서 저장
+            </b-button>
+          </b-tooltip>
         </div>
       </div>
       <div class="level-right">
@@ -32,7 +37,6 @@
         </div>
       </div>
     </div>
-
       <b-table
         ref="eventBannerTable"
         :data="postList"
