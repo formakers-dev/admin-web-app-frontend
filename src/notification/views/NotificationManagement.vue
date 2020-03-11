@@ -19,7 +19,7 @@
         <b-button type="is-primary"
                   size="is-medium"
                   icon-left="bell-ring"
-                  @click="openNotificationForm(null, 'create')"
+                  @click="openNotificationForm(null, 'add')"
         >알람 전송/예약</b-button>
       </div>
     </div>
@@ -64,7 +64,7 @@
           개별
         </strong>
       </b-table-column>
-      <b-table-column label="전송상태" centered>
+      <b-table-column label="전송결과" centered>
         <b-tooltip
           v-if="props.row.failCount > 0"
           :label="props.row.failReason"
@@ -216,7 +216,6 @@ export default {
         hasModalCard: true,
         trapFocus: true,
         canCancel: false,
-        fullScreen: true,
         events: {
           close: () => this.getReservedNoti(),
         },
@@ -228,6 +227,7 @@ export default {
       const reservedData = {};
       reservedData._id = row._id;
       reservedData.noti = info.data;
+      reservedData.noti.isSummary = (info.data.isSummary === 'true');
       reservedData.when = new Date(info.when);
       reservedData.failResult = Object.assign({}, {
         count: row.failCount ? row.failCount : 0,

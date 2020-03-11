@@ -5,7 +5,7 @@
         <p><font color="red">필수 값 *</font></p>
       </header>
       <section class="modal-card-body">
-        <div class="columns" style="width: 100%; height: max-content">
+        <div class="columns" style="width: 100%; min-height: 600px">
           <div class="column">
             <b-field  v-if="type==='modify'" label="전송 상태">
               <div v-if="data.failResult.count > 0">
@@ -125,19 +125,47 @@
                 </b-tooltip>
               </template>
               <b-field>
-                <b-datetimepicker
-                  v-model="data.when"
-                  rounded
-                  placeholder="예약할 시각을 선택하세요"
-                  icon="calendar-today"
-                >
+                <b-datetimepicker v-model="data.when"
+                                  placeholder="예약 시각을 선택해주세요."
+                                  icon="calendar-today">
                 </b-datetimepicker>
                 <b-button type="is-primary"
                           @click="data.when = null"
-                          style="border-radius: 0;">초기화(예약취소)</b-button>
+                          style="border-radius: 0;">예약 취소</b-button>
               </b-field>
             </b-field>
-
+            <b-field>
+                <div class="buttons">
+                  <button class="button is-primary"
+                          @click="setTime(11,30)">
+                    <span>11:30</span>
+                  </button>
+                  <button class="button is-primary"
+                          @click="setTime(18,0)">
+                    <span>18:00</span>
+                  </button>
+                  <button class="button is-primary"
+                          @click="setTime(18,30)">
+                    <span>18:30</span>
+                  </button>
+                  <button class="button is-primary"
+                          @click="setTime(19,0)">
+                    <span>19:00</span>
+                  </button>
+                  <button class="button is-primary"
+                          @click="setTime(19,30)">
+                    <span>19:30</span>
+                  </button>
+                  <button class="button is-primary"
+                          @click="setTime(20,0)">
+                    <span>20:00</span>
+                  </button>
+                  <button class="button is-primary"
+                          @click="setTime(20,30)">
+                    <span>20:30</span>
+                  </button>
+                </div>
+            </b-field>
             <b-field>
               <template slot="label">
                 <span class="has-text-danger">*</span> 전송 대상
@@ -368,6 +396,17 @@ export default {
     },
   },
   methods: {
+    setTime(hour, min) {
+      let datetime;
+      if (this.data.when) {
+        datetime = new Date(this.data.when);
+      } else {
+        datetime = new Date();
+      }
+      datetime.setHours(hour);
+      datetime.setMinutes(min);
+      this.data.when = datetime;
+    },
     validate() {
       console.log(this.data.noti.message.length);
       if (this.data.noti.title === '' || this.data.noti.subTitle === '') {
