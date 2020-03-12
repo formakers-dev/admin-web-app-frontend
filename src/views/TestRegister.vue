@@ -77,6 +77,31 @@
         </b-field>
       </b-field>
 
+      <b-field label="플랜 (plan) *" v-if="betaTest.subjectType === 'game-test'">
+        <b-field style="padding-bottom: 20px">
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="lite"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Lite Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="simple"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Simple Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="standard"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Standard Plan</span>
+          </b-radio-button>
+        </b-field>
+      </b-field>
+
       <b-field label="제목 (title) *">
         <b-input v-model="betaTest.title"></b-input>
       </b-field>
@@ -333,6 +358,17 @@ export default {
       console.log('setSubjectType : ', selected);
 
       this.betaTest.subjectType = selected;
+
+      if (selected !== 'game-test') {
+        delete this.betaTest.plan;
+      }
+
+      console.log(this.betaTest);
+    },
+    setPlan(selected) {
+      console.log('setPlan : ', selected);
+
+      this.betaTest.plan = selected;
 
       console.log(this.betaTest);
     },
