@@ -140,13 +140,13 @@
       <div class="box">
         <div class="subtitle"><strong>의뢰 게임 정보</strong></div>
         <div class="columns">
-          <b-field class="column" label="대표 이미지 URL (overviewImageUrl) *">
+          <b-field class="column" label="대표 이미지 URL (coverImageUrl) *">
             <p>
               메인화면에서 보여지는 커버 이미지 입니다.
-              <b-input v-model="betaTest.overviewImageUrl"
+              <b-input v-model="betaTest.coverImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
               <br/>
-              <img style="width: 500px" v-bind:src="betaTest.overviewImageUrl" alt="대표 이미지가 보여집니다"/>
+              <img style="width: 500px" v-bind:src="betaTest.coverImageUrl" alt="대표 이미지가 보여집니다"/>
             </p>
           </b-field>
 
@@ -304,7 +304,7 @@ export default {
         subjectType: 'game-test',
         tags: [],
         purpose: '',
-        overviewImageUrl: '',
+        coverImageUrl: '',
         iconImageUrl: '',
         openDate: new Date(),
         closeDate: new Date(),
@@ -332,6 +332,9 @@ export default {
     prepareDataToRegister() {
       if (this.isTargetToFomesMebers) {
         this.betaTest.targetUserIds.concat(this.fomesMembersUserIds);
+
+        // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
+        this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
       }
     },
     registerBetaTest() {
