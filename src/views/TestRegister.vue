@@ -52,6 +52,31 @@
       </div>
       <br/>
 
+      <b-field label="유형 (subjectType) *">
+        <b-field style="padding-bottom: 20px">
+          <b-radio-button v-model="betaTest.subjectType"
+                          native-value="game-test"
+                          v-on:input="setSubjectType"
+                          type="is-black">
+            <span>게임 테스트</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.subjectType"
+                          native-value="fomes-test"
+                          v-on:input="setSubjectType"
+                          type="is-black">
+            <span>포메스 테스트</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.subjectType"
+                          native-value="event"
+                          v-on:input="setSubjectType"
+                          type="is-black">
+            <span>이벤트</span>
+          </b-radio-button>
+        </b-field>
+      </b-field>
+
       <b-field label="제목 (title) *">
         <b-input v-model="betaTest.title"></b-input>
       </b-field>
@@ -251,6 +276,7 @@ export default {
       betaTest: {
         title: '[게임명] 게임 테스트',
         description: '',
+        subjectType: 'game-test',
         tags: [],
         purpose: '',
         overviewImageUrl: '',
@@ -302,6 +328,13 @@ export default {
           this.result = err;
           this.showErrorToast();
         });
+    },
+    setSubjectType(selected) {
+      console.log('setSubjectType : ', selected);
+
+      this.betaTest.subjectType = selected;
+
+      console.log(this.betaTest);
     },
     addRewardCard() {
       console.log('addRewardCard');
