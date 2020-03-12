@@ -236,20 +236,27 @@
       <br/>
 
       <div class="box">
-        <div class="subtitle"><strong>테스트 진행 상태별 문구 (progressText) *</strong></div>
+        <div class="subtitle"><strong>테스트 진행 상태별 문구 (progressText) </strong></div>
         <br/>
-        <b-field label="참여 전 (ready) *">
-          <b-input v-model="betaTest.progressText.ready"
-                   placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."></b-input>
-        </b-field>
-        <b-field label="참여 중 (doing) *">
-          <b-input v-model="betaTest.progressText.doing"
-                   placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"></b-input>
-        </b-field>
-        <b-field label="참여 완료 (done) *">
-          <b-input v-model="betaTest.progressText.done"
-                   placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."></b-input>
-        </b-field>
+        <b-checkbox v-model="isCustomizedProgressText" v-on:input="initializeProgressText">
+          기본 상태별 문구 이외의 문구 출력을 원하는 경우만 체크해서 내용을 수정하세요.
+        </b-checkbox>
+        <br/>
+
+        <div v-if="isCustomizedProgressText">
+          <b-field label="참여 전 (ready) *">
+            <b-input v-model="betaTest.progressText.ready"
+                     placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."></b-input>
+          </b-field>
+          <b-field label="참여 중 (doing) *">
+            <b-input v-model="betaTest.progressText.doing"
+                     placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"></b-input>
+          </b-field>
+          <b-field label="참여 완료 (done) *">
+            <b-input v-model="betaTest.progressText.done"
+                     placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."></b-input>
+          </b-field>
+        </div>
       </div>
 
       <br/>
@@ -291,6 +298,7 @@ export default {
       result: '',
       isLoading: true,
       isTargetToFomesMebers: true,
+      isCustomizedProgressText: false,
       testType: 'simple',
       fomesMembersUserIds: [
         'google110897406327517511196',
@@ -313,11 +321,6 @@ export default {
           list: [],
         },
         missions: [],
-        progressText: {
-          ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
-          doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
-          done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
-        },
         targetUserIds: [],
         bugReport: {
           url: '',
@@ -436,6 +439,17 @@ export default {
         message: toastMessage,
         type: 'is-danger',
       });
+    },
+    initializeProgressText(checked) {
+      if (checked) {
+        this.betaTest.progressText = {
+          ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
+          doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
+          done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
+        };
+      } else {
+        delete this.betaTest.progressText;
+      }
     },
     setTestTemplateByTestType() {
       console.log('setTestTemplateByTestType: ', this.testType);
