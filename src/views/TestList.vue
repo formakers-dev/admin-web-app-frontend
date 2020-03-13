@@ -55,13 +55,13 @@
                 <div v-if="props.row.bueReport">
                   <strong>- 버그리포트 설문 (bugReport.url) : </strong>{{ props.bueReport.url }}<br/>
                 </div>
-                <strong>- 대표 이미지 URL (overviewImageUrl) : </strong>
-                <a v-bind:href="props.row.overviewImageUrl">
-                  {{ props.row.overviewImageUrl }}
+                <strong>- 대표 이미지 URL (coverImageUrl) : </strong>
+                <a v-bind:href="props.row.coverImageUrl">
+                  {{ props.row.coverImageUrl }}
                 </a>
                 <br/>
                 <div style="width: 500px">
-                  <img v-bind:src="props.row.overviewImageUrl"/>
+                  <img v-bind:src="props.row.coverImageUrl"/>
                 </div>
                 <strong>- 앱 아이콘 (iconImageUrl) : </strong>
                 <a v-bind:href="props.row.iconImageUrl">

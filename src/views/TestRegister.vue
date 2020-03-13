@@ -52,6 +52,56 @@
       </div>
       <br/>
 
+      <b-field label="유형 (subjectType) *">
+        <b-field style="padding-bottom: 20px">
+          <b-radio-button v-model="betaTest.subjectType"
+                          native-value="game-test"
+                          v-on:input="setSubjectType"
+                          type="is-black">
+            <span>게임 테스트</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.subjectType"
+                          native-value="fomes-test"
+                          v-on:input="setSubjectType"
+                          type="is-black">
+            <span>포메스 테스트</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.subjectType"
+                          native-value="event"
+                          v-on:input="setSubjectType"
+                          type="is-black">
+            <span>이벤트</span>
+          </b-radio-button>
+        </b-field>
+      </b-field>
+
+      <b-field label="플랜 (plan) *" v-if="betaTest.subjectType === 'game-test'">
+        <b-field style="padding-bottom: 20px">
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="lite"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Lite Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="simple"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Simple Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="standard"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Standard Plan</span>
+          </b-radio-button>
+        </b-field>
+      </b-field>
+
       <b-field label="제목 (title) *">
         <b-input v-model="betaTest.title"></b-input>
       </b-field>
@@ -90,13 +140,13 @@
       <div class="box">
         <div class="subtitle"><strong>의뢰 게임 정보</strong></div>
         <div class="columns">
-          <b-field class="column" label="대표 이미지 URL (overviewImageUrl) *">
+          <b-field class="column" label="대표 이미지 URL (coverImageUrl) *">
             <p>
               메인화면에서 보여지는 커버 이미지 입니다.
-              <b-input v-model="betaTest.overviewImageUrl"
+              <b-input v-model="betaTest.coverImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
               <br/>
-              <img style="width: 500px" v-bind:src="betaTest.overviewImageUrl" alt="대표 이미지가 보여집니다"/>
+              <img style="width: 500px" v-bind:src="betaTest.coverImageUrl" alt="대표 이미지가 보여집니다"/>
             </p>
           </b-field>
 
@@ -186,20 +236,27 @@
       <br/>
 
       <div class="box">
-        <div class="subtitle"><strong>테스트 진행 상태별 문구 (progressText) *</strong></div>
+        <div class="subtitle"><strong>테스트 진행 상태별 문구 (progressText) </strong></div>
         <br/>
-        <b-field label="참여 전 (ready) *">
-          <b-input v-model="betaTest.progressText.ready"
-                   placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."></b-input>
-        </b-field>
-        <b-field label="참여 중 (doing) *">
-          <b-input v-model="betaTest.progressText.doing"
-                   placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"></b-input>
-        </b-field>
-        <b-field label="참여 완료 (done) *">
-          <b-input v-model="betaTest.progressText.done"
-                   placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."></b-input>
-        </b-field>
+        <b-checkbox v-model="isCustomizedProgressText" v-on:input="initializeProgressText">
+          기본 상태별 문구 이외의 문구 출력을 원하는 경우만 체크해서 내용을 수정하세요.
+        </b-checkbox>
+        <br/>
+
+        <div v-if="isCustomizedProgressText">
+          <b-field label="참여 전 (ready) *">
+            <b-input v-model="betaTest.progressText.ready"
+                     placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."></b-input>
+          </b-field>
+          <b-field label="참여 중 (doing) *">
+            <b-input v-model="betaTest.progressText.doing"
+                     placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"></b-input>
+          </b-field>
+          <b-field label="참여 완료 (done) *">
+            <b-input v-model="betaTest.progressText.done"
+                     placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."></b-input>
+          </b-field>
+        </div>
       </div>
 
       <br/>
@@ -241,6 +298,7 @@ export default {
       result: '',
       isLoading: true,
       isTargetToFomesMebers: true,
+      isCustomizedProgressText: false,
       testType: 'simple',
       fomesMembersUserIds: [
         'google110897406327517511196',
@@ -251,9 +309,10 @@ export default {
       betaTest: {
         title: '[게임명] 게임 테스트',
         description: '',
+        subjectType: 'game-test',
         tags: [],
         purpose: '',
-        overviewImageUrl: '',
+        coverImageUrl: '',
         iconImageUrl: '',
         openDate: new Date(),
         closeDate: new Date(),
@@ -262,11 +321,6 @@ export default {
           list: [],
         },
         missions: [],
-        progressText: {
-          ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
-          doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
-          done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
-        },
         targetUserIds: [],
         bugReport: {
           url: '',
@@ -281,6 +335,9 @@ export default {
     prepareDataToRegister() {
       if (this.isTargetToFomesMebers) {
         this.betaTest.targetUserIds.concat(this.fomesMembersUserIds);
+
+        // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
+        this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
       }
     },
     registerBetaTest() {
@@ -302,6 +359,24 @@ export default {
           this.result = err;
           this.showErrorToast();
         });
+    },
+    setSubjectType(selected) {
+      console.log('setSubjectType : ', selected);
+
+      this.betaTest.subjectType = selected;
+
+      if (selected !== 'game-test') {
+        delete this.betaTest.plan;
+      }
+
+      console.log(this.betaTest);
+    },
+    setPlan(selected) {
+      console.log('setPlan : ', selected);
+
+      this.betaTest.plan = selected;
+
+      console.log(this.betaTest);
     },
     addRewardCard() {
       console.log('addRewardCard');
@@ -364,6 +439,17 @@ export default {
         message: toastMessage,
         type: 'is-danger',
       });
+    },
+    initializeProgressText(checked) {
+      if (checked) {
+        this.betaTest.progressText = {
+          ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
+          doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
+          done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
+        };
+      } else {
+        delete this.betaTest.progressText;
+      }
     },
     setTestTemplateByTestType() {
       console.log('setTestTemplateByTestType: ', this.testType);
