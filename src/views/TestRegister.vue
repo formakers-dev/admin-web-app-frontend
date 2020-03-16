@@ -139,6 +139,20 @@
 
       <div class="box">
         <div class="subtitle"><strong>의뢰 게임 정보</strong></div>
+
+        <div class="columns" v-if="betaTest.subjectType === 'game-test'">
+          <b-field class="column" label="플레이 할 게임의 패키지명 (packageName) *">
+            <b-input
+              v-model="packageName" ref="packageName"
+              placeholder="com.formakers.fomes"></b-input>
+          </b-field>
+          <b-field class="column" label="↓↓↓">
+            <button class="button is-black is-small" v-on:click="getApp(packageName)">
+              <b>apps정보에서 앱 아이콘 가져오기</b>
+            </button>
+          </b-field>
+        </div>
+
         <div class="columns">
           <b-field class="column" label="대표 이미지 URL (coverImageUrl) *">
             <p>
@@ -299,6 +313,7 @@ export default {
       isLoading: true,
       isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
+      packageName: '',
       testType: 'simple',
       betaTest: {
         title: '[게임명] 게임 테스트',
@@ -421,6 +436,27 @@ export default {
     updateMissionTitle(value) {
       const item = this.betaTest.missions.find(i => i.order === value.order);
       item.title = value.title;
+    },
+    getApp(packageName) {
+      if (!packageName) {
+        alert('앱의 패키지명을 입력하세요.');
+        this.$refs.packageName.focus();
+        return;
+      }
+
+      request.get(`/apps/${packageName}`)
+        .then((res) => {
+          console.log(res);
+          if (res.status === 200) {
+            this.betaTest.iconImageUrl = res.data.iconUrl;
+          } else {
+            this.showErrorToast('실패! 로그를 확인하시오!');
+          }
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast();
+        });
     },
     showSuccessToast(toastMessage) {
       this.$toast.open({
