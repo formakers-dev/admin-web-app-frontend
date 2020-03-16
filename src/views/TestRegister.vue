@@ -261,8 +261,8 @@
 
       <br/>
 
-      <b-switch v-model="isTargetToFomesMebers">
-        해당 테스트를 <strong class="has-text-primary">포메이커스 팀원들</strong>에게 보여지게 하기!
+      <b-switch v-model="isTargetToFomesMembers">
+        해당 테스트를 <strong class="has-text-primary">포메이커스 관리자들</strong>에게 보여지게 하기! (테스트 모드)
       </b-switch>
 
       <br/>
@@ -297,15 +297,9 @@ export default {
     return {
       result: '',
       isLoading: true,
-      isTargetToFomesMebers: true,
+      isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
       testType: 'simple',
-      fomesMembersUserIds: [
-        'google110897406327517511196',
-        'google104451659553773678959',
-        'google110241405528009969953',
-        'google115909938647516500511',
-      ],
       betaTest: {
         title: '[게임명] 게임 테스트',
         description: '',
@@ -321,7 +315,7 @@ export default {
           list: [],
         },
         missions: [],
-        targetUserIds: [],
+        status: 'test',
         bugReport: {
           url: '',
         },
@@ -333,12 +327,14 @@ export default {
   },
   methods: {
     prepareDataToRegister() {
-      if (this.isTargetToFomesMebers) {
-        this.betaTest.targetUserIds.concat(this.fomesMembersUserIds);
-
-        // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
-        this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
+      if (this.isTargetToFomesMembers) {
+        this.betaTest.status = 'test';
+      } else {
+        delete this.betaTest.status;
       }
+
+      // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
+      this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
     },
     registerBetaTest() {
       this.prepareDataToRegister();
