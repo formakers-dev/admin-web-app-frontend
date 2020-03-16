@@ -150,6 +150,9 @@ jobs:
     - run: *setup-heroku
     - run: *setup-branch-and-commit
     - run: *deploy-to-heroku
+    - run:
+        name: Archive and Delivery to Slack
+        command: bash .circleci/delivery-to-slack.sh DEV $RELEASE_SLACK_DELIVERY_CHANNEL $CIRCLE_BRANCH
     - persist_to_workspace: *delivery-dist
 
   stg-deploy:
@@ -162,6 +165,9 @@ jobs:
       - run: *setup-heroku
       - run: *setup-branch-and-commit
       - run: *deploy-to-heroku
+      - run:
+          name: Archive and Delivery to Slack
+          command: bash .circleci/delivery-to-slack.sh STG $RELEASE_SLACK_DELIVERY_CHANNEL $CIRCLE_BRANCH
 
   prd-deploy:
     <<: *defaults
@@ -175,7 +181,7 @@ jobs:
     - run: *deploy-to-heroku
     - run:
         name: Archive and Delivery to Slack
-        command: bash .circleci/delivery-to-slack.sh
+        command: bash .circleci/delivery-to-slack.sh PRD $RELEASE_SLACK_DELIVERY_CHANNEL $CIRCLE_BRANCH
 
 workflows:
   version: 2
