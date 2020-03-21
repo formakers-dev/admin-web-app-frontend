@@ -132,7 +132,7 @@
 
 <script>
 import moment from 'moment';
-import request from '../../common/http';
+import request from '../../common/utils/http';
 
 export default {
   name: 'EventBannerForm.vue',
@@ -297,12 +297,8 @@ export default {
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {
-        if (res.status === 200) {
-          this.showSuccessToast('이벤트 배너를 정상적으로 등록하였습니다.');
-          this.$emit('close', true);
-        } else {
-          this.showErrorToast('이벤트 배너 등록에 실패하였습니다.', res);
-        }
+        this.showSuccessToast('이벤트 배너를 정상적으로 등록하였습니다.');
+        this.$emit('close', true);
       }).catch((err) => {
         this.showErrorToast('이벤트 배너 등록에 실패하였습니다.', err);
       });
@@ -318,7 +314,7 @@ export default {
         message,
         type: 'is-danger',
       });
-      console.log(err);
+      console.log(err.response);
     },
     getStatus(openDate, closeDate) {
       const current = moment();

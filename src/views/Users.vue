@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import request from '../common/http';
+import request from '../common/utils/http';
 
 export default {
   name: 'Users',
