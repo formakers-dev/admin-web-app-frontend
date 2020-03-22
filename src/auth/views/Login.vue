@@ -19,6 +19,7 @@
                  v-model="password"
                  validation-message="필수 입력 값입니다."
                  required
+                 @keyup.native.enter="submit"
         ></b-input>
       </b-field>
       <b-field v-if="showSignUp" label="Re-Password">

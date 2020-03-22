@@ -20,7 +20,7 @@ moment.locale('ko', {
 Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'login'){
+  if (to.path !== '/login' && to.path !== '/logout'){
     request.get('/auth/check').then(response=>{
       next();
     }, error => {

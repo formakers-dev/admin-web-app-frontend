@@ -88,6 +88,11 @@ export default {
   .table td, .table th{
     vertical-align: middle !important;
   }
+  .tabs.is-boxed li.is-active a{
+    font-weight: bold;
+    border-color: #12121c !important;
+    background-color: #12121c !important;
+  }
 </style>
 
 <style lang="scss">

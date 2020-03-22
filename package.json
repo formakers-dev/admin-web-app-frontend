@@ -19,7 +19,9 @@
     "moment": "^2.24.0",
     "vue": "^2.6.6",
     "vue-cookies": "^1.7.0",
-    "vue-router": "^3.0.1"
+    "vue-json-excel": "^0.2.98",
+    "vue-router": "^3.0.1",
+    "xlsx": "^0.15.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",
