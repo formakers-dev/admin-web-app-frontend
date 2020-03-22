@@ -97,7 +97,7 @@
 
 <script>
 import moment from 'moment';
-import request from '../../common/http';
+import request from '../../common/utils/http';
 import NotificationForm from '../components/NotificationForm';
 
 export default {
@@ -141,35 +141,26 @@ export default {
       request.get('/noti/reserved')
         .then((res) => {
           console.log(res);
-          if (res.status === 200) {
-            this.reservedNotiList = res.data.map((item) => {
-              const result = item;
-              if (!result.data.when) {
-                result.data.when = result.nextRunAt;
-              }
-              if (result.failCount > 0) {
-                result.nextRunAt = result.data.when;
-              }
-              result.nextRunAt = moment(result.nextRunAt).format('YYYY-MM-DD (ddd) HH:mm:ss');
-              return result;
-            });
-          } else {
-            this.$buefy.toast.open({
-              message: '예약된 알람 정보를 불러오는데 실패하였습니다.',
-              type: 'is-danger',
-            });
-            console.log(res);
-          }
+          this.reservedNotiList = res.data.map((item) => {
+            const result = item;
+            if (!result.data.when) {
+              result.data.when = result.nextRunAt;
+            }
+            if (result.failCount > 0) {
+              result.nextRunAt = result.data.when;
+            }
+            result.nextRunAt = moment(result.nextRunAt).format('YYYY-MM-DD (ddd) HH:mm:ss');
+            return result;
+          });
           this.isLoading = false;
           this.checkedRows = [];
         })
         .catch((err) => {
-          this.result = err;
           this.$buefy.toast.open({
             message: '예약된 알람 정보를 불러오는데 실패하였습니다.',
             type: 'is-danger',
           });
-          console.log(err);
+          console.log(err.response);
           this.checkedRows = [];
         });
     },
@@ -178,20 +169,13 @@ export default {
 
       request.post('/noti/reserved/cancel', checkedNotiIds)
         .then((res) => {
-          if (res.status === 200) {
-            this.getReservedNoti();
-            this.checkedRows = [];
-            this.$buefy.toast.open({
-              message: `${checkedNotiIds.length} 개의 예약을 정상적으로 삭제하였습니다.`,
-              type: 'is-primary',
-            });
-          } else {
-            this.$buefy.toast.open({
-              message: '삭제에 실패하였습니다.',
-              type: 'is-danger',
-            });
-            console.log(res);
-          }
+          this.getReservedNoti();
+          this.checkedRows = [];
+          this.$buefy.toast.open({
+            message: `${checkedNotiIds.length} 개의 예약을 정상적으로 삭제하였습니다.`,
+            type: 'is-primary',
+          });
+          console.log(res);
         })
         .catch((err) => {
           this.result = err;
@@ -199,7 +183,7 @@ export default {
             message: '삭제에 실패하였습니다.',
             type: 'is-danger',
           });
-          console.log(err);
+          console.log(err.response);
         });
     },
     openNotificationForm(value, type) {

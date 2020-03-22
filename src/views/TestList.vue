@@ -88,7 +88,7 @@
 
 <script>
 import moment from 'moment';
-import request from '../common/http';
+import request from '../common/utils/http';
 
 export default {
   name: 'TestList',

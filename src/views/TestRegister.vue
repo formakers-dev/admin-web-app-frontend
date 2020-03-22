@@ -297,7 +297,7 @@
 </template>
 
 <script>
-import request from '../common/http';
+import request from '../common/utils/http';
 import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 
