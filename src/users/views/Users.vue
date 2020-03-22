@@ -153,11 +153,8 @@ export default {
         getUser:[],
         getUsers:[]
       },
-      activeTab:1,
+      activeTab:0,
       emails: '',
-      nickNames: [],
-      email: '',
-      nickName: '',
       isLoading: false,
       requestUsersCount:0,
       responseUsersCount:0,
