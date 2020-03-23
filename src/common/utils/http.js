@@ -12,7 +12,7 @@ function create(axiosInstance) {
     app.isLoggedIn = true;
     return response;
   }, function(error){
-    if(error.response.status === 440){
+    if(error.response.status === 403){
       app.$router.push('login');
     }
     return Promise.reject(error);
