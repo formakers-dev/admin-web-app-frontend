@@ -8,25 +8,28 @@
         >
     </section>
     <section style="margin-top: 20px">
-      <b-field label="Account">
-        <b-input v-model="account"
-                 validation-message="필수 입력 값입니다."
+      <b-field label="Email">
+        <b-input v-model="email"
+                 ref="email"
+                 type="email"
                  required
         ></b-input>
       </b-field>
       <b-field label="Password">
         <b-input type="password"
                  v-model="password"
-                 validation-message="필수 입력 값입니다."
+                 ref="password"
                  required
+                 password-reveal
                  @keyup.native.enter="submit"
         ></b-input>
       </b-field>
       <b-field v-if="showSignUp" label="Re-Password">
         <b-input type="password"
                  v-model="password2"
-                 validation-message="필수 입력 값입니다."
+                 ref="password2"
                  required
+                 password-reveal
         ></b-input>
       </b-field>
       <p class="has-text-danger">{{message}}</p>
@@ -54,7 +57,7 @@ export default {
   data() {
     return {
       buildType: process.env.NODE_ENV,
-      account: '',
+      email: '',
       password: '',
       password2: '',
       showSignUp: false,
@@ -69,7 +72,7 @@ export default {
       this.message='';
       if(this.validate()){
         const body = {
-          account : this.account,
+          email : this.email,
           password: this.password
         };
         request({
@@ -103,9 +106,9 @@ export default {
           return false;
         }
         this.message = '';
-        return this.account.length && this.password.length && this.password2.length;
+        return this.$refs.email.checkHtml5Validity() && this.$refs.password.checkHtml5Validity() && this.$refs.password2.checkHtml5Validity();
       }else{
-        return this.account.length && this.password.length;
+        return this.$refs.email.checkHtml5Validity() && this.$refs.password.checkHtml5Validity();
       }
     }
   }
