@@ -187,7 +187,7 @@ export default {
     },
     updateOrder() {
       this.isLoading = true;
-      request.put('/posts', this.postList)
+      request.put('/api/posts', this.postList)
         .then((res) => {
           if (res.status === 200) {
             this.showSuccessToast('순서를 정상적으로 저장하였습니다.');
@@ -218,7 +218,7 @@ export default {
     },
     getAllPosts() {
       this.isLoading = true;
-      request.get('/posts')
+      request.get('/api/posts')
         .then((res) => {
           console.log('response', res.data);
           res.data.forEach((element, index) => {
@@ -253,7 +253,7 @@ export default {
       if (confirm('삭제하시겠습니까?')) {
         const checkedIds = this.checkedRows.map(row => row._id);
         this.isLoading = true;
-        request.post('/posts/delete', checkedIds)
+        request.post('/api/posts/delete', checkedIds)
           .then((res) => {
             this.getAllPosts();
             this.checkedRows = [];

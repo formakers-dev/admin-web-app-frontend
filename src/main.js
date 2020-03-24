@@ -23,7 +23,7 @@ Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
   if (to.path !== '/login' && to.path !== '/logout'){
-    request.get('/auth/check').then(response=>{
+    request.get('/api/auth/check').then(response=>{
       next();
     }, error => {
       console.log(error);

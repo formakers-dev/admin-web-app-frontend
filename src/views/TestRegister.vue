@@ -356,7 +356,7 @@ export default {
 
       const body = this.betaTest;
 
-      request.post('/beta-test', body)
+      request.post('/api/beta-test', body)
         .then((result) => {
           this.result = result;
 
@@ -444,7 +444,7 @@ export default {
         return;
       }
 
-      request.get(`/apps/${packageName}`)
+      request.get(`/api/apps/${packageName}`)
         .then((res) => {
           console.log(res);
           if (res.status === 200) {

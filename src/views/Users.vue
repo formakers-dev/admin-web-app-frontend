@@ -95,7 +95,7 @@ export default {
       const emailList = this.emails ? this.emails.split(/[,\s\n]+/) : [];
       emailList.forEach((email) => {
         // 일단 한명씩 쏘도록하고 여러명 가져오는건 천천히 만들자
-        request.get(`/users/${email}/nick-name`)
+        request.get(`/api/users/${email}/nick-name`)
           .then((res) => {
             this.isLoading = false;
             if (res.status === 204) {
@@ -117,7 +117,7 @@ export default {
       });
     },
     getNickName() {
-      request.get(`/users/${this.email}/nick-name`)
+      request.get(`/api/users/${this.email}/nick-name`)
         .then((res) => {
           if (res.status === 204) {
             this.showErrorToast('존재하지 않는 유저입니다! 이메일 주소를 다시 확인해보세요!');

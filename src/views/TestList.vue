@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     getAllBetaTests() {
-      request.get('/beta-test/all')
+      request.get('/api/beta-test/all')
         .then((res) => {
           if (res.status === 200) {
             this.allBetaTests = res.data.map((betaTest) => {

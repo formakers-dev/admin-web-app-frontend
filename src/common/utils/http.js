@@ -10,7 +10,7 @@ const instance = axios.create({
 
 function create(axiosInstance) {
   const interceptor = axiosInstance.interceptors.response.use(function(response){
-    if(response.request.responseURL.indexOf('/auth/sign-up') > -1){
+    if(response.request.responseURL.indexOf('/api/auth/sign-up') > -1){
       return response;
     }
     axiosInstance.defaults.headers.common['Authorization'] = response.headers.authorization;
@@ -21,7 +21,6 @@ function create(axiosInstance) {
     if(error.response.status === 403){
       app.removeCookie('access_token');
       delete axiosInstance.defaults.headers.common['Authorization'];
-      app.$router.push('login');
     }
     return Promise.reject(error);
   });

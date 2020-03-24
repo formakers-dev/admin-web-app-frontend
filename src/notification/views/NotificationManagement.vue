@@ -138,7 +138,7 @@ export default {
   },
   methods: {
     getReservedNoti() {
-      request.get('/noti/reserved')
+      request.get('/api/noti/reserved')
         .then((res) => {
           console.log(res);
           this.reservedNotiList = res.data.map((item) => {
@@ -167,7 +167,7 @@ export default {
     remove() {
       const checkedNotiIds = this.checkedRows.map(row => row._id);
 
-      request.post('/noti/reserved/cancel', checkedNotiIds)
+      request.post('/api/noti/reserved/cancel', checkedNotiIds)
         .then((res) => {
           this.getReservedNoti();
           this.checkedRows = [];

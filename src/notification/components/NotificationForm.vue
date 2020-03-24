@@ -459,7 +459,7 @@ export default {
 
       console.log(body);
       request({
-        url: '/noti',
+        url: '/api/noti',
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {
@@ -496,7 +496,7 @@ export default {
       };
 
       request({
-        url: `/noti/topics/${this.topic}`,
+        url: `/api/noti/topics/${this.topic}`,
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {

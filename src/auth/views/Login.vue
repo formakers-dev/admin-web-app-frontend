@@ -87,7 +87,7 @@ export default {
           password: this.password
         };
         request({
-          url: this.showSignUp ? '/auth/sign-up' : '/auth/login',
+          url: this.showSignUp ? '/api/auth/sign-up' : '/api/auth/login',
           method: 'post',
           data: body,
         }).then(res => {
@@ -96,7 +96,7 @@ export default {
               message: '정상적으로 가입 신청하였습니다. 가입 심사가 마무리 될 때까지 기다려주세요.',
               type: 'is-primary',
             });
-            this.$router.push('/login');
+            this.showSignUp = false;
           }else{
             this.$root.isLoggedIn = true;
             this.$router.push('/');

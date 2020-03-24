@@ -201,7 +201,7 @@ export default {
           keywords: keywords
         };
         this.requestUsersCount = keywords.length;
-        request.post('/users/search', body)
+        request.post('/api/users/search', body)
           .then(res => {
             this.checkedResult = [];
             this.result.getUsers = res.data;
@@ -225,7 +225,7 @@ export default {
         type : this.search.type,
         keyword : this.search.keyword
       }
-      request.get('/users',{params}).then(res=>{
+      request.get('/api/users',{params}).then(res=>{
         this.result.getUser = res.data;
         console.log(res);
         if( this.result.getUser.length === 0){

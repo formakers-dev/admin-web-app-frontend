@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     logout(){
-      request.post('/auth/logout').then(res =>{
+      request.post('/api/auth/logout').then(res =>{
         this.$nextTick(function(){
           this.$root.isLoggedIn = false;
           location.replace('/login');

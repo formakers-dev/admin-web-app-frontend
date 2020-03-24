@@ -292,7 +292,7 @@ export default {
         this.showErrorToast('잘못된 내용 입니다.', '');
         return;
       }
-      const url = this.type === 'modify' ? `/posts/${this.data._id}` : '/posts';
+      const url = this.type === 'modify' ? `/api/posts/${this.data._id}` : '/api/posts';
       request({
         url,
         method: this.type === 'modify' ? 'put' : 'post',
