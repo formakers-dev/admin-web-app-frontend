@@ -67,6 +67,17 @@ export default {
   created() {
     this.$root.isLoggedIn = false;
   },
+  watch:{
+    'showSignUp':{
+      handler(value){
+        this.email = '';
+        this.password = '';
+        this.password2 = '';
+        this.message = '';
+      },
+      deep: true
+    },
+  },
   methods: {
     submit(){
       this.message='';
@@ -79,7 +90,7 @@ export default {
           url: this.showSignUp ? '/auth/sign-up' : '/auth/login',
           method: 'post',
           data: body,
-        }).then((res) => {
+        }).then(res => {
           if(this.showSignUp){
             this.$buefy.toast.open({
               message: '정상적으로 가입 신청하였습니다. 가입 심사가 마무리 될 때까지 기다려주세요.',
@@ -90,8 +101,17 @@ export default {
             this.$root.isLoggedIn = true;
             this.$router.push('/');
           }
-        }).catch((err) => {
-          this.message = err.response.data.error;
+        }).catch(err => {
+          console.log(err);
+          if(err.response.data){
+            this.message = err.response.data.error;
+          }else{
+            this.$buefy.toast.open({
+              message: '문제가 발생하였습니다.',
+              type: 'is-danger',
+            });
+          }
+
         });
       }
     },

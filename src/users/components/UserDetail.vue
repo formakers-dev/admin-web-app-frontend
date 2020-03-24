@@ -9,7 +9,10 @@
       <div class="media">
         <div class="media-content">
           <p class="title is-4">{{result.name}}</p>
-          <p class="subtitle is-6" style="color:gray">{{result.gender | convertGender}}, {{result.email}}</p>
+          <p class="subtitle is-6" style="color:gray">
+            {{result.gender | convertGender}}, {{result.email}}
+            <b-button size="is-small" type="is-dark" @click="$root.copy(result.email)">복사</b-button>
+          </p>
         </div>
       </div>
       <br>
