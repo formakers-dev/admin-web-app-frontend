@@ -46,7 +46,7 @@ const app = new Vue({
       const expires = (process.env.NODE_ENV === 'development' ? '1h' : '1d');
       const secure = true;
       const sameSite = 'none';
-      this.$cookies.set('access_token', token, expires);
+      this.$cookies.set('access_token', token, expires, null, null, secure, sameSite);
     },
     removeCookie(){
       this.$cookies.remove('access_token');
