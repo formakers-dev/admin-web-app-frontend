@@ -19,7 +19,8 @@ export default {
       request.post('/api/auth/logout').then(res =>{
         this.$nextTick(function(){
           this.$root.isLoggedIn = false;
-          location.replace('/login');
+          this.$router.push('/login');
+          location.reload();
         });
       }).catch(err => {
         this.$buefy.toast.open({
