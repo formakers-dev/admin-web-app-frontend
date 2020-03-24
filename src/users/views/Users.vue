@@ -88,9 +88,6 @@
                 <b-table-column field="nickName" label="Nickname" searchable>
                   {{props.row.nickName}}
                 </b-table-column>
-                <b-table-column field="provider" label="Provider">
-                  {{props.row.provider}}
-                </b-table-column>
                 <b-table-column field="birthday" label="Age">
                   {{props.row.birthday | convertAgeRange}}
                 </b-table-column>
@@ -192,7 +189,14 @@ export default {
       this.showErrorMessage = false;
       if(this.validation('users')) {
         this.isLoading = true;
-        const keywords = this.emails ? this.emails.split(/[,\s\n]+/) : [];
+        const splitedKeywords = this.emails ? this.emails.split(/[,\s\n]+/) : [];
+        const keywords = [];
+        splitedKeywords.forEach(value => {
+          const keyword = value.replace(/(\s*)/g, "");
+          if(keyword.length > 0){
+            keywords.push(keyword);
+          }
+        });
         const body = {
           keywords: keywords
         };

@@ -8,9 +8,11 @@ import App from './App.vue';
 import router from './router';
 import VueCookies from 'vue-cookies';
 import request from './common/utils/http';
+import copyToClipboard from 'vue-clipboard2';
 
 Vue.use(Buefy);
 Vue.use(VueCookies);
+Vue.use(copyToClipboard);
 
 moment.locale('ko', {
   weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
@@ -39,6 +41,30 @@ const app = new Vue({
   }
   },
   render: h => h(App),
+  methods:{
+    setCookie(token){
+      const expires = (process.env.NODE_ENV === 'development' ? '1h' : '1d');
+      const secure = true;
+      const sameSite = 'none';
+      this.$cookies.set('access_token', token, expires);
+    },
+    removeCookie(){
+      this.$cookies.remove('access_token');
+    },
+    copy(text){
+      this.$copyText(text).then(success =>{
+        this.$buefy.toast.open({
+          message: text + ' 를 복사하였습니다.',
+          type: 'is-info',
+        });
+      }, error => {
+        this.$buefy.toast.open({
+          message: '복사에 실패하였습니다.',
+          type: 'is-danger',
+        });
+      });
+    }
+  }
 });
 app.$mount('#app');
 

@@ -8,25 +8,28 @@
         >
     </section>
     <section style="margin-top: 20px">
-      <b-field label="Account">
-        <b-input v-model="account"
-                 validation-message="필수 입력 값입니다."
+      <b-field label="Email">
+        <b-input v-model="email"
+                 ref="email"
+                 type="email"
                  required
         ></b-input>
       </b-field>
       <b-field label="Password">
         <b-input type="password"
                  v-model="password"
-                 validation-message="필수 입력 값입니다."
+                 ref="password"
                  required
+                 password-reveal
                  @keyup.native.enter="submit"
         ></b-input>
       </b-field>
       <b-field v-if="showSignUp" label="Re-Password">
         <b-input type="password"
                  v-model="password2"
-                 validation-message="필수 입력 값입니다."
+                 ref="password2"
                  required
+                 password-reveal
         ></b-input>
       </b-field>
       <p class="has-text-danger">{{message}}</p>
@@ -54,7 +57,7 @@ export default {
   data() {
     return {
       buildType: process.env.NODE_ENV,
-      account: '',
+      email: '',
       password: '',
       password2: '',
       showSignUp: false,
@@ -64,19 +67,30 @@ export default {
   created() {
     this.$root.isLoggedIn = false;
   },
+  watch:{
+    'showSignUp':{
+      handler(value){
+        this.email = '';
+        this.password = '';
+        this.password2 = '';
+        this.message = '';
+      },
+      deep: true
+    },
+  },
   methods: {
     submit(){
       this.message='';
       if(this.validate()){
         const body = {
-          account : this.account,
+          email : this.email,
           password: this.password
         };
         request({
           url: this.showSignUp ? '/auth/sign-up' : '/auth/login',
           method: 'post',
           data: body,
-        }).then((res) => {
+        }).then(res => {
           if(this.showSignUp){
             this.$buefy.toast.open({
               message: '정상적으로 가입 신청하였습니다. 가입 심사가 마무리 될 때까지 기다려주세요.',
@@ -87,8 +101,17 @@ export default {
             this.$root.isLoggedIn = true;
             this.$router.push('/');
           }
-        }).catch((err) => {
-          this.message = err.response.data.error;
+        }).catch(err => {
+          console.log(err);
+          if(err.response.data){
+            this.message = err.response.data.error;
+          }else{
+            this.$buefy.toast.open({
+              message: '문제가 발생하였습니다.',
+              type: 'is-danger',
+            });
+          }
+
         });
       }
     },
@@ -103,9 +126,9 @@ export default {
           return false;
         }
         this.message = '';
-        return this.account.length && this.password.length && this.password2.length;
+        return this.$refs.email.checkHtml5Validity() && this.$refs.password.checkHtml5Validity() && this.$refs.password2.checkHtml5Validity();
       }else{
-        return this.account.length && this.password.length;
+        return this.$refs.email.checkHtml5Validity() && this.$refs.password.checkHtml5Validity();
       }
     }
   }
