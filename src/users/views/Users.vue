@@ -9,13 +9,13 @@
               <div class="level-item">
                 <b-field grouped>
                     <b-field>
-                      <b-select v-model="search.type">
+                      <b-select v-model="search.one.type">
                         <option v-for="option in search.option.types" :key="option.value" :value="option.value">
                           {{ option.text }}
                         </option>
                       </b-select>
                       <b-input type="search"
-                               v-model="search.keyword"
+                               v-model="search.one.keyword"
                                style="width: 380px"
                                @keyup.native.enter="getUser"
                                required>
@@ -32,19 +32,30 @@
         </b-tab-item>
         <b-tab-item label="여러명 조회하기">
           <section style="margin-bottom: 10px">
-            <p><strong>이메일을 1개 이상 입력해주세요.</strong></p>
-              <b-field grouped style="width: 100%">
+              <b-select v-model="search.multiple.type">
+                <option v-for="option in search.option.types" :key="option.value" :value="option.value">
+                  {{ option.text }}
+                </option>
+              </b-select>
+              <b-field style="width: 100%">
                 <b-field style="width: 100%">
-                  <b-input type="textarea"
-                           v-model="emails"
-                           style="width: 100%"
-                           placeholder="각 이메일들은 쉼표(,)나 엔터로 구분해주세요."
+                  <b-tooltip label="쉼표(,)나 엔터로 구분해주세요."
+                             position="is-bottom"
+                             type="is-warning"
+                             style="width: inherit;"
                   >
-                  </b-input>
+                    <b-input type="textarea"
+                             v-model="search.multiple.keyword"
+                             style="width: 100%"
+                    >
+                    </b-input>
+                </b-tooltip>
                   <p class="control">
                     <button class="button is-primary"
                             style="height: 100%"
-                            @click="getUsers">조회</button>
+                            @click="getUsers"
+                            :disabled="search.multiple.keyword.length === 0"
+                    >조회</button>
                   </p>
                 </b-field>
               </b-field>
@@ -139,8 +150,14 @@ export default {
   data() {
     return {
       search:{
-        type:'email',
-        keyword:'',
+        one:{
+          type:'email',
+          keyword:'',
+        },
+        multiple:{
+          type:'email',
+          keyword:'',
+        },
         option:{
           types:[{text:'Email', value:'email'}, {text:'Nickname', value:'nickName'}, {text:'User ID', value:'userId'}],
         }
@@ -160,7 +177,7 @@ export default {
   },
   filters:{
     convertAgeRange: function(value){
-      const age = new Date().getFullYear() - value + 1;
+      const age = new Date().getFullYear() - value;
       return Math.floor(age/10)*10 +'대';
     },
     convertGender: function(value){
@@ -170,16 +187,25 @@ export default {
       return moment(value).format('YYYY-MM-DD (ddd) HH:mm:ss');
     },
     convertBirthDay: function(value){
-      const age = new Date().getFullYear() - value + 1;
-      return age + "세(" + value + ")"
+      const age = new Date().getFullYear() - value;
+      return '만 ' + age + "세(" + value + ")"
     }
   },
   methods: {
+    getSearchTypeText(value){
+      let text = '';
+      this.search.option.types.forEach(type => {
+        if(type.value === value){
+          text = type.text;
+        }
+      });
+      return text;
+    },
     validation(path){
       if(path === 'user'){
-        return this.search.type && this.search.keyword;
+        return this.search.one.type && this.search.one.keyword;
       }else{
-        return this.emails.length > 0;
+        return this.search.multiple.keyword.length > 0;
       }
     },
     getFaviconUrl(url){
@@ -189,7 +215,7 @@ export default {
       this.showErrorMessage = false;
       if(this.validation('users')) {
         this.isLoading = true;
-        const splitedKeywords = this.emails ? this.emails.split(/[,\s\n]+/) : [];
+        const splitedKeywords = this.search.multiple.keyword ? this.search.multiple.keyword.split(/[,\s\n]+/) : [];
         const keywords = [];
         splitedKeywords.forEach(value => {
           const keyword = value.replace(/(\s*)/g, "");
@@ -197,7 +223,14 @@ export default {
             keywords.push(keyword);
           }
         });
+        if(keywords.length === 0){
+          const text = this.getSearchTypeText(this.search.multiple.type);
+          this.showErrorToast(text + '을 1개이상 입력해주세요.', '');
+          this.isLoading = false;
+          return;
+        }
         const body = {
+          type: this.search.multiple.type,
           keywords: keywords
         };
         this.requestUsersCount = keywords.length;
