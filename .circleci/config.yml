@@ -41,6 +41,11 @@ aliases:
       sleep 5
       heroku restart
 
+  - &filter-dev-branch
+    branches:
+        - master
+        - jo
+
   - &filter-master-branch
     branches:
       only:
@@ -191,12 +196,12 @@ workflows:
       - dev-build:
           requires:
             - test
-          filters: *filter-master-branch
+          filters: *filter-dev-branch
       - dev-deploy:
           requires:
             - test
             - dev-build
-          filters: *filter-master-branch
+          filters: *filter-dev-branch
       - stg-build:
           requires:
             - test
