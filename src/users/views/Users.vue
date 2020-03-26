@@ -255,8 +255,8 @@ export default {
         return;
       }
       const params = {
-        type : this.search.type,
-        keyword : this.search.keyword
+        type : this.search.one.type,
+        keyword : this.search.one.keyword
       }
       request.get('/api/users',{params}).then(res=>{
         this.result.getUser = res.data;
