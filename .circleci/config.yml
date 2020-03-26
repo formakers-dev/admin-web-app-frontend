@@ -43,6 +43,7 @@ aliases:
 
   - &filter-dev-branch
     branches:
+      only:
         - master
         - jo
 
