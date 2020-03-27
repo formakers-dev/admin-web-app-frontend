@@ -40,8 +40,8 @@
               <b-field style="width: 100%">
                 <b-field style="width: 100%">
                   <b-tooltip label="쉼표(,)나 엔터로 구분해주세요."
-                             position="is-bottom"
-                             type="is-warning"
+                             position="is-top"
+                             type="is-primary"
                              style="width: inherit;"
                   >
                     <b-input type="textarea"
@@ -49,7 +49,7 @@
                              style="width: 100%"
                     >
                     </b-input>
-                </b-tooltip>
+                  </b-tooltip>
                   <p class="control">
                     <button class="button is-primary"
                             style="height: 100%"
@@ -70,7 +70,7 @@
                           icon-left="download"
                           @click="showExcelDownloadModal"
                           :disabled="result.getUsers.length === 0"
-                >Download</b-button>
+                >All Download (.xlsx)</b-button>
               </div>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default {
           keyword:'',
         },
         option:{
-          types:[{text:'Email', value:'email'}, {text:'Nickname', value:'nickName'}, {text:'User ID', value:'userId'}],
+          types:[{text:'이메일', value:'email'}, {text:'닉네임', value:'nickName'}, {text:'유저 아이디', value:'userId'}],
         }
       },
       checkedResult:[],

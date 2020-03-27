@@ -14,9 +14,9 @@ fi
 echo "version : $VERSION"
 ### end of getting version
 
-if [ "$1" == "prd" ]; then
+if [ "$1" == "PRD" ]; then
   URL="https://fomes-admin-frontend.herokuapp.com"
-elif [ "$1" == "stg" ]; then
+elif [ "$1" == "STG" ]; then
   URL="https://fomes-admin-frontend-stg.herokuapp.com"
 else
   URL="https://fomes-admin-frontend-dev.herokuapp.com"
