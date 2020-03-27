@@ -40,8 +40,8 @@
               <b-field style="width: 100%">
                 <b-field style="width: 100%">
                   <b-tooltip label="쉼표(,)나 엔터로 구분해주세요."
-                             position="is-bottom"
-                             type="is-warning"
+                             position="is-top"
+                             type="is-primary"
                              style="width: inherit;"
                   >
                     <b-input type="textarea"
@@ -49,7 +49,7 @@
                              style="width: 100%"
                     >
                     </b-input>
-                </b-tooltip>
+                  </b-tooltip>
                   <p class="control">
                     <button class="button is-primary"
                             style="height: 100%"
