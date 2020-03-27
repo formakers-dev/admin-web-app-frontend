@@ -159,7 +159,7 @@ export default {
           keyword:'',
         },
         option:{
-          types:[{text:'Email', value:'email'}, {text:'Nickname', value:'nickName'}, {text:'User ID', value:'userId'}],
+          types:[{text:'이메일', value:'email'}, {text:'닉네임', value:'nickName'}, {text:'유저 아이디', value:'userId'}],
         }
       },
       checkedResult:[],
