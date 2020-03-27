@@ -43,7 +43,7 @@ const app = new Vue({
   render: h => h(App),
   methods:{
     setCookie(token){
-      const expires = (process.env.NODE_ENV === 'development' ? 3600000 : 86400000);
+      const expires = '1d';
       const secure = true;
       const sameSite = 'none';
       this.$cookies.set('access_token', token, expires, null, null, secure, sameSite);
