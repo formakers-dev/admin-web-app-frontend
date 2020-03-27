@@ -38,5 +38,8 @@
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.5.21"
+  },
+  "eslintConfig": {
+    "rules": { "no-console": "off" },
   }
 }
