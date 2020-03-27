@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <section>
     <header-nav></header-nav>
     <p class="version">
       {{buildType}}-v{{version}}
     </p>
     <router-view class="container is-fluid" style="padding-top: 30px"/>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -32,6 +32,7 @@ export default {
     height: 100%;
     background-color : #f4f7fa !important;
     word-break: keep-all;
+    overflow-y: auto !important;
   }
   .container{
     margin: 0 auto !important;
@@ -86,6 +87,11 @@ export default {
   }
   .table td, .table th{
     vertical-align: middle !important;
+  }
+  .tabs.is-boxed li.is-active a{
+    font-weight: bold;
+    border-color: #12121c !important;
+    background-color: #12121c !important;
   }
 </style>
 

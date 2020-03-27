@@ -88,7 +88,7 @@
 
 <script>
 import moment from 'moment';
-import request from '../common/http';
+import request from '../common/utils/http';
 
 export default {
   name: 'TestList',
@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     getAllBetaTests() {
-      request.get('/beta-test/all')
+      request.get('/api/beta-test/all')
         .then((res) => {
           if (res.status === 200) {
             this.allBetaTests = res.data.map((betaTest) => {

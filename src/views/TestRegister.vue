@@ -139,6 +139,20 @@
 
       <div class="box">
         <div class="subtitle"><strong>의뢰 게임 정보</strong></div>
+
+        <div class="columns" v-if="betaTest.subjectType === 'game-test'">
+          <b-field class="column" label="플레이 할 게임의 패키지명 (packageName) *">
+            <b-input
+              v-model="packageName" ref="packageName"
+              placeholder="com.formakers.fomes"></b-input>
+          </b-field>
+          <b-field class="column" label="↓↓↓">
+            <button class="button is-black is-small" v-on:click="getApp(packageName)">
+              <b>apps정보에서 앱 아이콘 가져오기</b>
+            </button>
+          </b-field>
+        </div>
+
         <div class="columns">
           <b-field class="column" label="대표 이미지 URL (coverImageUrl) *">
             <p>
@@ -261,8 +275,8 @@
 
       <br/>
 
-      <b-switch v-model="isTargetToFomesMebers">
-        해당 테스트를 <strong class="has-text-primary">포메이커스 팀원들</strong>에게 보여지게 하기!
+      <b-switch v-model="isTargetToFomesMembers">
+        해당 테스트를 <strong class="has-text-primary">포메이커스 관리자들</strong>에게 보여지게 하기! (테스트 모드)
       </b-switch>
 
       <br/>
@@ -283,7 +297,7 @@
 </template>
 
 <script>
-import request from '../common/http';
+import request from '../common/utils/http';
 import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 
@@ -297,15 +311,10 @@ export default {
     return {
       result: '',
       isLoading: true,
-      isTargetToFomesMebers: true,
+      isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
+      packageName: '',
       testType: 'simple',
-      fomesMembersUserIds: [
-        'google110897406327517511196',
-        'google104451659553773678959',
-        'google110241405528009969953',
-        'google115909938647516500511',
-      ],
       betaTest: {
         title: '[게임명] 게임 테스트',
         description: '',
@@ -321,7 +330,7 @@ export default {
           list: [],
         },
         missions: [],
-        targetUserIds: [],
+        status: 'test',
         bugReport: {
           url: '',
         },
@@ -333,19 +342,21 @@ export default {
   },
   methods: {
     prepareDataToRegister() {
-      if (this.isTargetToFomesMebers) {
-        this.betaTest.targetUserIds.concat(this.fomesMembersUserIds);
-
-        // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
-        this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
+      if (this.isTargetToFomesMembers) {
+        this.betaTest.status = 'test';
+      } else {
+        delete this.betaTest.status;
       }
+
+      // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
+      this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
     },
     registerBetaTest() {
       this.prepareDataToRegister();
 
       const body = this.betaTest;
 
-      request.post('/beta-test', body)
+      request.post('/api/beta-test', body)
         .then((result) => {
           this.result = result;
 
@@ -425,6 +436,27 @@ export default {
     updateMissionTitle(value) {
       const item = this.betaTest.missions.find(i => i.order === value.order);
       item.title = value.title;
+    },
+    getApp(packageName) {
+      if (!packageName) {
+        alert('앱의 패키지명을 입력하세요.');
+        this.$refs.packageName.focus();
+        return;
+      }
+
+      request.get(`/api/apps/${packageName}`)
+        .then((res) => {
+          console.log(res);
+          if (res.status === 200) {
+            this.betaTest.iconImageUrl = res.data.iconUrl;
+          } else {
+            this.showErrorToast('실패! 로그를 확인하시오!');
+          }
+        })
+        .catch((err) => {
+          this.result = err;
+          this.showErrorToast();
+        });
     },
     showSuccessToast(toastMessage) {
       this.$toast.open({

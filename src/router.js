@@ -5,7 +5,9 @@ import NotificationManagement from './notification/views/NotificationManagement.
 import Events from './event/views/EventBannerManagement.vue';
 import TestRegister from './views/TestRegister.vue';
 import TestList from './views/TestList.vue';
-import Users from './views/Users.vue';
+import Users from './users/views/Users.vue';
+import Login from './auth/views/Login.vue';
+import Logout from './auth/views/Logout.vue';
 
 Vue.use(Router);
 
@@ -44,12 +46,14 @@ export default new Router({
       component: Events,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
+      path: '/login',
+      name: 'login',
+      component: Login,
     },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: Logout,
+    }
   ],
 });

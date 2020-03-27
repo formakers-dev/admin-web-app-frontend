@@ -459,7 +459,7 @@ export default {
 
       console.log(body);
       request({
-        url: '/noti',
+        url: '/api/noti',
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {
@@ -480,12 +480,11 @@ export default {
           });
         }
       }).catch((err) => {
-        this.result = err;
         this.$buefy.toast.open({
           message: '예약에 실패하였습니다.',
           type: 'is-danger',
         });
-        console.log(err);
+        console.log(err.response);
       });
     },
     sendNotiByTopic() {
@@ -497,35 +496,21 @@ export default {
       };
 
       request({
-        url: `/noti/topics/${this.topic}`,
+        url: `/api/noti/topics/${this.topic}`,
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {
-        this.result = res;
-
-        if (res.status === 200) {
-          this.$buefy.toast.open({
-            message: '정상적으로 전송/예약을 하였습니다.',
-            type: 'is-primary',
-          });
-        } else {
-          this.$buefy.toast.open({
-            message: '예약에 실패하였습니다.',
-            type: 'is-danger',
-          });
-          console.log(res);
-        }
+        this.$buefy.toast.open({
+          message: '정상적으로 전송/예약을 하였습니다.',
+          type: 'is-primary',
+        });
       }).catch((err) => {
-        this.result = err;
         this.$buefy.toast.open({
           message: '예약에 실패하였습니다.',
           type: 'is-danger',
         });
-        console.log(err);
+        console.log(err.response);
       });
-    },
-    openDeeplinkHelpLink() {
-      window.open('https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7', '_blank');
     },
   },
 };

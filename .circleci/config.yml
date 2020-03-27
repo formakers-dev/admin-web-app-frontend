@@ -41,6 +41,12 @@ aliases:
       sleep 5
       heroku restart
 
+  - &filter-dev-branch
+    branches:
+      only:
+        - master
+        - jo
+
   - &filter-master-branch
     branches:
       only:
@@ -150,6 +156,9 @@ jobs:
     - run: *setup-heroku
     - run: *setup-branch-and-commit
     - run: *deploy-to-heroku
+    - run:
+        name: Archive and Delivery to Slack
+        command: bash .circleci/delivery-to-slack.sh DEV dev-build $CIRCLE_BRANCH
     - persist_to_workspace: *delivery-dist
 
   stg-deploy:
@@ -162,6 +171,9 @@ jobs:
       - run: *setup-heroku
       - run: *setup-branch-and-commit
       - run: *deploy-to-heroku
+      - run:
+          name: Archive and Delivery to Slack
+          command: bash .circleci/delivery-to-slack.sh STG dev-build $CIRCLE_BRANCH
 
   prd-deploy:
     <<: *defaults
@@ -175,7 +187,7 @@ jobs:
     - run: *deploy-to-heroku
     - run:
         name: Archive and Delivery to Slack
-        command: bash .circleci/delivery-to-slack.sh
+        command: bash .circleci/delivery-to-slack.sh PRD _general $CIRCLE_BRANCH
 
 workflows:
   version: 2
@@ -185,12 +197,12 @@ workflows:
       - dev-build:
           requires:
             - test
-          filters: *filter-master-branch
+          filters: *filter-dev-branch
       - dev-deploy:
           requires:
             - test
             - dev-build
-          filters: *filter-master-branch
+          filters: *filter-dev-branch
       - stg-build:
           requires:
             - test

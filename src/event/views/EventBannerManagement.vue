@@ -107,7 +107,7 @@
 
 <script>
 import moment from 'moment';
-import request from '../../common/http';
+import request from '../../common/utils/http';
 import EventBannerForm from '../components/EventBannerForm';
 
 export default {
@@ -187,7 +187,7 @@ export default {
     },
     updateOrder() {
       this.isLoading = true;
-      request.put('/posts', this.postList)
+      request.put('/api/posts', this.postList)
         .then((res) => {
           if (res.status === 200) {
             this.showSuccessToast('순서를 정상적으로 저장하였습니다.');
@@ -218,32 +218,28 @@ export default {
     },
     getAllPosts() {
       this.isLoading = true;
-      request.get('/posts')
+      request.get('/api/posts')
         .then((res) => {
           console.log('response', res.data);
-          if (res.status === 200) {
-            res.data.forEach((element, index) => {
-              element.status = this.getStatus(element.openDate, element.closeDate);
-              if (element.status === 1) {
-                this.counts.open = this.counts.open + 1;
-              } else if (element.status === 2) {
-                this.counts.ready = this.counts.ready + 1;
-              } else {
-                // 종료
-                element.order = 99999;
-                this.counts.close = this.counts.close + 1;
-              }
-            });
-            res.data.sort((a, b) => a.order - b.order);
-            res.data.forEach((element, index) => {
-              if (element.order < 99999) {
-                element.order = index + 1;
-              }
-            });
-            this.postList = res.data;
-          } else {
-            this.showErrorToast('이벤트 배너 정보를 불러오는데 실패하였습니다.', res);
-          }
+          res.data.forEach((element, index) => {
+            element.status = this.getStatus(element.openDate, element.closeDate);
+            if (element.status === 1) {
+              this.counts.open = this.counts.open + 1;
+            } else if (element.status === 2) {
+              this.counts.ready = this.counts.ready + 1;
+            } else {
+              // 종료
+              element.order = 99999;
+              this.counts.close = this.counts.close + 1;
+            }
+          });
+          res.data.sort((a, b) => a.order - b.order);
+          res.data.forEach((element, index) => {
+            if (element.order < 99999) {
+              element.order = index + 1;
+            }
+          });
+          this.postList = res.data;
           this.isLoading = false;
           this.checkedRows = [];
         })
@@ -257,15 +253,11 @@ export default {
       if (confirm('삭제하시겠습니까?')) {
         const checkedIds = this.checkedRows.map(row => row._id);
         this.isLoading = true;
-        request.post('/posts/delete', checkedIds)
+        request.post('/api/posts/delete', checkedIds)
           .then((res) => {
-            if (res.status === 200) {
-              this.getAllPosts();
-              this.checkedRows = [];
-              this.showSuccessToast(`${checkedIds.length} 개의 배너를 정상적으로 삭제하였습니다.`);
-            } else {
-              this.showErrorToast('삭제에 실패하였습니다', res);
-            }
+            this.getAllPosts();
+            this.checkedRows = [];
+            this.showSuccessToast(`${checkedIds.length} 개의 배너를 정상적으로 삭제하였습니다.`);
             this.isLoading = false;
           })
           .catch((err) => {
@@ -310,7 +302,7 @@ export default {
         message,
         type: 'is-danger',
       });
-      console.log(err);
+      console.log(err.response);
     },
   },
 };
