@@ -70,7 +70,7 @@
                           icon-left="download"
                           @click="showExcelDownloadModal"
                           :disabled="result.getUsers.length === 0"
-                >Download</b-button>
+                >All Download (.xlsx)</b-button>
               </div>
             </div>
           </div>
