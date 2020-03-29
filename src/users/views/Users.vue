@@ -143,6 +143,15 @@
           </section>
         </b-tab-item>
         <b-tab-item label="전체 사용자 조회하기">
+          <div class="level" style="margin-bottom: 10px;">
+            <div class="level-left">
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <p><strong>Total : {{result.getAllUsers.length}}</strong></p>
+              </div>
+            </div>
+          </div>
           <section style="margin-bottom: 10px">
             <b-table
               ref="allUsersTable"
