@@ -148,7 +148,7 @@
             </div>
             <div class="level-right">
               <div class="level-item">
-                <p><strong>Total : {{result.getAllUsers.length}}</strong></p>
+                <p><strong>Total : {{result.getAllUsers.length | numberComma}}</strong></p>
               </div>
             </div>
           </div>
@@ -281,6 +281,9 @@ export default {
     convertBirthDay: function(value){
       const age = new Date().getFullYear() - value;
       return '만 ' + age + "세(" + value + ")"
+    },
+    numberComma: function(value){
+      return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '';
     }
   },
   methods: {
