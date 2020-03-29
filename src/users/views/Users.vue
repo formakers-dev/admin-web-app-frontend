@@ -65,12 +65,19 @@
             </div>
             <div class="level-right">
               <div class="level-item">
+                <b-button type="is-info"
+                          size="is-medium"
+                          icon-left="download"
+                          @click="showExcelDownloadModal('selected')"
+                          :disabled="checkedResult.length === 0"
+                >선택된 항목 다운로드 (.xlsx)</b-button>
                 <b-button type="is-success"
                           size="is-medium"
                           icon-left="download"
-                          @click="showExcelDownloadModal"
+                          @click="showExcelDownloadModal('all')"
                           :disabled="result.getUsers.length === 0"
-                >All Download (.xlsx)</b-button>
+                          style="margin-left: 10px"
+                >전체 항목 다운로드 (.xlsx)</b-button>
               </div>
             </div>
           </div>
@@ -281,12 +288,12 @@ export default {
       });
       console.log(error);
     },
-    showExcelDownloadModal(){
+    showExcelDownloadModal(type){
+      const users = type === 'all' ? this.result.getUsers : this.checkedResult
       this.$buefy.modal.open({
         parent: this,
         props: {
-          users: this.result.getUsers,
-          checkedUsers: this.checkedResult
+          users: users
         },
         component: ExcelDownloadForm,
         hasModalCard: true,

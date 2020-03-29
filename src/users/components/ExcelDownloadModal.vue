@@ -47,16 +47,10 @@
           return [];
         },
       },
-      checkedUsers: {
-        type: Array,
-        default() {
-          return [];
-        },
-      },
     },
     data() {
       return {
-        totalUsers:[],
+        usersForDownload:[],
         columns:[
           {text:'Email', value:'email'},
           {text:'Nickname', value:'nickName'},
@@ -76,7 +70,6 @@
           {text:'Device Model', value:'model'},
           {text:'Device OS Version', value:'osVersion'},
         ],
-        selectedUsers:[],
         selectedColumn:['email','nickName'],
         totalColumn:[
           'email','nickName','provider','providerId','registrationToken','signUpTime',
@@ -88,8 +81,7 @@
       };
     },
     mounted() {
-      this.totalUsers = this.users;
-      this.selectedUsers = this.checkedUsers;
+      this.usersForDownload = this.users;
     },
     watch:{
       checkedTotal:function(value){
@@ -104,7 +96,7 @@
     methods: {
       download(){
         const filteredData = [];
-        this.totalUsers.forEach(user => {
+        this.usersForDownload.forEach(user => {
           const filtered = {};
           this.selectedColumn.forEach(col => {
             if(col === 'manufacturer' || col === 'model' || col === 'osVersion'){
