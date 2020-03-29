@@ -1,7 +1,6 @@
 import axios from 'axios';
 import config from '../../../config';
 import app from '../../main';
-import cookie from 'vue-cookies';
 
 const instance = axios.create({
   baseURL: config.serverBaseUrl,

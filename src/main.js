@@ -26,7 +26,7 @@ router.beforeEach((to, from, next) => {
     request.get('/api/auth/check').then(response=>{
       next();
     }, error => {
-      console.log(error);
+      console.log(error.response);
       next('/login');
     });
   }
