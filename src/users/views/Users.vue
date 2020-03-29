@@ -69,7 +69,7 @@
                           size="is-medium"
                           icon-left="download"
                           @click="showExcelDownloadModal('selected')"
-                          :disabled="checkedResult.length === 0"
+                          :disabled="checkedResult.byMultiple.length === 0"
                 >선택된 항목 다운로드 (.xlsx)</b-button>
                 <b-button type="is-success"
                           size="is-medium"
@@ -92,9 +92,12 @@
               :bordered="false"
               :hoverable="true"
               :show-detail-icon="false"
-              :checked-rows.sync="checkedResult"
+              :checked-rows.sync="checkedResult.byMultiple"
+              :paginated="true"
+              per-page="10"
+              current-page.sync="1"
+              :pagination-simple="false"
               default-sort="userId"
-              sticky-header
               checkable
               detailed
               selectable
@@ -136,7 +139,65 @@
             </b-table>
           </section>
           <section style="margin-bottom: 10px;">
-            <user-detail :users="checkedResult"></user-detail>
+            <user-detail :users="checkedResult.byMultiple"></user-detail>
+          </section>
+        </b-tab-item>
+        <b-tab-item label="전체 사용자 조회하기">
+          <section style="margin-bottom: 10px">
+            <b-table
+              ref="allUsersTable"
+              :data="result.getAllUsers"
+              :loading="isLoading"
+              :bordered="false"
+              :hoverable="true"
+              :paginated="true"
+              detail-key="userId"
+              per-page="10"
+              current-page.sync="1"
+              :pagination-simple="false"
+              default-sort="userId"
+              detailed
+              selectable
+              show-detail-icon
+            >
+              <template slot-scope="props">
+                <b-table-column field="email" label="Email" searchable>
+                  <img :src="getFaviconUrl('google.com')"/> {{ props.row.email}}
+                </b-table-column>
+                <b-table-column field="nickName" label="Nickname" searchable>
+                  {{props.row.nickName}}
+                </b-table-column>
+                <b-table-column field="birthday" label="Age">
+                  {{props.row.birthday | convertAgeRange}}
+                </b-table-column>
+                <b-table-column field="gender" label="Gender">
+                  {{props.row.gender | convertGender}}
+                </b-table-column>
+                <b-table-column field="activatedDate" label="Activated Date">
+                  {{props.row.activatedDate | convertDatetime}}
+                </b-table-column>
+                <b-table-column field="appVersion" label="App Version">
+                  {{props.row.appVersion}}
+                </b-table-column>
+              </template>
+
+              <template slot="empty">
+                <section v-if="!isLoading" class="section">
+                  <div class="content has-text-grey has-text-centered">
+                    <p>
+                      <b-icon
+                        icon="emoticon-sad"
+                        size="is-large">
+                      </b-icon>
+                    </p>
+                    <p>사용자 정보가 없습니다.</p>
+                  </div>
+                </section>
+              </template>
+              <template slot="detail" slot-scope="props">
+                <user-detail :user="props.row"></user-detail>
+              </template>
+            </b-table>
           </section>
         </b-tab-item>
       </b-tabs>
@@ -169,10 +230,14 @@ export default {
           types:[{text:'이메일', value:'email'}, {text:'닉네임', value:'nickName'}, {text:'유저 아이디', value:'userId'}],
         }
       },
-      checkedResult:[],
+      checkedResult:{
+        byAllUsers:[],
+        byMultiple:[]
+      },
       result:{
         getUser:[],
-        getUsers:[]
+        getUsers:[],
+        getAllUsers:[]
       },
       activeTab:0,
       emails: '',
@@ -181,6 +246,17 @@ export default {
       responseUsersCount:0,
       showErrorMessage: false,
     };
+  },
+  watch:{
+    'activeTab':{
+      handler(value){
+        if(value === 2){
+          //active all Users
+          this.getAllUsers();
+        }
+      },
+      deep:true
+    }
   },
   filters:{
     convertAgeRange: function(value){
@@ -218,6 +294,19 @@ export default {
     getFaviconUrl(url){
       return 'http://www.google.com/s2/favicons?domain=' + url;
     },
+    getAllUsers(){
+      this.isLoading = true;
+      request.get('/api/users')
+        .then(res => {
+          this.checkedResult.byAllUsers = [];
+          this.result.getAllUsers = res.data;
+          this.isLoading = false;
+        })
+        .catch(error => {
+          this.isLoading = false;
+          this.showErrorToast('회원 조회에 실패하였습니다.', error);
+        });
+    },
     getUsers(){
       this.showErrorMessage = false;
       if(this.validation('users')) {
@@ -243,7 +332,7 @@ export default {
         this.requestUsersCount = keywords.length;
         request.post('/api/users/search', body)
           .then(res => {
-            this.checkedResult = [];
+            this.checkedResult.byMultiple = [];
             this.result.getUsers = res.data;
             this.isLoading = false;
             this.responseUsersCount = this.result.getUsers.length;
@@ -289,7 +378,7 @@ export default {
       console.log(error);
     },
     showExcelDownloadModal(type){
-      const users = type === 'all' ? this.result.getUsers : this.checkedResult
+      const users = type === 'all' ? this.result.getUsers : this.checkedResult.byMultiple
       this.$buefy.modal.open({
         parent: this,
         props: {
