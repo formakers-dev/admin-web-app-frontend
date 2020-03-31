@@ -20,7 +20,7 @@ export default {
         this.$nextTick(function(){
           this.$root.isLoggedIn = false;
           this.$router.push('/login');
-          location.reload();
+          // location.reload();
         });
       }).catch(err => {
         this.$buefy.toast.open({

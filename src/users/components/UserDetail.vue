@@ -82,18 +82,18 @@
             <p><strong class="large">App Version</strong><br>{{result.appVersion}}</p>
           </div>
           <div class="column is-one-quarter">
-            <p><strong class="large">Device Menufacturer</strong><br>{{result.device.manufacturer}}</p>
+            <p><strong class="large">Device Menufacturer</strong><br>{{result.device ? result.device.manufacturer : ''}}</p>
           </div>
           <div class="column is-one-quarter">
-            <p><strong class="large">Device Model</strong><br>{{result.device.model}}</p>
+            <p><strong class="large">Device Model</strong><br>{{result.device ? result.device.model : ''}}</p>
           </div>
           <div class="column is-one-quarter">
-            <p><strong class="large">Device OS Version</strong><br>{{result.device.osVersion}}</p>
+            <p><strong class="large">Device OS Version</strong><br>{{result.device ? result.device.osVersion : ''}}</p>
           </div>
         </div>
         <div class="columns">
           <div class="column is-one-quarter">
-            <p><strong class="large">Registration Token</strong><br>{{result.registrationToken}}</p>
+            <p><strong class="large">Registration Token</strong><br>{{result.registrationToken ? result.registrationToken : ''}}</p>
           </div>
         </div>
       </div>
@@ -113,7 +113,13 @@
         default() {
           return [];
         },
-      }
+      },
+      user:{
+        type: Object,
+        default() {
+          return null
+        }
+      },
     },
     data(){
       return{
@@ -130,7 +136,11 @@
       }
     },
     mounted() {
-      this.details = this.users;
+      if(this.user){
+        this.details.push(this.user);
+      }else{
+        this.details = this.users;
+      }
     },
     filters:{
       convertAgeRange: function(value){
