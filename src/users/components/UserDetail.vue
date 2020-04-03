@@ -57,6 +57,23 @@
             <p><strong class="large">Activated Date</strong><br>{{result.activatedDate | convertDatetime}}</p>
           </div>
           <div class="column is-one-quarter">
+            <p><strong class="large">App Version</strong><br>{{result.appVersion}}</p>
+          </div>
+          <div class="column is-one-quarter">
+            <p><strong class="large">Device Menufacturer</strong><br>{{result.device ? result.device.manufacturer : ''}}</p>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-one-quarter">
+            <p><strong class="large">Device Model</strong><br>{{result.device ? result.device.model : ''}}</p>
+          </div>
+          <div class="column is-one-quarter">
+            <p><strong class="large">Device OS Version</strong><br>{{result.device ? result.device.osVersion : ''}}</p>
+          </div>
+          <div class="column is-one-quarter">
+            <p><strong class="large">Registration Token</strong><br>{{result.registrationToken ? result.registrationToken : ''}}</p>
+          </div>
+          <div class="column is-one-quarter">
             <p><strong class="large">Life Apps</strong><br>
               <b-taglist>
                 <b-tag type="is-primary"
@@ -66,7 +83,9 @@
               </b-taglist>
             </p>
           </div>
-          <div class="column is-one-quarter">
+        </div>
+        <div class="columns">
+          <div class="column">
             <p><strong class="large">Wish List</strong><br>
               <b-taglist>
                 <b-tag type="is-primary"
@@ -75,25 +94,6 @@
                 >{{wish}}</b-tag>
               </b-taglist>
             </p>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-one-quarter">
-            <p><strong class="large">App Version</strong><br>{{result.appVersion}}</p>
-          </div>
-          <div class="column is-one-quarter">
-            <p><strong class="large">Device Menufacturer</strong><br>{{result.device ? result.device.manufacturer : ''}}</p>
-          </div>
-          <div class="column is-one-quarter">
-            <p><strong class="large">Device Model</strong><br>{{result.device ? result.device.model : ''}}</p>
-          </div>
-          <div class="column is-one-quarter">
-            <p><strong class="large">Device OS Version</strong><br>{{result.device ? result.device.osVersion : ''}}</p>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-one-quarter">
-            <p><strong class="large">Registration Token</strong><br>{{result.registrationToken ? result.registrationToken : ''}}</p>
           </div>
         </div>
       </div>

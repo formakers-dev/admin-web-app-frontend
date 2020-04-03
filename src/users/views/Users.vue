@@ -145,6 +145,10 @@
         <b-tab-item label="전체 사용자 조회하기">
           <div class="level" style="margin-bottom: 10px;">
             <div class="level-left">
+              <button class="button is-primary"
+                      style="height: 100%"
+                      @click="getAllUsers"
+              >사용자 정보 다시 불러오기</button>
             </div>
             <div class="level-right">
               <div class="level-item">
@@ -283,7 +287,7 @@ export default {
       return '만 ' + age + "세(" + value + ")"
     },
     numberComma: function(value){
-      return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '';
+      return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '0';
     }
   },
   methods: {
