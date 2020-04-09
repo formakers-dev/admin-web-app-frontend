@@ -412,19 +412,14 @@ export default {
       this.betaTest.missions.push({
         order: missionLength > 0
           ? Number(this.betaTest.missions[missionLength - 1].order) + 1 : 1,
-        iconImageUrl: '',
+        type: '',
         title: '',
         description: '',
         descriptionImageUrl: '',
         guide: '',
-        item: {
-          order: 1,
-          type: '',
-          title: '',
-          actionType: '',
-          action: '',
-          options: '',
-        },
+        actionType: '',
+        action: '',
+        options: '',
       });
     },
     removeMissionCard(order) {
@@ -538,19 +533,14 @@ export default {
         case 'application+normal':
           missions.push({
             order: missions.length + 1,
-            iconImageUrl: '',
-            title: '',
+            type: 'survey',
+            title: '참여 신청',
             description: '[게임명] 클로즈드 베타 테스터 참여 신청',
             descriptionImageUrl: 'https://i.imgur.com/F3EJAOs.png',
             guide: '• 참여 신청 후 설치권한 부여까지 약 1일이 소요됩니다.',
-            item: {
-              order: 1,
-              type: '',
-              title: '참여 신청',
-              actionType: '',
-              action: '',
-              options: ['mandatory'],
-            },
+            actionType: '',
+            action: '',
+            options: ['mandatory'],
           });
 
         // eslint-disable-next-line no-fallthrough
@@ -558,38 +548,29 @@ export default {
         case 'normal':
           missions.push({
             order: missions.length + 1,
-            iconImageUrl: '',
-            title: '',
+            type: 'play',
+            title: '게임 플레이',
             description: '[게임명] 게임을 플레이해주세요.(30분 이상 권장)',
             descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
-            item: {
-              order: 1,
-              type: 'play',
-              title: '게임 플레이',
-              actionType: '',
-              action: '',
-              options: '',
-            },
+            packageName: '',
+            actionType: '',
+            action: '',
+            options: '',
           });
           missions.push({
             order: missions.length + 1,
-            iconImageUrl: '',
-            title: '',
+            type: 'survey',
+            title: '플레이 후 소감 작성',
             description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
             descriptionImageUrl: 'https://i.imgur.com/XfqTB0K.png',
             guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
-            item: {
-              order: 1,
-              type: '',
-              title: '플레이 후 소감 작성',
-              actionType: '',
-              action: '',
-              options: [
-                'mandatory',
-                'repeatable',
-              ],
-            },
+            actionType: '',
+            action: '',
+            options: [
+              'mandatory',
+              'repeatable',
+            ],
           });
           break;
 
