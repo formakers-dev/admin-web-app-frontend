@@ -347,9 +347,6 @@ export default {
       } else {
         delete this.betaTest.status;
       }
-
-      // TODO : overviewImageUrl 마이그레이션 관련 임시 유지 : 앱 크리티컬릴리즈 후 아래 구문 제거 필요
-      this.betaTest.overviewImageUrl = this.betaTest.coverImageUrl;
     },
     registerBetaTest() {
       this.prepareDataToRegister();
