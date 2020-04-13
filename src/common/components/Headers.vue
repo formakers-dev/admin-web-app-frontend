@@ -18,6 +18,9 @@
       <b-navbar-item tag="router-link" to="/test/list">
         테스트 목록
       </b-navbar-item>
+      <b-navbar-item tag="router-link" to="/requests">
+        의뢰 관리
+      </b-navbar-item>
       <b-navbar-item tag="router-link" to="/users">
         사용자 정보 조회
       </b-navbar-item>
