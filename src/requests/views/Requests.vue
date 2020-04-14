@@ -2,7 +2,7 @@
   <div style="word-break: break-all;">
     <h1 class="title">의뢰 관리</h1>
     <section>
-      <request-card-list :items="requests"></request-card-list>
+      <request-card-list :items="requests" @refresh="getRequests"></request-card-list>
     </section>
   </div>
 </template>
@@ -39,22 +39,9 @@ export default {
           this.requests = res.data;
         })
         .catch(error => {
-          this.showErrorToast('의뢰 항목 조회에 실패하였습니다.', error);
+          this.$root.showErrorToast('의뢰 항목 조회에 실패하였습니다.', error);
         });
-    },
-    showSuccessToast(message) {
-      this.$buefy.toast.open({
-        message: message,
-        type: 'is-success',
-      });
-    },
-    showErrorToast(message, error) {
-      this.$buefy.toast.open({
-        message: message,
-        type: 'is-danger',
-      });
-      console.log(error);
-    },
+    }
   },
 };
 </script>

@@ -10,7 +10,7 @@
       <div class="media">
         <div class="media-content">
           <div v-if="request.status != 'cancel'" style="position: absolute; right: 20px">
-            <b-button class="is-small" type="is-danger" outlined>의뢰 취소</b-button>
+            <b-button class="is-small" type="is-danger" outlined @click.stop="cancelRequest(request._id)">의뢰 취소</b-button>
           </div>
           <p class="title is-4">{{request.game.title}}
             <b-tag :type="getStatusColor(request.status)">{{convertStatus(request.status)}}</b-tag>
@@ -30,7 +30,7 @@
             <p><strong class="has-text-primary">의뢰 희망 테스터 인원 수</strong><br>{{request.numberOfTester}} 명</p>
           </div>
           <div class="column is-one-fifth">
-            <p><strong class="has-text-primary">플랜</strong><br>{{request.plan}}</p>
+            <p><strong class="has-text-primary">플랜</strong><br>{{convertPlan(request.plan)}}</p>
           </div>
           <div class="column is-one-fifth">
             <p><strong class="has-text-primary">시작일</strong><br>{{request.openDate | convertDatetime}}</p>
@@ -87,54 +87,13 @@
             completed: {color:'is-warning', text:'종료'},
             cancel: {color:'is-dark', text:'취소'}
           },
+
           devProcess:{
             '1000': '기획 & 컨셉 정의',
             '2000': '프로토 타입',
             '3000': '출시 전',
             '4000': '베타 출시',
             '5000': '정식 출시'
-          }
-        },
-        item:{
-          _id: '',
-          status: '',
-          // 의뢰 메타 데이터
-          date : null,       // 의뢰 일자
-          numberOfTester : 0,
-          isIncludedUserData : true,
-          customizing: {
-            isIncluded : true,
-            managerEmails : [],
-          },
-          // 게임
-          game: {
-            title : '',
-            tags : [],
-            description : '',
-            downloadUrl: '',
-            packageName : '',
-            devProcess : 1000,
-          },
-          // 테스트
-          betaTest: {
-            purpose : '',
-            plan : '', // 소문자로 영어만
-            openDate : null, // 희망 테스트 시작일
-            duration : 0, // 희망 테스트 진행 일 수
-            additionalInfo : ''
-          },
-          customer : {
-            referer : [],
-            name : '',
-            role : '',
-            phoneNumber : '',
-            email : '',
-            // company
-            company : {
-              name : '',
-              class : '',
-              numberOfEmployee : 0,
-            }
           }
         }
       }
@@ -165,10 +124,13 @@
         const url = '/api/requests/' + id;
         httpRequest.get(url)
           .then(res => {
+            const value = res.data;
+            value.openDate = new Date(value.openDate);
+            value.date = new Date(value.date);
             this.$buefy.modal.open({
               parent: this,
               props: {
-                value: res.data,
+                value,
                 type: 'modify'
               },
               component: RequestDetailForm,
@@ -176,18 +138,39 @@
               trapFocus: true,
               canCancel: false,
               events: {
+                close : () => this.$emit('refresh')
               },
             });
           })
           .catch(error => {
-            this.showErrorToast('의뢰 상세 조회에 실패하였습니다.', error);
+            this.$root.showErrorToast('의뢰 상세 조회에 실패하였습니다.', error);
         });
+      },
+      cancelRequest(id){
+        const url = '/api/requests/'+id;
+        httpRequest.delete(url).then(res=>{
+          this.$root.showSuccessToast('정상적으로 의뢰 취소하였습니다.');
+          this.$emit('refresh');
+        }).catch(error=>{
+          this.$root.showErrorToast('의뢰 취소에 실패하였습니다.', error);
+        });
+      },
+      convertPlan(value){
+        let plan = "";
+        for(let i = 0; i < value.length; i++){
+          if(i === 0){
+            plan += value[i].toUpperCase();
+          }else{
+            plan += value[i];
+          }
+        }
+        return plan;
       }
     },
     filters:{
       convertDatetime: function(value){
         return moment(value).format('YYYY-MM-DD (ddd) HH:mm:ss');
-      },
+      }
     },
   };
 </script>
