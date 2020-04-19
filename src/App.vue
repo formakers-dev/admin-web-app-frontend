@@ -5,17 +5,24 @@
       {{buildType}}-v{{version}}
     </p>
     <router-view class="container is-fluid" style="padding-top: 30px"/>
+    <go-top :size="50"
+            :right="250"
+            bg-color="#00bfba"
+            :has-outline="false"
+    ></go-top>
   </section>
 </template>
 
 <script>
 import Headers from './common/components/Headers.vue';
+import GoTop from '@inotom/vue-go-top';
 
 const packageJson = require('../package.json');
 
 export default {
   components: {
     'header-nav': Headers,
+    'go-top': GoTop
   },
   data() {
     return {
