@@ -64,7 +64,20 @@ const app = new Vue({
           type: 'is-danger',
         });
       });
-    }
+    },
+    showSuccessToast(message){
+      this.$buefy.toast.open({
+        message: message,
+        type: 'is-info',
+      });
+    },
+    showErrorToast(message, error) {
+      this.$buefy.toast.open({
+        message: message,
+        type: 'is-danger',
+      });
+      console.log(error);
+    },
   }
 });
 app.$mount('#app');
