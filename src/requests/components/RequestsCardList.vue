@@ -1,7 +1,70 @@
 <template>
   <section>
+    <nav class="level">
+      <div class="level-left">
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+          <b-field grouped>
+            <b-field>
+              <b-select v-model="filterOptions.searchType">
+                <option v-for="searchOption in options.searchInResult"
+                        :key="searchOption.key"
+                        :value="searchOption.key"
+                >
+                  {{searchOption.text}}
+                </option>
+              </b-select>
+              <b-input v-model="filterOptions.keyword"
+                       type="search"
+                       style="width: 350px"
+                       placeholder="결과내 검색하기" expanded>
+              </b-input>
+            </b-field>
+          </b-field>
+        </div>
+        <div class="level-item">
+          <b-button type='is-primary'
+                    @click="openDialog('add', null)">의뢰 등록</b-button>
+        </div>
+        <div class="level-item">
+          <b-button type='is-primary'
+                    icon-left="refresh"
+                    @click="init">의뢰 정보 다시 불러오기</b-button>
+        </div>
+      </div>
+    </nav>
+  <nav class="level">
+    <div class="level-left">
+      <div class="level-item">
+        <b-field>
+          <b-radio-button v-model="filterOptions.status"
+                          v-for="status in options.status"
+                          :key="status.key"
+                          :type="status.color"
+                          :native-value="status.key"
+                          size="is-small"
+          >
+            {{status.text}}({{counts[status.key]}})
+          </b-radio-button>
+        </b-field>
+      </div>
+      <div class="level-item">
+        <b-field>
+          <b-radio-button v-model="filterOptions.sortBy"
+                          v-for="sortBy in options.sortBy"
+                          :native-value="sortBy.value"
+                          :key="sortBy.value"
+                          size="is-small"
+          >
+            {{sortBy.text}}
+          </b-radio-button>
+        </b-field>
+      </div>
+    </div>
+  </nav>
   <div class="card request-card"
-       v-for="request in requests"
+       v-for="request in filteredRequests"
        :key="request._id"
        style="margin-bottom: 10px"
        @click="showDetail(request._id)"
@@ -13,7 +76,7 @@
             <b-button class="is-small" type="is-danger" outlined @click.stop="cancelRequest(request._id)">의뢰 취소</b-button>
           </div>
           <p class="title is-4">{{request.game.title}}
-            <b-tag :type="getStatusColor(request.status)">{{convertStatus(request.status)}}</b-tag>
+            <b-tag :type="getStatus(request.status).color">{{getStatus(request.status).text}}</b-tag>
           </p>
           <p v-if="request.operatorName" class="subtitle is-6" style="color:gray" >
             <strong>운영 담당자</strong> {{request.operatorName}}
@@ -47,7 +110,7 @@
             <p><strong class="has-text-primary">커스터마이징 구매 여부</strong><br>{{request.isIncludedCustomizing ? '네' : '아니요'}}</p>
           </div>
           <div class="column is-one-fifth">
-            <p><strong class="has-text-primary">개발 진행 단계</strong><br>{{convertDevProcess(request.game.devProcess)}}</p>
+            <p><strong class="has-text-primary">개발 진행 단계</strong><br>{{getDevProcess(request.game.devProcess).text}}</p>
           </div>
           <div class="column is-one-fifth">
             <p><strong class="has-text-primary">게임회사</strong><br>{{request.company.name}}</p>
@@ -70,55 +133,171 @@
   export default {
     name: 'requestCardList.vue',
     props:{
-      items:{
-        type: Array,
-        default() {
-          return [];
-        },
-      },
     },
     data(){
       return{
-        requests:[],
         options:{
-          status:{
-            received: {color:'is-danger', text:'접수'},
-            processing: {color:'is-primary', text:'처리중'},
-            completed: {color:'is-warning', text:'종료'},
-            cancel: {color:'is-dark', text:'취소'}
-          },
-
-          devProcess:{
-            '1000': '기획 & 컨셉 정의',
-            '2000': '프로토 타입',
-            '3000': '출시 전',
-            '4000': '베타 출시',
-            '5000': '정식 출시'
-          }
-        }
+          sortBy:[
+            {value:'{"key":"date", "value":"desc"}', text:'등록일 최신순'},
+            {value:'{"key":"date", "value":"asc"}', text:'등록일 오래된 순'},
+            {value:'{"key":"openDate", "value":"asc"}', text:'시작일 빠른 순'},
+            {value:'{"key":"openDate", "value":"desc"}', text:'시작일 느린 순'}
+          ],
+          searchInResult:[
+            {key:'gameTitle',text:'게임 타이틀'},
+            {key:'operatorName',text:'운영 담당자'},
+            {key:'plan',text:'플랜'},
+            {key:'company',text:'게임 회사'},
+          ],
+          status:[
+            {key: 'total',color:'is-info', text:'전체'},
+            {key: 'received',color:'is-danger', text:'접수'},
+            {key: 'processing', color:'is-primary', text:'처리중'},
+            {key: 'completed', color:'is-warning', text:'종료'},
+            {key: 'cancel', color:'is-dark', text:'취소'}
+          ],
+          devProcess:[
+            {key:1000, text: '기획 & 컨셉 정의'},
+            {key:2000, text: '프로토 타입'},
+            {key:3000, text: '출시 전'},
+            {key:4000, text: '베타 출시'},
+            {key:5000, text: '정식 출시'}
+          ],
+          plan:[
+            {key:'trial', text:'Trial'},
+            {key:'starter', text:'Starter'},
+            {key:'lite', text:'Lite'},
+            {key:'simple', text:'Simple'},
+            {key:'standard', text:'Standard'},
+          ],
+        },
+        requests:[],
+        filteredRequests:[],
+        filterOptions:{
+          sortBy: '{"key":"date", "value":"desc"}',
+          status:'total',
+          keyword:'',
+          searchType:'gameTitle'
+        },
+        counts:{
+          total:0,
+          received : 0,
+          processing: 0,
+          completed: 0,
+          cancel: 0
+        },
       }
     },
     watch:{
-      items:{
-        handler(value){
-          this.requests = [];
-          this.requests = value;
+      filterOptions:{
+        handler(obj){
+          const options = obj;
+          this.filtered(options.status, this.requests);
         },
-        deep: true
+        deep:true
       }
     },
-    mounted() {
-      this.requests = this.items;
+    created() {
+      this.init();
     },
     methods:{
-      convertStatus(value){
-        return this.options.status[value] ? this.options.status[value].text : value;
+      init(){
+        httpRequest.get('/api/requests')
+          .then(res => {
+            this.counts = Object.assign({},{
+              total:0,
+              received : 0,
+              processing: 0,
+              completed: 0,
+              cancel: 0
+            });
+            res.data.forEach((item)=>{
+              this.counts[item.status] = this.counts[item.status] + 1;
+              this.counts.total = this.counts.total + 1;
+            });
+            this.requests = res.data;
+            this.filtered('total', this.requests);
+          })
+          .catch(error => {
+            this.$root.showErrorToast('의뢰 항목 조회에 실패하였습니다.', error);
+          });
       },
-      convertDevProcess(value){
-        return this.options.devProcess[value] ? this.options.devProcess[value] : value;
+      getStatus(value){
+        return this.options.status.filter(s => s.key === value)[0];
       },
-      getStatusColor(value){
-        return this.options.status[value] ? this.options.status[value].color : 'is-info';
+      getDevProcess(value){
+        const devProcess =  this.options.devProcess.filter(s => s.key === value);
+        return devProcess.length ? devProcess[0] : value;
+      },
+      filtered(status, items){
+       if(!items){
+          items = this.requests;
+        }
+        this.filterOptions.status = status;
+        const sortBy = JSON.parse(this.filterOptions.sortBy);
+        const type = this.filterOptions.searchType;
+        const keyword =  this.filterOptions.keyword;
+        items.sort((a,b)=>{
+          if(sortBy.value === 'asc'){
+            return this.sortByAsc(a,b,sortBy.key);
+          }else{
+            return this.sortByDesc(a,b,sortBy.key);
+          }
+        });
+        if(this.filterOptions.status  === 'total'){
+          this.filteredRequests = items.filter((item)=>{
+            return this.checkKeyword(type, keyword, item);
+          });
+        }else{
+          this.filteredRequests = items.filter((item) => item.status === status).filter((item)=>{
+            return this.checkKeyword(type, keyword, item);
+          });
+        }
+      },
+      checkKeyword(type, keyword, item){
+        if(keyword.length === 0){
+          return true;
+        }
+        if(type === 'gameTitle'){
+          return item.game.title.includes(keyword);
+        }else if(type === 'company'){
+          return item.company.name.includes(keyword);
+        }else{
+          return item[type].includes(keyword);
+        }
+      },
+      sortByAsc(a, b, key){
+        if(key.toLowerCase().indexOf('date') > -1){
+          const convertedA = new Date(a[key]).getTime();
+          const convertedB = new Date(b[key]).getTime();
+          return convertedA < convertedB ? -1 : convertedA > convertedB ? 1 : 0;
+        }
+        return a[key] < b[key];
+      },
+      sortByDesc(a, b, key){
+        if(key.toLowerCase().indexOf('date') > -1){
+          const convertedA = new Date(a[key]).getTime();
+          const convertedB = new Date(b[key]).getTime();
+          return convertedA > convertedB ? -1 : convertedA < convertedB ? 1 : 0;
+        }
+        return a[key] > b[key];
+      },
+      openDialog(type, value){
+        this.$buefy.modal.open({
+          parent: this,
+          props: {
+            value,
+            type,
+            options: this.options
+          },
+          component: RequestDetailForm,
+          hasModalCard: true,
+          trapFocus: true,
+          canCancel: false,
+          events: {
+            close: (options) => { this.closeForm(options); },
+          },
+        });
       },
       showDetail(id) {
         const url = '/api/requests/' + id;
@@ -127,20 +306,7 @@
             const value = res.data;
             value.openDate = new Date(value.openDate);
             value.date = new Date(value.date);
-            this.$buefy.modal.open({
-              parent: this,
-              props: {
-                value,
-                type: 'modify'
-              },
-              component: RequestDetailForm,
-              hasModalCard: true,
-              trapFocus: true,
-              canCancel: false,
-              events: {
-                close : () => this.$emit('refresh')
-              },
-            });
+            this.openDialog('modify', value);
           })
           .catch(error => {
             this.$root.showErrorToast('의뢰 상세 조회에 실패하였습니다.', error);
@@ -165,6 +331,11 @@
           }
         }
         return plan;
+      },
+      closeForm(refresh){
+        if(refresh){
+          this.init();
+        }
       }
     },
     filters:{

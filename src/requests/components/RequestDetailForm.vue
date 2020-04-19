@@ -7,7 +7,7 @@
     <section class="modal-card-body">
       <div class="columns" style="width: 100%; height: max-content">
         <div class="column">
-          <b-field v-if="data.operatorName">
+          <b-field>
             <template slot="label">
               운영담당자
               <b-tooltip type="is-dark"
@@ -20,13 +20,17 @@
                 </b-button>
               </b-tooltip>
             </template>
-            <b-field>
-              {{data.operatorName}}
-            </b-field>
+            <b-select  v-model="data.operatorAccountId">
+              <option v-for="member in members"
+                      :key="member.email"
+                      :value="member.email">
+                {{member.name}}
+              </option>
+            </b-select>
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 운영담당자 처리 상태
+              <span class="has-text-danger">*</span> 의뢰 상태
             </template>
             <b-select  v-model="data.status">
               <option v-for="status in options.status"
@@ -59,7 +63,7 @@
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 의뢰 목적
+              의뢰 목적
             </template>
             <b-input v-model="data.purpose"
                      placeholder="의뢰 목적을 입력해주세요."
@@ -107,7 +111,7 @@
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 유저정보 구매 여부
+              유저 정보 구매 여부
             </template>
             <b-field>
               <b-checkbox v-model="data.isIncludedUserData">
@@ -117,7 +121,7 @@
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 커스터마이징 구매 여부
+              커스터마이징 구매 여부
             </template>
             <b-field>
               <b-checkbox v-model="data.isIncludedCustomizing">
@@ -127,7 +131,7 @@
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 커스터마이징 매니저 이메일
+              <span v-if="data.isIncludedCustomizing" class="has-text-danger">* </span>커스터마이징 매니저 이메일
             </template>
             <b-taginput
               v-model="data.customizingManagerEmails"
@@ -138,20 +142,21 @@
             </b-taginput>
           </b-field>
         </div>
-        <div class="is-vertical-divider" style="height: 100%"></div>
+        <div class="is-vertical-divider"></div>
         <div class="column">
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 게임 타이틀
             </template>
             <b-input v-model="data.game.title"
+                     ref="gameTitle"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 게임 태그
+              게임 태그
             </template>
             <b-taginput
               v-model="data.game.tags"
@@ -166,14 +171,18 @@
               <span class="has-text-danger">*</span> 게임 설명
             </template>
             <b-input v-model="data.game.description"
+                     ref="gameDescription"
                      placeholder="게임 설명을 입력해주세요."
-                     type="textarea"></b-input>
+                     type="textarea"
+                     required
+            ></b-input>
           </b-field>
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 게임 다운로드 URL
             </template>
             <b-input v-model="data.game.downloadUrl"
+                     ref="gameDownloadUrl"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
@@ -183,6 +192,7 @@
               <span class="has-text-danger">*</span> 게임 패키지 이름
             </template>
             <b-input v-model="data.game.packageName"
+                     ref="gamePackageName"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
@@ -201,25 +211,27 @@
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 게임회사 이름
+              <span class="has-text-danger">*</span> 회사 이름
             </template>
             <b-input v-model="data.company.name"
+                     ref="companyName"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 게임회사 분류
+              <span class="has-text-danger">*</span> 회사 분류
             </template>
             <b-input v-model="data.company.class"
+                     ref="companyClass"
                      validation-message="필수 입력 값입니다."
                      required
             ></b-input>
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 게임회사 규모
+              <span class="has-text-danger">*</span> 회사 규모
             </template>
             <b-numberinput v-model="data.company.numberOfEmployee"
                            min="0"
@@ -229,64 +241,53 @@
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 게임회사 분류
+              의뢰자 이름
             </template>
-            <b-input v-model="data.company.class"
-                     validation-message="필수 입력 값입니다."
-                     required
-            ></b-input>
+            <b-input v-model="data.customer.name"></b-input>
           </b-field>
           <b-field>
             <template slot="label">
-              <span class="has-text-danger">*</span> 의뢰자 레퍼럴
+              의뢰자 전화번호
+            </template>
+            <b-input v-model="data.customer.phoneNumber"></b-input>
+          </b-field>
+          <b-field>
+            <template slot="label">
+              의뢰자 직책
+            </template>
+            <b-input v-model="data.customer.role"></b-input>
+          </b-field>
+          <b-field>
+            <template slot="label">
+              의뢰자 이메일
+            </template>
+            <b-input v-model="data.customer.email"></b-input>
+          </b-field>
+          <b-field>
+            <template slot="label">
+              의뢰자 레퍼럴
             </template>
             <b-taginput
-              v-model="data.customer.referer"
+              v-model="data.customer.referers"
               allow-new
               ellipsis
               icon="label"
               placeholder="의뢰자 레퍼럴을 입력하세요.">
             </b-taginput>
           </b-field>
-          <b-field>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 의뢰자 이름
-            </template>
-            <b-input v-model="data.company.name"
-                     validation-message="필수 입력 값입니다."
-                     required
-            ></b-input>
-          </b-field>
-          <b-field>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 의뢰자 전화번호
-            </template>
-            <b-input v-model="data.company.phoneNumber"
-                     validation-message="필수 입력 값입니다."
-                     required
-            ></b-input>
-          </b-field>
-          <b-field>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 의뢰자 이메일
-            </template>
-            <b-input v-model="data.company.email"
-                     validation-message="필수 입력 값입니다."
-                     required
-            ></b-input>
-          </b-field>
         </div>
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button" type="button" @click="$emit('close')">닫기</button>
-      <button class="button is-primary" @click="save"><b>저장</b></button>
+      <button class="button" type="button" @click="$emit('close', false)">닫기</button>
+      <button v-if="type==='modify'" class="button is-primary" @click="update"><b>의뢰 수정</b></button>
+      <button v-if="type==='add'" class="button is-primary" @click="create"><b>의뢰 생성</b></button>
     </footer>
   </div>
 </template>
 
 <script>
-  import request from '../../common/utils/http';
+  import httpRequest from '../../common/utils/http';
 
   export default {
     name: 'RequestDetailForm',
@@ -304,47 +305,37 @@
           return 'add';
         },
       },
+      options:{
+        type: Object,
+        default(){
+          return null;
+        }
+      }
     },
     data() {
       return {
-        error: {
-          message: false,
-        },
-        options:{
-          status:[
-            {key: 'received',color:'is-danger', text:'접수'},
-            {key: 'processing', color:'is-primary', text:'처리중'},
-            {key: 'completed', color:'is-warning', text:'종료'},
-            {key: 'cancel', color:'is-dark', text:'취소'}
-          ],
-          devProcess:[
-            {key:'1000', text: '기획 & 컨셉 정의'},
-            {key:'2000', text: '프로토 타입'},
-            {key:'3000', text: '출시 전'},
-            {key:'4000', text: '베타 출시'},
-            {key:'5000', text: '정식 출시'}
-          ],
-          plan:[
-            {key:'standard', text:'Standard'},
-            {key:'simple', text:'Simple'},
-            {key:'lite', text:'Lite'},
-          ]
-        },
+        members: [
+          { name: 'Eve', email: 'bolimlee22@gmail.com' },
+          { name: 'Yenarue', email: 'yenarue@gmail.com' },
+          { name: 'Jason', email: 'sryu99@gmail.com' },
+          { name: 'Jake', email: 'copyx00@gmail.com' }
+        ],
         disabled: false,
         data: {
           _id: '',
           // 의뢰 메타 데이터
           date: new Date(),       // 의뢰 일자
-          numberOfTester: 0,
+          numberOfTester: 10,
           purpose: '',
-          plan: '', // 소문자로 영어만
+          plan: 'lite', // 소문자로 영어만
           openDate: new Date(), // 희망 테스트 시작일
-          duration: 0, // 희망 테스트 진행 일 수
+          duration: 7, // 희망 테스트 진행 일 수
           additionalInfo: '',
           isIncludedUserData: false,
           isIncludedCustomizing: false,
           customizingManagerEmails: [],
           operatorName: '', //운영담당자 이름
+          operatorAccountId: '',
           status: 'received', // 운영담당자가 처리한 상태
           // 게임
           game: {
@@ -353,7 +344,7 @@
             description: '',
             downloadUrl: '',
             packageName: '',
-            devProcess: '1000',
+            devProcess: 1000,
           },
           // company
           company: {
@@ -363,7 +354,7 @@
           },
           // 의뢰자 메타데이터
           customer: {
-            referer: [],
+            referers: [],
             name: '',
             role: '',
             phoneNumber: '',
@@ -373,7 +364,9 @@
       };
     },
     mounted() {
-      this.data = this.value;
+      if(this.value){
+        this.data = this.value;
+      }
     },
     watch: {
       value:{
@@ -384,22 +377,45 @@
       }
     },
     methods: {
-      setTime(hour, min) {
-        let datetime;
-        if (this.data.when) {
-          datetime = new Date(this.data.when);
-        } else {
-          datetime = new Date();
-        }
-        datetime.setHours(hour);
-        datetime.setMinutes(min);
-        this.data.when = datetime;
-      },
       validate() {
-        return true;
+        let isValid = true;
+        for (let ref in this.$refs) {
+          let checkValidity = this.$refs[ref].checkHtml5Validity();
+          if(!checkValidity){
+            isValid = false;
+          }
+        }
+        return isValid;
       },
-      save(){
-
+      getOperatorName(){
+        if(this.data.operatorAccountId){
+          return this.members.filter((member)=> member.email === this.data.operatorAccountId)[0].name;
+        }
+        return '';
+      },
+      update(){
+        if(this.validate()){
+          this.data.operatorName = this.getOperatorName();
+          const url = '/api/requests/'+this.data._id;
+          httpRequest.put(url, this.data).then(res=>{
+            this.$root.showSuccessToast('정상적으로 수정하였습니다.');
+            this.$emit('close', true);
+          }).catch(error=>{
+            this.$root.showErrorToast('수정에 실패하였습니다.', error);
+          });
+        }
+      },
+      create(){
+        if(this.validate()){
+          this.data.operatorName = this.getOperatorName();
+          const url = '/api/requests';
+          httpRequest.post(url, this.data).then(res=>{
+            this.$root.showSuccessToast('정상적으로 의뢰 등록하였습니다.');
+            this.$emit('close', true);
+          }).catch(error=>{
+            this.$root.showErrorToast('의뢰 등록에 실패하였습니다.', error);
+          });
+        }
       }
     },
   };
