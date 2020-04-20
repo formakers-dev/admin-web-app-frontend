@@ -1,7 +1,7 @@
 <template>
   <div class="modal-card noti-info-container">
     <header class="modal-card-head">
-      <p class="modal-card-title">알림 정보 {{type === 'modify'? '수정하기' : '등록하기'}}</p>
+      <p class="modal-card-title">의뢰 정보 {{type === 'modify'? '수정하기' : '등록하기'}}</p>
       <p><font color="red">필수 값 *</font></p>
     </header>
     <section class="modal-card-body">
