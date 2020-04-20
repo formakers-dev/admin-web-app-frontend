@@ -466,10 +466,7 @@ export default {
         this.result = res;
 
         if (this.data.when) {
-          this.$buefy.toast.open({
-            message: '정상적으로 전송/예약을 하였습니다.',
-            type: 'is-primary',
-          });
+          this.$root.showSuccessToast('정상적으로 전송/예약을 하였습니다.');
         } else {
           const failCount = this.result.data.result.failure ? this.result.data.result.failure : 0;
           const message = `총 ${receiverList.length}의 알람을 전송하였습니다.(성공 : ${this.result.data.result.success} / 실패 : ${failCount})`;
@@ -480,11 +477,7 @@ export default {
           });
         }
       }).catch((err) => {
-        this.$buefy.toast.open({
-          message: '예약에 실패하였습니다.',
-          type: 'is-danger',
-        });
-        console.log(err.response);
+        this.$root.showErrorToast('예약에 실패하였습니다.', error);
       });
     },
     sendNotiByTopic() {
@@ -495,21 +488,15 @@ export default {
         notiType: this.data.notiType,
       };
 
+      const url = '/api/noti/topics/'+ this.data.topic;
       request({
-        url: `/api/noti/topics/${this.topic}`,
+        url,
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {
-        this.$buefy.toast.open({
-          message: '정상적으로 전송/예약을 하였습니다.',
-          type: 'is-primary',
-        });
+        this.$root.showSuccessToast('정상적으로 전송/예약을 하였습니다.');
       }).catch((err) => {
-        this.$buefy.toast.open({
-          message: '예약에 실패하였습니다.',
-          type: 'is-danger',
-        });
-        console.log(err.response);
+        this.$root.showErrorToast('예약에 실패하였습니다.', error);
       });
     },
   },
