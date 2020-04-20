@@ -30,12 +30,13 @@
         <div class="level-item">
           <b-button type='is-primary'
                     icon-left="refresh"
-                    @click="init">의뢰 정보 다시 불러오기</b-button>
+                    @click="init">의뢰 정보 새로 불러오기</b-button>
         </div>
       </div>
     </nav>
   <nav class="level">
-    <div class="level-left">
+    <div class="level-left"></div>
+    <div class="level-right">
       <div class="level-item">
         <b-field>
           <b-radio-button v-model="filterOptions.status"
