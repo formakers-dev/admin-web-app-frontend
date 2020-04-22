@@ -9,41 +9,15 @@
 
         <b-field class="column padding-0 padding-left-10" label="타입 (type) *">
           <b-select v-model="type"
-                    v-on:input="setMissionItemType">
+                    v-on:input="setMissionType">
             <option
-              v-for="type in missionItemTypes"
+              v-for="type in missionTypes"
               :value="type"
               :key="type">
               {{ type }}
             </option>
           </b-select>
         </b-field>
-      </b-field>
-
-      <b-field v-if="type === 'play'" class="padding-bottom-10"
-               label="플레이 할 게임의 패키지명 (item.packageName) *">
-        <b-input
-          v-model="mission.item.packageName"
-          placeholder="com.formakers.fomes"
-          v-on:input="setPlayTypeAction"></b-input>
-      </b-field>
-
-      <b-field class="padding-bottom-10" label="제목 아이콘 (iconImageUrl) *">
-        <div>
-          <div class="padding-bottom-10 columns">
-            sample : <img class="icon padding-left-10 padding-right-10 cursor-pointer"
-                          v-for="icon in Object.values(icons)"
-                          v-bind:key="icon"
-                          v-bind:src="icon"
-                          v-on:click="onClickIconSample"/>
-          </div>
-          <div class="columns">
-            <b-input class="padding-right-10" style="width:300px" v-model="mission.iconImageUrl" placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
-            preview : <img v-if="mission.iconImageUrl.length > 0"
-                 class="icon padding-left-10 padding-right-10"
-                 v-bind:src="mission.iconImageUrl"/>
-          </div>
-        </div>
       </b-field>
 
       <b-field class="padding-bottom-10" label="제목 (title) *">
@@ -53,10 +27,6 @@
           </b-switch>
           <b-input v-model="mission.title" placeholder="1단계 미션"></b-input>
         </div>
-      </b-field>
-
-      <b-field class="padding-bottom-10" label="아이템 제목 (item.title) *">
-        <b-input v-model="mission.item.title" placeholder="의견을 작성하라!"></b-input>
       </b-field>
 
       <b-field class="padding-bottom-10" label="내용 (description) *">
@@ -75,11 +45,19 @@
         <b-input type="textarea" v-model="mission.guide"></b-input>
       </b-field>
 
-      <b-field class="padding-bottom-10" label="액션 타입 (item.actionType)">
+      <b-field v-if="type === 'play'" class="padding-bottom-10"
+               label="플레이 할 게임의 패키지명 (packageName) *">
+        <b-input
+          v-model="mission.packageName"
+          placeholder="com.formakers.fomes"
+          v-on:input="setPlayTypeAction"></b-input>
+      </b-field>
+
+      <b-field class="padding-bottom-10" label="액션 타입 (actionType)">
         <b-select v-model="actionType"
-                  v-on:input="setMissionItemActionType">
+                  v-on:input="setMissionActionType">
           <option
-            v-for="type in missionItemActionTypes"
+            v-for="type in missionActionTypes"
             :value="type"
             :key="type">
             {{ type }}
@@ -87,7 +65,7 @@
         </b-select>
       </b-field>
 
-      <b-field class="padding-bottom-10" label="액션 (item.action) *">
+      <b-field class="padding-bottom-10" label="액션 (action) *">
         <div>
           <b-switch v-if="type === 'play'"
                     v-model="isGooglePlayUrl"
@@ -95,15 +73,16 @@
             구글플레이 기본 마켓 URL 사용하기
           </b-switch>
           <b-input
-            v-model="mission.item.action"
-            placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"></b-input>
+            v-model="mission.action"
+            placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"
+            v-on:input="setDeeplink"></b-input>
         </div>
       </b-field>
 
       <b-field label="옵션 (options)">
         <b-taginput
-          v-model="mission.item.options"
-          :data="missionItemOptions"
+          v-model="mission.options"
+          :data="missionOptions"
           autocomplete
           icon="label"
           placeholder="미션 아이템의 옵션을 추가해주세요">
@@ -127,55 +106,55 @@ export default {
   data() {
     return {
       isGooglePlayUrl: true,
-      isDependencyWithOrder: true,
-      actionType: this.mission.item.actionType.length > 0 ? this.mission.item.actionType : 'default',
-      type: this.mission.item.type.length > 0 ? this.mission.item.type : 'default',
-      missionItemOptions: ['mandatory', 'repeatable', 'recheckable'],
-      missionItemTypes: ['default', 'play', 'hidden'],
-      missionItemActionTypes: ['default', 'internal_web'],
-      icons: {
-        survey: 'https://i.imgur.com/o8kAhPM.png',
-        play: 'https://i.imgur.com/rjQSzgp.png',
-      },
+      isDependencyWithOrder: false,
+      actionType: this.mission.actionType.length > 0 ? this.mission.actionType : 'default',
+      type: this.mission.type.length > 0 ? this.mission.type : 'survey',
+      missionOptions: ['mandatory', 'repeatable', 'recheckable'],
+      missionTypes: ['survey', 'play'],
+      missionActionTypes: ['default', 'internal_web'],
     };
   },
   created() {
-    this.setMissionItemType(this.mission.item.type || 'default');
+    this.setMissionType(this.mission.type || 'survey');
     this.onInputOrder(this.mission.order);
   },
   methods: {
-    setMissionItemType(selected) {
-      console.log('setMissionItemType : ', selected);
+    setMissionType(selected) {
+      console.log('setMissionType : ', selected);
 
-      if (selected === 'default') {
-        delete this.mission.item.type;
-        this.mission.iconImageUrl = this.icons.survey;
-      } else {
-        this.mission.item.type = selected;
-        if (selected === 'play') {
-          this.mission.iconImageUrl = this.icons.play;
-          this.mission.item.actionType = 'default';
-          this.setPlayTypeAction();
-        } else {
-          delete this.mission.iconImageUrl;
-        }
+      this.mission.type = selected;
+
+      if (selected === 'play') {
+        this.mission.actionType = 'default';
+        this.setPlayTypeAction();
       }
+
       console.log(this.mission);
     },
-    setMissionItemActionType(selected) {
-      console.log('setMissionItemActionType : ', selected);
+    setMissionActionType(selected) {
+      console.log('setMissionActionType : ', selected);
       if (selected === 'default') {
-        delete this.mission.item.actionType;
+        delete this.mission.actionType;
       } else {
-        this.mission.item.actionType = selected;
+        this.mission.actionType = selected;
       }
       console.log(this.mission);
     },
     setPlayTypeAction() {
       if (this.isGooglePlayUrl) {
-        this.mission.item.action = `https://play.google.com/store/apps/details?id=${this.mission.item.packageName}`;
+        this.mission.action = `https://play.google.com/store/apps/details?id=${this.mission.packageName}`;
       } else {
-        delete this.mission.item.action;
+        this.mission.action = '';
+      }
+
+      this.setDeeplink();
+    },
+    // TODO : 임시로직 - action, actionType Deeplink로 대체 시 아래 함수는 삭제되어야 함
+    setDeeplink() {
+      if (this.mission.type === 'play') {
+        this.mission.deeplink = this.mission.action;
+      } else {
+        delete this.mission.deeplink;
       }
     },
     onInputOrder(order) {
@@ -186,10 +165,6 @@ export default {
           title: `${order}번째 미션`,
         });
       }
-    },
-    onClickIconSample(value) {
-      console.log(value.srcElement.src);
-      this.mission.iconImageUrl = value.srcElement.src;
     },
   },
 };

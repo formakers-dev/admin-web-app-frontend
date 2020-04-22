@@ -83,6 +83,7 @@
           </div>
           <b-message v-if="showErrorMessage" type="is-danger">
             총 {{requestUsersCount}}명의 사용자 중 {{requestUsersCount - responseUsersCount}} 명의 사용자 정보조회를 실패하였습니다.
+            <br>{{notMatchedUsers.join(' , ')}}
           </b-message>
           <section style="margin-bottom: 10px">
             <b-table
@@ -145,6 +146,10 @@
         <b-tab-item label="전체 사용자 조회하기">
           <div class="level" style="margin-bottom: 10px;">
             <div class="level-left">
+              <button class="button is-primary"
+                      style="height: 100%"
+                      @click="getAllUsers"
+              >사용자 정보 새로 불러오기</button>
             </div>
             <div class="level-right">
               <div class="level-item">
@@ -236,7 +241,11 @@ export default {
           keyword:'',
         },
         option:{
-          types:[{text:'이메일', value:'email'}, {text:'닉네임', value:'nickName'}, {text:'유저 아이디', value:'userId'}],
+          types:[
+            {text:'이메일', value:'email'},
+            {text:'닉네임', value:'nickName'},
+            {text:'유저 아이디', value:'userId'}
+            ],
         }
       },
       checkedResult:{
@@ -254,6 +263,7 @@ export default {
       requestUsersCount:0,
       responseUsersCount:0,
       showErrorMessage: false,
+      notMatchedUsers:[]
     };
   },
   watch:{
@@ -283,7 +293,7 @@ export default {
       return '만 ' + age + "세(" + value + ")"
     },
     numberComma: function(value){
-      return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '';
+      return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '0';
     }
   },
   methods: {
@@ -321,6 +331,7 @@ export default {
     },
     getUsers(){
       this.showErrorMessage = false;
+      this.notMatchedUsers = [];
       if(this.validation('users')) {
         this.isLoading = true;
         const splitedKeywords = this.search.multiple.keyword ? this.search.multiple.keyword.split(/[,\s\n]+/) : [];
@@ -349,6 +360,10 @@ export default {
             this.isLoading = false;
             this.responseUsersCount = this.result.getUsers.length;
             this.showErrorMessage = (this.requestUsersCount-this.responseUsersCount) > 0;
+            if(this.showErrorMessage){
+              console.log(keywords, res.data);
+              this.checkNotMatchedUser(this.search.multiple.type, keywords, res.data)
+            }
           })
           .catch(error => {
             this.isLoading = false;
@@ -401,6 +416,18 @@ export default {
         trapFocus: true,
         canCancel: ['escape','outside'],
       });
+    },
+    checkNotMatchedUser(type, req, res){
+      const diff = req.length - res.length;
+      for(let i = 0; i < req.length && this.notMatchedUsers.length < diff; i++){
+            for(let j =0; j< res.length; j++){
+              let value = res[j];
+              if(req[i] != value[type]){
+                this.notMatchedUsers.push(req[i]);
+                break;
+              }
+        }
+      }
     }
   },
 };

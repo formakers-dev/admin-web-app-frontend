@@ -8,7 +8,7 @@ import TestList from './views/TestList.vue';
 import Users from './users/views/Users.vue';
 import Login from './auth/views/Login.vue';
 import Logout from './auth/views/Logout.vue';
-
+import Requests from './requests/views/Requests';
 Vue.use(Router);
 
 export default new Router({
@@ -54,6 +54,16 @@ export default new Router({
       path: '/logout',
       name: 'logout',
       component: Logout,
-    }
+    },
+    {
+      path: '/requests',
+      name: 'requests',
+      component: Requests,
+    },
+    {
+      path: '*',
+      name: 'Error404',
+      component: Logout,
+    },
   ],
 });
