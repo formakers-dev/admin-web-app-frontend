@@ -80,6 +80,20 @@
       <b-field label="플랜 (plan) *" v-if="betaTest.subjectType === 'game-test'">
         <b-field style="padding-bottom: 20px">
           <b-radio-button v-model="betaTest.plan"
+                          native-value="trial"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Trial Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="starter"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Starter Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
                           native-value="lite"
                           v-on:input="setPlan"
                           type="is-black">
