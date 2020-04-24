@@ -202,6 +202,12 @@
             <span>자유선택</span>
           </b-radio-button>
           <b-radio-button v-model="testType"
+                          native-value="short"
+                          v-on:input="setTestTemplateByTestType"
+                          type="is-black">
+            <span>약식설문형</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
                           native-value="simple"
                           v-on:input="setTestTemplateByTestType"
                           type="is-black">
@@ -495,6 +501,15 @@ export default {
       // Set rewards
       const rewardList = [];
       switch (this.testType) {
+        case 'short':
+          rewardList.push({
+            order: rewardList.length + 1,
+            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
+            title: '테스트 참여상',
+            content: '게임 인앱 아이템',
+          });
+          break;
+
         case 'simple':
         case 'application+simple':
           rewardList.push({
@@ -555,6 +570,7 @@ export default {
           });
 
         // eslint-disable-next-line no-fallthrough
+        case 'short':
         case 'simple':
         case 'normal':
           missions.push({
