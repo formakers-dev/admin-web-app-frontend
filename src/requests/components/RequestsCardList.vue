@@ -327,6 +327,7 @@
           component: RequestDetailForm,
           hasModalCard: true,
           trapFocus: true,
+          fullScreen: true,
           canCancel: false,
           events: {
             close: (options) => { this.closeForm(options); },
