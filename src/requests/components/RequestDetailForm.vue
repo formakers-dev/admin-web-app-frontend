@@ -42,6 +42,16 @@
           </b-field>
           <b-field>
             <template slot="label">
+              의뢰 취소 여부
+            </template>
+            <b-field>
+              <b-checkbox v-model="data.isCancelled">
+                {{ data.isCancelled ? '네' : '아니요' }}
+              </b-checkbox>
+            </b-field>
+          </b-field>
+          <b-field>
+            <template slot="label">
               <span class="has-text-danger">*</span> 의뢰일시
             </template>
             <b-field>
@@ -337,6 +347,7 @@
           operatorName: '', //운영담당자 이름
           operatorAccountId: '',
           status: 'received', // 운영담당자가 처리한 상태
+          isCancelled: false,
           // 게임
           game: {
             title: '',

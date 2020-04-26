@@ -46,7 +46,7 @@
                           :native-value="status.key"
                           size="is-small"
           >
-            {{status.text}}({{counts[status.key]}})
+            {{status.text}}({{ getItemCount(status.key)}})
           </b-radio-button>
         </b-field>
       </div>
@@ -62,6 +62,14 @@
           </b-radio-button>
         </b-field>
       </div>
+      <div class="level-item">
+        <b-field>
+          <b-checkbox
+            v-model="filterOptions.showCanceledItem"
+            size="is-small"
+          >의뢰취소된 항목만 보기</b-checkbox>
+        </b-field>
+      </div>
     </div>
   </nav>
   <div class="card request-card"
@@ -73,11 +81,12 @@
     <div class="card-content">
       <div class="media">
         <div class="media-content">
-          <div v-if="request.status != 'cancel'" style="position: absolute; right: 20px">
+          <div v-if="!request.isCancelled" style="position: absolute; right: 20px">
             <b-button class="is-small" type="is-danger" outlined @click.stop="cancelRequest(request._id)">의뢰 취소</b-button>
           </div>
           <p class="title is-4">{{request.game.title}}
             <b-tag :type="getStatus(request.status).color">{{getStatus(request.status).text}}</b-tag>
+            <b-tag v-if="request.isCancelled" type="is-danger" style="margin-left:10px">의뢰 취소</b-tag>
           </p>
           <p v-if="request.operatorName" class="subtitle is-6" style="color:gray" >
             <strong>운영 담당자</strong> {{request.operatorName}}
@@ -130,6 +139,7 @@
   import moment from 'moment';
   import httpRequest from '../../common/utils/http';
   import RequestDetailForm from '../components/RequestDetailForm';
+  import RequestDetail from '../views/RequestDetail';
 
   export default {
     name: 'requestCardList.vue',
@@ -151,11 +161,16 @@
             {key:'company',text:'게임 회사'},
           ],
           status:[
-            {key: 'total',color:'is-info', text:'전체'},
-            {key: 'received',color:'is-danger', text:'접수'},
-            {key: 'processing', color:'is-primary', text:'처리중'},
-            {key: 'completed', color:'is-warning', text:'종료'},
-            {key: 'cancel', color:'is-dark', text:'취소'}
+            {key: 'total', color:'is-primary', text:'전체'},
+            {key: 'received', color:'is-info', text:'의뢰 접수'},
+            {key: 'confirming', color:'is-info', text:'의뢰 확인중'},
+            {key: 'preparing', color:'is-success', text:'테스트 준비중'},
+            {key: 'ready', color:'is-success', text:'테스트 오픈 대기'},
+            {key: 'open', color:'is-success', text:'테스트 진행'},
+            {key: 'gathering', color:'is-warning', text:'결과 취합중'},
+            {key: 'reported', color:'is-warning', text:'결과서 전달'},
+            {key: 'awarding', color:'is-link', text:'시상식 준비중'},
+            {key: 'completed', color:'is-dark', text:'완료'}
           ],
           devProcess:[
             {key:1000, text: '기획 & 컨셉 정의'},
@@ -178,22 +193,34 @@
           sortBy: '{"key":"date", "value":"desc"}',
           status:'total',
           keyword:'',
-          searchType:'gameTitle'
+          searchType:'gameTitle',
+          showCanceledItem: false
         },
-        counts:{
+        defaultCount:{
           total:0,
           received : 0,
-          processing: 0,
+          confirming: 0,
+          preparing: 0,
+          ready: 0,
+          open: 0,
+          gathering: 0,
+          reported: 0,
+          awarding: 0,
           completed: 0,
           cancel: 0
         },
+        counts:{
+          active:{},
+          cancel:{}
+        },
+
       }
     },
     watch:{
       filterOptions:{
         handler(obj){
           const options = obj;
-          this.filtered(options.status, this.requests);
+          this.filtered(options.status, this.requests, options.showCanceledItem);
         },
         deep:true
       }
@@ -202,22 +229,21 @@
       this.init();
     },
     methods:{
+      initCounts(){
+        this.counts.active = Object.assign({}, this.defaultCount);
+        this.counts.cancel = Object.assign({}, this.defaultCount);
+      },
       init(){
+        this.initCounts();
         httpRequest.get('/api/requests')
           .then(res => {
-            this.counts = Object.assign({},{
-              total:0,
-              received : 0,
-              processing: 0,
-              completed: 0,
-              cancel: 0
-            });
             res.data.forEach((item)=>{
-              this.counts[item.status] = this.counts[item.status] + 1;
-              this.counts.total = this.counts.total + 1;
+              const stat = item.isCancelled ? 'cancel' : 'active';
+              this.counts[stat][item.status] = this.counts[stat][item.status] + 1;
+              this.counts[stat].total = this.counts[stat].total + 1;
             });
             this.requests = res.data;
-            this.filtered('total', this.requests);
+            this.filtered('total', this.requests, false);
           })
           .catch(error => {
             this.$root.showErrorToast('의뢰 항목 조회에 실패하였습니다.', error);
@@ -230,10 +256,17 @@
         const devProcess =  this.options.devProcess.filter(s => s.key === value);
         return devProcess.length ? devProcess[0] : value;
       },
-      filtered(status, items){
+      getItemCount(key){
+        const stat = this.filterOptions.showCanceledItem ? 'cancel' : 'active'
+        return this.counts[stat][key] ? this.counts[stat][key] : 0;
+      },
+      filtered(status, items, onlyCancelled){
        if(!items){
           items = this.requests;
         }
+       if(onlyCancelled){
+         items = items.filter(i=> i.isCancelled);
+       }
         this.filterOptions.status = status;
         const sortBy = JSON.parse(this.filterOptions.sortBy);
         const type = this.filterOptions.searchType;
