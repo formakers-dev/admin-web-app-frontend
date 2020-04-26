@@ -52,7 +52,6 @@ export default {
     z-index: 99;
     height: auto;
     width: 90%;
-    max-width: 1000px !important;
     box-shadow: 0px 0px 55px 0px rgba(0,0,0,0.6);
   }
   .version{
