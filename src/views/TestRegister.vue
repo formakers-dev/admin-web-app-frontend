@@ -80,6 +80,20 @@
       <b-field label="플랜 (plan) *" v-if="betaTest.subjectType === 'game-test'">
         <b-field style="padding-bottom: 20px">
           <b-radio-button v-model="betaTest.plan"
+                          native-value="trial"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Trial Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
+                          native-value="starter"
+                          v-on:input="setPlan"
+                          type="is-black">
+            <span>Starter Plan</span>
+          </b-radio-button>
+
+          <b-radio-button v-model="betaTest.plan"
                           native-value="lite"
                           v-on:input="setPlan"
                           type="is-black">
@@ -186,6 +200,12 @@
                           v-on:input="setTestTemplateByTestType"
                           type="is-black">
             <span>자유선택</span>
+          </b-radio-button>
+          <b-radio-button v-model="testType"
+                          native-value="short"
+                          v-on:input="setTestTemplateByTestType"
+                          type="is-black">
+            <span>약식설문형</span>
           </b-radio-button>
           <b-radio-button v-model="testType"
                           native-value="simple"
@@ -481,6 +501,15 @@ export default {
       // Set rewards
       const rewardList = [];
       switch (this.testType) {
+        case 'short':
+          rewardList.push({
+            order: rewardList.length + 1,
+            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
+            title: '테스트 참여상',
+            content: '게임 인앱 아이템',
+          });
+          break;
+
         case 'simple':
         case 'application+simple':
           rewardList.push({
@@ -541,6 +570,7 @@ export default {
           });
 
         // eslint-disable-next-line no-fallthrough
+        case 'short':
         case 'simple':
         case 'normal':
           missions.push({
