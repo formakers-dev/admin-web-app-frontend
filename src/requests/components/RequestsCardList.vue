@@ -139,7 +139,6 @@
   import moment from 'moment';
   import httpRequest from '../../common/utils/http';
   import RequestDetailForm from '../components/RequestDetailForm';
-  import RequestDetail from '../views/RequestDetail';
 
   export default {
     name: 'requestCardList.vue',

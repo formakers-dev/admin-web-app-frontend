@@ -1,14 +1,16 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './home/views/Home.vue';
-import NotificationManagement from './notification/views/NotificationManagement.vue';
-import Events from './event/views/EventBannerManagement.vue';
-import TestRegister from './views/TestRegister.vue';
-import TestList from './views/TestList.vue';
-import Users from './users/views/Users.vue';
-import Login from './auth/views/Login.vue';
-import Logout from './auth/views/Logout.vue';
-import Requests from './requests/views/Requests';
+const Home = () => import('./home/views/Home.vue');
+const NotificationManagement = () => import('./notification/views/NotificationManagement.vue');
+const Events = () => import('./event/views/EventBannerManagement.vue');
+const TestRegister = () => import('./views/TestRegister.vue');
+const TestList = () => import('./views/TestList.vue');
+const Users = () => import('./users/views/Users.vue');
+const Login = () => import('./auth/views/Login.vue');
+const Logout = () => import('./auth/views/Logout.vue');
+const Profile = () => import('./auth/views/Profile.vue');
+const Requests = () => import('./requests/views/Requests');
+
 Vue.use(Router);
 
 export default new Router({
@@ -59,6 +61,11 @@ export default new Router({
       path: '/requests',
       name: 'requests',
       component: Requests,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile
     },
     {
       path: '*',

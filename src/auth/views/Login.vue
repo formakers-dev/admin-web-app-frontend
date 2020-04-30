@@ -8,14 +8,20 @@
         >
     </section>
     <section style="margin-top: 20px">
-      <b-field label="Email">
+      <b-field label="이메일">
         <b-input v-model="email"
                  ref="email"
                  type="email"
                  required
         ></b-input>
       </b-field>
-      <b-field label="Password">
+      <b-field v-if="showSignUp" label="닉네임">
+        <b-input v-model="nickName"
+                 ref="nickName"
+                 required
+        ></b-input>
+      </b-field>
+      <b-field label="비밀번호">
         <b-input type="password"
                  v-model="password"
                  ref="password"
@@ -24,7 +30,7 @@
                  @keyup.native.enter="submit"
         ></b-input>
       </b-field>
-      <b-field v-if="showSignUp" label="Re-Password">
+      <b-field v-if="showSignUp" label="비밀번호 재입력">
         <b-input type="password"
                  v-model="password2"
                  ref="password2"
@@ -60,6 +66,7 @@ export default {
       email: '',
       password: '',
       password2: '',
+      nickName: '',
       showSignUp: false,
       message: null
     }
@@ -71,6 +78,7 @@ export default {
     'showSignUp':{
       handler(value){
         this.email = '';
+        this.nickName = '';
         this.password = '';
         this.password2 = '';
         this.message = '';
@@ -92,27 +100,21 @@ export default {
           data: body,
         }).then(res => {
           if(this.showSignUp){
-            this.$buefy.toast.open({
-              message: '정상적으로 가입 신청하였습니다. 가입 심사가 마무리 될 때까지 기다려주세요.',
-              type: 'is-primary',
-            });
+            this.$root.showSuccessToast('정상적으로 가입 신청하였습니다. 가입 심사가 마무리 될 때까지 기다려주세요.');
             this.showSignUp = false;
           }else{
             this.$root.isLoggedIn = true;
             this.$router.push('/');
           }
-        }).catch(err => {
-          console.log(err);
-          if(err.response.data){
-            this.message = err.response.data.error;
+        }).catch(error => {
+          if(error.response.data){
+            this.message = error.response.data.error;
           }else{
-            this.$buefy.toast.open({
-              message: '문제가 발생하였습니다.',
-              type: 'is-danger',
-            });
+            this.$root.showErrorToast('문제가 발생하였습니다.', error);
           }
-
         });
+      }else{
+        this.message='입력 값을 확인해주세요.';
       }
     },
     showForm(){
@@ -125,8 +127,14 @@ export default {
           this.message = "비밀번호가 같지 않습니다.";
           return false;
         }
-        this.message = '';
-        return this.$refs.email.checkHtml5Validity() && this.$refs.password.checkHtml5Validity() && this.$refs.password2.checkHtml5Validity();
+        let isValid = true;
+        for (let ref in this.$refs) {
+          let checkValidity = this.$refs[ref].checkHtml5Validity();
+          if(!checkValidity){
+            isValid = false;
+          }
+        }
+        return isValid;
       }else{
         return this.$refs.email.checkHtml5Validity() && this.$refs.password.checkHtml5Validity();
       }

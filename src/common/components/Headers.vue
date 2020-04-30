@@ -32,6 +32,9 @@
       </b-navbar-item>
     </template>
     <template slot="end" v-if="$root.isLoggedIn">
+      <b-navbar-item tag="router-link" to="/profile">
+        <b-icon icon="account"></b-icon>
+      </b-navbar-item>
       <b-navbar-item tag="router-link" to="/logout">
         <b-icon icon="logout"></b-icon>
       </b-navbar-item>

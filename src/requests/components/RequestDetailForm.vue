@@ -271,9 +271,9 @@
                 </template>
                 <b-select  v-model="data.operatorAccountId">
                   <option v-for="member in members"
-                          :key="member.email"
-                          :value="member.email">
-                    {{member.name}}
+                          :key="member._id"
+                          :value="member._id">
+                    {{member.nickName ? member.nickName : member.account}}
                   </option>
                 </b-select>
               </b-field>
@@ -340,12 +340,7 @@
     },
     data() {
       return {
-        members: [
-          { name: 'Eve', email: 'bolimlee22@gmail.com' },
-          { name: 'Yenarue', email: 'yenarue@gmail.com' },
-          { name: 'Jason', email: 'sryu99@gmail.com' },
-          { name: 'Jake', email: 'copyx00@gmail.com' }
-        ],
+        members: [],
         disabled: false,
         data: {
           _id: '',
@@ -390,6 +385,9 @@
         }
       };
     },
+    created() {
+      this.getAssignees();
+    },
     mounted() {
       if(this.value){
         this.data = this.value;
@@ -416,9 +414,10 @@
       },
       getOperatorName(){
         if(this.data.operatorAccountId){
-          return this.members.filter((member)=> member.email === this.data.operatorAccountId)[0].name;
+          const member = this.members.filter((member)=> member._id === this.data.operatorAccountId)[0];
+          return member.nickName ? member.nickName : member.account;
         }
-        return '';
+        return 'unknown';
       },
       update(){
         if(this.validate()){
@@ -431,6 +430,14 @@
             this.$root.showErrorToast('수정에 실패하였습니다.', error);
           });
         }
+      },
+      getAssignees(){
+        httpRequest.get('/api/admin/assignees').then(res=>{
+          this.members = res.data;
+          console.log(this.members);
+        }).catch(error=>{
+          this.$root.showErrorToast('담당자 정보를 불러오는데 실패하였습니다.', error);
+        });
       },
       create(){
         if(this.validate()){
@@ -461,11 +468,6 @@
     margin-bottom: 1rem;
   }
 
-  .modal-card-body {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-  }
   .request-classification-title{
     font-weight: bold;
     font-size: 1.2em;

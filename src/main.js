@@ -76,7 +76,7 @@ const app = new Vue({
         message: message,
         type: 'is-danger',
       });
-      console.log(error);
+      console.log(error.response);
     },
   }
 });

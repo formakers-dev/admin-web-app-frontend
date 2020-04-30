@@ -22,12 +22,8 @@ export default {
           this.$router.push('/login');
           // location.reload();
         });
-      }).catch(err => {
-        this.$buefy.toast.open({
-          message: '로그아웃에 실패하였습니다.',
-          type: 'is-danger',
-        });
-        console.log(err.response);
+      }).catch(error => {
+        this.$root.showErrorToast('로그아웃에 실패하였습니다.', error);
       });
     },
   }
