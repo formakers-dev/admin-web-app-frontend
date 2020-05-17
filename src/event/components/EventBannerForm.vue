@@ -242,7 +242,7 @@ export default {
       const open = moment(this.data.openDate);
       const close = moment(this.data.closeDate);
       if (!open.isSameOrBefore(close)) {
-        this.showErrorToast('오픈 시각과 종료 시각을 다시 한번 확인해주세요.', '');
+        this.$root.showErrorToast('오픈 시각과 종료 시각을 다시 한번 확인해주세요.', '');
       } else {
         return true;
       }
@@ -253,7 +253,7 @@ export default {
     },
     submit() {
       if (!this.validate()) {
-        this.showErrorToast('입력 값들을 다시 한번 확인해주세요.', '필수 값을 입력해주세요');
+        this.$root.showErrorToast('입력 값들을 다시 한번 확인해주세요.', '필수 값을 입력해주세요');
         return;
       }
       const status = this.getStatus(this.data.openDate, this.data.closeDate);
@@ -289,7 +289,7 @@ export default {
           body.contents = this.data.contents;
         }
       } else {
-        this.showErrorToast('잘못된 내용 입니다.', '');
+        this.$root.showErrorToast('잘못된 내용 입니다.', '');
         return;
       }
       const url = this.type === 'modify' ? `/api/posts/${this.data._id}` : '/api/posts';
@@ -298,24 +298,11 @@ export default {
         method: this.type === 'modify' ? 'put' : 'post',
         data: body,
       }).then((res) => {
-        this.showSuccessToast('이벤트 배너를 정상적으로 등록하였습니다.');
+        this.$root.showSuccessToast('이벤트 배너를 정상적으로 등록하였습니다.');
         this.$emit('close', true);
       }).catch((err) => {
-        this.showErrorToast('이벤트 배너 등록에 실패하였습니다.', err);
+        this.$root.showErrorToast('이벤트 배너 등록에 실패하였습니다.', err);
       });
-    },
-    showSuccessToast(message) {
-      this.$buefy.toast.open({
-        message,
-        type: 'is-primary',
-      });
-    },
-    showErrorToast(message, err) {
-      this.$buefy.toast.open({
-        message,
-        type: 'is-danger',
-      });
-      console.log(err.response);
     },
     getStatus(openDate, closeDate) {
       const current = moment();

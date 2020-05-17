@@ -65,6 +65,12 @@ const app = new Vue({
         });
       });
     },
+    showToast(type, message){
+      this.$buefy.toast.open({
+        message: message,
+        type: type,
+      });
+    },
     showSuccessToast(message){
       this.$buefy.toast.open({
         message: message,
