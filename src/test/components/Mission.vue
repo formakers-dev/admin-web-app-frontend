@@ -26,10 +26,7 @@
               <span class="has-text-danger">*</span> 제목
             </template>
             <div>
-              <b-checkbox v-model="isDependencyWithOrder">
-                순서와 연동 (order + "번째 미션")
-              </b-checkbox>
-              <b-input ref='mission.title' v-model="mission.title" placeholder="1단계 미션" required></b-input>
+              <b-input ref='mission.title' v-model="mission.title" required></b-input>
             </div>
           </b-field>
           <b-field>
@@ -141,7 +138,6 @@ export default {
     return {
       mission:{},
       isGooglePlayUrl: true,
-      isDependencyWithOrder: false,
       actionType: 'default',
       type: 'survey',
       missionOptions: ['mandatory', 'repeatable', 'recheckable'],
@@ -152,7 +148,6 @@ export default {
   mounted() {
     this.mission = Object.assign({}, this.item);
     this.setMissionType(this.mission.type || 'survey');
-    this.onInputOrder(this.mission.order);
     this.actionType = this.mission.actionType.length > 0 ? this.mission.actionType : 'default';
     this.type = this.mission.type.length > 0 ? this.mission.type : 'survey';
   },
@@ -186,15 +181,6 @@ export default {
         this.mission.deeplink = this.mission.action;
       } else {
         delete this.mission.deeplink;
-      }
-    },
-    onInputOrder(order) {
-      console.log(this.isDependencyWithOrder);
-      if (this.isDependencyWithOrder) {
-        this.$emit('update-mission-title', {
-          order,
-          title: `${order}번째 미션`,
-        });
       }
     },
     create(){

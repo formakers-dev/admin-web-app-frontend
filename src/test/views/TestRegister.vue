@@ -62,47 +62,27 @@
           </b-field>
           <b-field label="유형" horizontal>
             <b-field>
-              <b-radio-button v-model="betaTest.subjectType"
-                              native-value="game-test"
+              <b-radio-button v-for="subjectType in options.subjectTypes"
+                              :key="subjectType.key"
+                              v-model="betaTest.subjectType"
+                              :native-value="subjectType.key"
                               @input="setSubjectType"
                               type="is-primary">
-                <span>게임 테스트</span>
-              </b-radio-button>
-              <b-radio-button v-model="betaTest.subjectType"
-                              native-value="fomes-test"
-                              @input="setSubjectType"
-                              type="is-primary">
-                <span>포메스 테스트</span>
-              </b-radio-button>
-              <b-radio-button v-model="betaTest.subjectType"
-                              native-value="event"
-                              @input="setSubjectType"
-                              type="is-primary">
-                <span>이벤트</span>
+                {{subjectType.text}}
               </b-radio-button>
             </b-field>
           </b-field>
-          <b-field label="플랜" v-if="betaTest.subjectType === 'game-test'" horizontal>
+          <b-field v-if="betaTest.subjectType === 'game-test'" horizontal>
+            <template slot="label">
+              <span class="has-text-danger">*</span> 플랜
+            </template>
             <b-field>
               <b-radio-button v-for="plan in options.plan"
                               :key="plan.key"
                               v-model="betaTest.plan"
                               :native-value="plan.key"
-                              @input="setPlan"
                               type="is-primary">
                 {{plan.text}}
-              </b-radio-button>
-            </b-field>
-          </b-field>
-          <b-field label="테스트 구성" horizontal>
-            <b-field>
-              <b-radio-button v-model="testType"
-                              v-for="type in options.testTypes"
-                              :key="type.key"
-                              :native-value="type.key"
-                              @input="setTestTemplateByTestType"
-                              type="is-primary">
-                {{type.text}}
               </b-radio-button>
             </b-field>
           </b-field>
@@ -128,7 +108,7 @@
               ellipsis
               icon="label"
               placeholder="태그를 추가하세요"
-            required>
+            :required="betaTest.tags.length === 0">
             </b-taginput>
           </b-field>
           <b-field label="목적" horizontal>
@@ -194,9 +174,6 @@
           <b-field horizontal>
             <template slot="label">
               <span class="has-text-danger">*</span> 앱 아이콘
-              <b-tooltip type="is-dark" label="배너 클릭시 보여질 디테일 화면 입니다.">
-                <b-icon size="is-small" icon="help-circle-outline"></b-icon>
-              </b-tooltip>
             </template>
             <b-input v-model="betaTest.iconImageUrl"
                      ref="betaTest.iconImageUrl"
@@ -254,6 +231,19 @@
           <section>
             <div class="level">
               <div class="level-left">
+                <b-field label="테스트 구성" horizontal custom-class="is-small">
+                  <b-field>
+                    <b-radio-button v-model="betaTest.type"
+                                    v-for="type in options.testTypes"
+                                    :key="type.key"
+                                    :native-value="type.key"
+                                    @input="setTestTemplateByTestType"
+                                    type="is-primary"
+                    size="is-small">
+                      {{type.text}}
+                    </b-radio-button>
+                  </b-field>
+                </b-field>
               </div>
               <div class="level-right">
                 <div class="level-item">
@@ -275,12 +265,20 @@
                     <div class="card-content">
                       <div class="media">
                         <div class="media-content">
-                          <b-button class="button"
-                                    style="position: absolute; right:20px"
-                                    type="is-danger"
-                                    size="is-small"
-                                    @click.stop="removeMissionCard(mission.order)"
-                                    outlined>삭제</b-button>
+                          <div  style="position: absolute; right:20px">
+                            <b-button v-if="type==='update'"
+                                      class="button"
+                                      type="is-info"
+                                      style="margin-right: 5px"
+                                      size="is-small"
+                                      @click.stop="showBetaTester(mission._id, mission.betaTestId)"
+                                      outlined>미션 완료자 관리</b-button>
+                            <b-button class="button"
+                                      type="is-danger"
+                                      size="is-small"
+                                      @click.stop="removeMissionCard(mission.order)"
+                                      outlined>삭제</b-button>
+                          </div>
                         </div>
                       </div>
                       <div class="content" style="margin-top: 40px">
@@ -307,6 +305,7 @@ import request from '../../common/utils/http';
 import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
+import Participants  from '../components/Participants';
 
 export default {
   name: 'TestRegister',
@@ -340,6 +339,11 @@ export default {
           {key:'normal', text:'일반설문형'},
           {key:'application+simple', text:'간단설문형 + 참가신청'},
           {key:'application+normal', text:'일반설문형 + 참가신청'},
+        ],
+        subjectTypes:[
+          {key:'game-test', text:'게임 테스트'},
+          {key:'fomes-test', text:'포메스 테스트'},
+          {key:'event', text:'이벤트'},
         ]
       },
       result: '',
@@ -371,12 +375,34 @@ export default {
       },
     };
   },
+  watch:{
+    'betaTest.subjectType' : {
+      handler(value){
+        if(value === 'game-test'){
+          if(!this.betaTest.plan){
+            this.$set(this.betaTest, 'plan', 'trial');
+          }
+        }
+      },
+      deep:true
+    },
+  },
   created() {
     if(this.$route.query.id){
       this.type='update';
       this.getBetaTest();
     }else{
       this.type='add';
+      const openDate = new Date();
+      openDate.setHours(9);
+      openDate.setMinutes(0);
+      openDate.setSeconds(0);
+      const closeDate = new Date();
+      closeDate.setHours(23);
+      closeDate.setMinutes(59);
+      closeDate.setSeconds(59);
+      this.betaTest.openDate = openDate;
+      this.betaTest.closeDate = closeDate;
     }
     this.setTestTemplateByTestType();
 
@@ -398,7 +424,9 @@ export default {
         this.betaTest.openDate = new Date(result.data.openDate);
         this.betaTest.closeDate = new Date(result.data.closeDate);
         this.isTargetToFomesMembers = this.betaTest.status === 'test';
-        this.isCustomizedProgressText = this.betaTest.progressText;
+        this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
+        console.log(result.data);
+        console.log(this.isCustomizedProgressText);
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
       });
@@ -411,6 +439,7 @@ export default {
           .then((result) => {
             this.result = result;
             this.$root.showSuccessToast('등록을 정상적으로 하였습니다.');
+            this.$router.push('/test/list');
           })
           .catch((err) => {
             this.$root.showErrorToast('등록에 실패하였습니다.',err);
@@ -442,9 +471,6 @@ export default {
       if (selected !== 'game-test') {
         delete this.betaTest.plan;
       }
-    },
-    setPlan(selected) {
-      this.betaTest.plan = selected;
     },
     addRewardCard() {
       const rewardListLength = this.betaTest.rewards.list.length;
@@ -514,7 +540,8 @@ export default {
         });
     },
     initializeProgressText(checked) {
-      if (checked) {
+      const isInit = this.betaTest.progressText ? false : true;
+      if (checked && isInit) {
         this.betaTest.progressText = {
           ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
           doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
@@ -598,8 +625,6 @@ export default {
             action: '',
             options: ['mandatory'],
           });
-
-        // eslint-disable-next-line no-fallthrough
         case 'short':
         case 'simple':
         case 'normal':
@@ -695,6 +720,20 @@ export default {
         }
       }
       return isValid;
+    },
+    showBetaTester(missionId, betaTestId){
+      this.$buefy.modal.open({
+        parent: this,
+        props: {
+          betaTestId:betaTestId,
+          missionId:missionId
+        },
+        component: Participants,
+        hasModalCard: true,
+        trapFocus: true,
+        canCancel: false,
+        events: {
+        }})
     }
   },
 };
