@@ -638,7 +638,7 @@ export default {
             packageName: '',
             actionType: '',
             action: '',
-            options: [],
+            options: ['repeatable'],
           });
           missions.push({
             order: missions.length + 1,
