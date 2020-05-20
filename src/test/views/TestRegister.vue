@@ -272,7 +272,7 @@
                                       style="margin-right: 5px"
                                       size="is-small"
                                       @click.stop="showBetaTester(mission._id, mission.betaTestId)"
-                                      outlined>미션 완료자 관리</b-button>
+                                      outlined>미션 이용자 관리</b-button>
                             <b-button class="button"
                                       type="is-danger"
                                       size="is-small"
@@ -652,6 +652,7 @@ export default {
             options: [
               'mandatory',
               'repeatable',
+              'recheckable'
             ],
           });
           break;
@@ -670,7 +671,8 @@ export default {
             parent: this,
             props: {
               item:item,
-              modalType: type
+              modalType: type,
+              packageName: this.packageName
             },
             component: Mission,
             hasModalCard: true,

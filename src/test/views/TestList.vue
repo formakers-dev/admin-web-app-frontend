@@ -31,6 +31,9 @@
       @select="showDetail"
       selectable>
       <template slot-scope="props">
+        <b-table-column field="_id" label="ID" width="60" searchable>
+          {{ props.row._id }}
+        </b-table-column>
         <b-table-column field="iconImageUrl" label="" width="60">
           <img :src="props.row.iconImageUrl" width="40"/>
         </b-table-column>

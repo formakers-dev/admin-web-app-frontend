@@ -132,6 +132,12 @@ export default {
       default(){
         return 'add'
       }
+    },
+    packageName:{
+      type: String,
+      default(){
+        return '';
+      }
     }
   },
   data() {
@@ -150,6 +156,7 @@ export default {
     this.setMissionType(this.mission.type || 'survey');
     this.actionType = this.mission.actionType.length > 0 ? this.mission.actionType : 'default';
     this.type = this.mission.type.length > 0 ? this.mission.type : 'survey';
+    this.mission.packageName = this.packageName;
   },
   methods: {
     setMissionType(selected) {
