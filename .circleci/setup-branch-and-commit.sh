@@ -18,7 +18,7 @@ git config --global user.name "AppBee Admin"
 ### [For only Vue.js] Heroku의 Express 환경 구성을 위한 Dummy 파일들
 cp .circleci/package.json dist/
 cp .circleci/server.js dist/
-cp static.json dist/
+cp .circleci/static.json dist/
 
 cp .gitignore .gitignore_original
 sed -i '/dist/d' .gitignore
