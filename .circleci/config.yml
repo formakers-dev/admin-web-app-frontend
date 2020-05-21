@@ -37,6 +37,8 @@ aliases:
     name: Deploy to Heroku
     command: |
       ls; ls dist
+      heroku buildpacks:add heroku/nodejs
+      heroku buildpacks:set https://github.com/hone/heroku-buildpack-static
       git push -v heroku `git subtree split --prefix=dist -b heroku-$HEROKU_APP-deploy`:master --force
       sleep 5
       heroku restart
@@ -46,6 +48,7 @@ aliases:
       only:
         - master
         - jo
+        - circleci
 
   - &filter-master-branch
     branches:
