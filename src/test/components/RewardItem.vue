@@ -29,8 +29,15 @@
             </div>
           </b-field>
           <b-field v-if="icon.key === 'manual'">
-            <img v-if="icon.key === 'manual' && icon.img" class="icon" :src="icon.img" style="margin-right: 10px">
-            <b-input ref="icon.img" v-model="icon.img" :readonly="icon.key !='manual'" expanded required></b-input>
+            <img v-if="icon.key === 'manual' && icon.img" class="icon" :src="icon.img" style="margin-right: 10px; filter: opacity(0.5) drop-shadow(0 0 0 black);">
+            <b-tooltip type="is-dark"
+                       label="PNG 파일의 경우 미리보기에서 색이 다르게 보여질 수 있습니다."
+                       position="is-top"
+                       multilined
+                       style="width: 100%;"
+            >
+              <b-input ref="icon.img" v-model="icon.img" :readonly="icon.key !='manual'" expanded required></b-input>
+            </b-tooltip>
           </b-field>
           <b-field>
             <template slot="label">
