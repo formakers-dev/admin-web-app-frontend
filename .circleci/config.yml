@@ -37,7 +37,6 @@ aliases:
     name: Deploy to Heroku
     command: |
       ls; ls dist
-      heroku buildpacks:set https://github.com/hone/heroku-buildpack-static
       git push heroku master
       sleep 5
       heroku restart
