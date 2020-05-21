@@ -164,9 +164,6 @@ jobs:
       - run: *setup-heroku
       - run: *setup-branch-and-commit
       - run: *deploy-to-heroku-test
-      - run:
-          name: Archive and Delivery to Slack
-          command: bash .circleci/delivery-to-slack.sh DEV dev-build $CIRCLE_BRANCH
       - persist_to_workspace: *delivery-dist
 
   dev-deploy:
