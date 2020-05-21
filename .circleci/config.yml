@@ -44,7 +44,7 @@ aliases:
   - &deploy-to-heroku
     name: Deploy to Heroku
     command: |
-      ls; ls dist
+      ls; ls dist; cat dist/index.html
       git push heroku master
       sleep 5
       heroku restart
