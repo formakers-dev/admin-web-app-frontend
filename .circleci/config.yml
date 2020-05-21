@@ -33,7 +33,7 @@ aliases:
     command: |
       bash .circleci/setup-branch-and-commit.sh heroku-$HEROKU_APP
 
-  - &deploy-to-heroku-force
+  - &deploy-to-heroku
     name: Deploy to Heroku
     command: |
       ls; ls dist
@@ -41,12 +41,10 @@ aliases:
       sleep 5
       heroku restart
 
-  - &deploy-to-heroku
+  - &deploy-to-heroku-test
     name: Deploy to Heroku
     command: |
       ls; ls dist; cat dist/index.html
-      git status
-      git log
       git push heroku master
       sleep 5
       heroku restart
@@ -56,7 +54,6 @@ aliases:
       only:
         - master
         - jo
-        - circleci
 
   - &filter-master-branch
     branches:
@@ -157,6 +154,21 @@ jobs:
           command: pwd; ls; ls dist
 
   # Deploy
+  test-deploy:
+    <<: *defaults
+    environment:
+      - HEROKU_APP: fomes-admin-frontend-test
+    steps:
+      - checkout
+      - attach_workspace: *attach-workspace
+      - run: *setup-heroku
+      - run: *setup-branch-and-commit
+      - run: *deploy-to-heroku-test
+      - run:
+          name: Archive and Delivery to Slack
+          command: bash .circleci/delivery-to-slack.sh DEV dev-build $CIRCLE_BRANCH
+      - persist_to_workspace: *delivery-dist
+
   dev-deploy:
     <<: *defaults
     environment:
@@ -214,6 +226,21 @@ workflows:
             - test
             - dev-build
           filters: *filter-dev-branch
+      - dev-build:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - circleci
+      - test-deploy:
+          requires:
+              - test
+              - dev-build
+          filters:
+            branches:
+              only:
+                - circleci
       - stg-build:
           requires:
             - test
