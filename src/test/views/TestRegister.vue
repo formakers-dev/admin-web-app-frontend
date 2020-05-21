@@ -457,7 +457,7 @@ export default {
           .then((result) => {
             this.result = result;
             this.$root.showSuccessToast('정상적으로 수정하였습니다.');
-            this.$router.push('/test/list');
+            this.$router.push({path:'/test/list', query:{page:this.$route.query.p}});
           })
           .catch((err) => {
             this.$root.showErrorToast('수정에 실패하였습니다.',err);
@@ -693,6 +693,9 @@ export default {
     validate(){
       let isValid = true;
       for (let ref in this.$refs) {
+        if(!this.$refs[ref]){
+          continue;
+        }
         if(ref === 'betaTest.tags'){
           isValid = this.$refs[ref].tags.length > 0
           if(!isValid){
