@@ -37,7 +37,7 @@ aliases:
     name: Deploy to Heroku
     command: |
       ls; ls dist
-      git push -v heroku `git subtree split --prefix=dist -b heroku-$HEROKU_APP-deploy`:master --force
+      git push heroku master
       sleep 5
       heroku restart
 
