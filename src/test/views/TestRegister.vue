@@ -207,6 +207,13 @@
             </div>
             <div class="level-right">
               <div class="level-item">
+                <b-select v-model="rewardType" size="is-small" style="margin-right: 5px">
+                  <option v-for="type in options.rewardTypes"
+                          :key="type.key"
+                          :value="type.key">
+                    {{type.value.title}}
+                  </option>
+                </b-select>
                 <b-button  type='is-info' @click="addRewardCard" size="is-small">리워드 추가</b-button>
               </div>
             </div>
@@ -220,6 +227,7 @@
                           ref="rewardItem"
                           :key="index"
                           :reward="reward"
+                          :reward-types="options.rewardTypes"
                           class="column is-one-third rewards"
                           @remove-reward-item="removeRewardCard"/>
             </draggable>
@@ -344,8 +352,16 @@ export default {
           {key:'game-test', text:'게임 테스트'},
           {key:'fomes-test', text:'포메스 테스트'},
           {key:'event', text:'이벤트'},
-        ]
+        ],
+        rewardTypes:[
+          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
+          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+        ],
       },
+      rewardType: 'best',
       result: '',
       isLoading: true,
       isTargetToFomesMembers: true,
@@ -474,14 +490,15 @@ export default {
     },
     addRewardCard() {
       const rewardListLength = this.betaTest.rewards.list.length;
-      this.betaTest.rewards.list.push({
-        order: rewardListLength > 0
-          ? Number(this.betaTest.rewards.list[rewardListLength - 1].order) + 1 : 1,
-        iconImageUrl: '',
-        title: '',
-        content: '',
-        price:0
+      let item = {};
+      this.options.rewardTypes.forEach((i)=>{
+        if(i.key === this.rewardType){
+          item = Object.assign({}, i.value);
+        }
       });
+      item.order = rewardListLength > 0
+        ? Number(this.betaTest.rewards.list[rewardListLength - 1].order) + 1 : 1;
+      this.betaTest.rewards.list.push(item);
     },
     removeRewardCard(order) {
       const item = this.betaTest.rewards.list.find(i => i.order === order);
@@ -558,10 +575,12 @@ export default {
         case 'short':
           rewardList.push({
             order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
-            title: '테스트 참여상',
-            content: '게임 인앱 아이템',
-            price:0
+            iconImageUrl: '',
+            title: '참가상',
+            content: '',
+            price:0,
+            count:0,
+            type:'participated'
           });
           break;
         case 'simple':

@@ -14,6 +14,16 @@
         </div>
         <div class="content" style="margin-top: 40px">
           <span class="order-wrapper">{{reward.order}}</span>
+          <b-field v-if="reward.type" label="수상 유형">
+            <b-select v-model="reward.type">
+              <option v-for="type in options.types"
+                      :key="type.key"
+                      :value="type.key"
+              >
+                {{ type.value.title }}
+              </option>
+            </b-select>
+          </b-field>
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 아이콘
@@ -57,6 +67,9 @@
             </template>
             <b-input ref="reward.price" v-model.number="reward.price" placeholder="보상 가격을 입력하세요." required/>
           </b-field>
+          <b-field label="인원">
+            <b-input ref="reward.price" v-model.number="reward.count" placeholder="인원 수를 입력하세요."/>
+          </b-field>
         </div>
       </div>
     </div>
@@ -66,18 +79,21 @@
 <script>
 export default {
   name: 'RewardItem',
-  props: ['reward'],
+  props: ['reward', 'rewardTypes'],
   data() {
     return {
       options:{
         icons: [
-          {key:'pencil', img:'https://i.imgur.com/btZZHRp.png'},
-          {key:'silver', img:'https://i.imgur.com/6RaZ7vI.png'},
           {key:'gold', img:'https://i.imgur.com/ybuI732.png'},
+          {key:'silver', img:'https://i.imgur.com/6RaZ7vI.png'},
+          {key:'pencil', img:'https://i.imgur.com/btZZHRp.png'},
           {key:'manual', img:'', text:'직접입력'}
         ],
+        types:[]
       },
-      icon:{}
+      icon:{},
+      type:{prev:'', current:''},
+
     };
   },
   watch:{
@@ -97,10 +113,13 @@ export default {
         this.initIcon();
       },
       deep: true
-    }
+    },
   },
   created() {
     this.initIcon();
+  },
+  mounted() {
+    this.options.types = this.rewardTypes;
   },
   methods: {
     initIcon(){
