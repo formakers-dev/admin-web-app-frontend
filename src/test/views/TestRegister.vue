@@ -261,7 +261,7 @@
                      :key="index"
                      @click="openMissionForm('modify', mission)"
                 >
-                  <div class="card">
+                  <div class="card" style="cursor: pointer">
                     <div class="card-content">
                       <div class="media">
                         <div class="media-content">
