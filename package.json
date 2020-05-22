@@ -18,6 +18,7 @@
     "buefy": "^0.8.10",
     "mdi": "^2.2.43",
     "moment": "^2.24.0",
+    "sortablejs": "^1.10.2",
     "vue": "^2.6.6",
     "vue-clipboard2": "^0.3.1",
     "vue-cookies": "^1.7.0",

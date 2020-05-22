@@ -171,19 +171,12 @@ export default {
         .then((res) => {
           this.getReservedNoti();
           this.checkedRows = [];
-          this.$buefy.toast.open({
-            message: `${checkedNotiIds.length} 개의 예약을 정상적으로 삭제하였습니다.`,
-            type: 'is-primary',
-          });
+          this.$root.showSuccessToast(`${checkedNotiIds.length} 개의 예약을 정상적으로 삭제하였습니다.`);
           console.log(res);
         })
         .catch((err) => {
           this.result = err;
-          this.$buefy.toast.open({
-            message: '삭제에 실패하였습니다.',
-            type: 'is-danger',
-          });
-          console.log(err.response);
+          this.$root.showErrorToast('삭제에 실패하였습니다.', err);
         });
     },
     openNotificationForm(value, type) {

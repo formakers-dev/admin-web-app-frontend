@@ -156,7 +156,7 @@ export default {
     drop(payload) {
       payload.event.target.closest('tr').classList.remove('is-selected');
       if (payload.row.status > 2) {
-        this.showErrorToast('종료된 배너와 순서를 변경할 수 없습니다.', '');
+        this.$root.showErrorToast('종료된 배너와 순서를 변경할 수 없습니다.', '');
         return;
       }
       if (this.draggingRow.status < 3) {
@@ -182,7 +182,7 @@ export default {
         this.postList = Object.assign([], posts);
         this.disabled = false;
       } else {
-        this.showErrorToast('종료된 배너의 경우 순서를 변경할 수 없습니다.', '');
+        this.$root.showErrorToast('종료된 배너의 경우 순서를 변경할 수 없습니다.', '');
       }
     },
     updateOrder() {
@@ -190,14 +190,14 @@ export default {
       request.put('/api/posts', this.postList)
         .then((res) => {
           if (res.status === 200) {
-            this.showSuccessToast('순서를 정상적으로 저장하였습니다.');
+            this.$root.showSuccessToast('순서를 정상적으로 저장하였습니다.');
           } else {
-            this.showErrorToast('순서를 저장하는데 실패하였습니다', res);
+            this.$root.showErrorToast('순서를 저장하는데 실패하였습니다', res);
           }
           this.isLoading = false;
         })
         .catch((err) => {
-          this.showErrorToast('순서를 저장하는데 실패하였습니다', err);
+          this.$root.showErrorToast('순서를 저장하는데 실패하였습니다', err);
           this.isLoading = false;
         });
     },
@@ -244,7 +244,7 @@ export default {
           this.checkedRows = [];
         })
         .catch((err) => {
-          this.showErrorToast('이벤트 배너 정보를 불러오는데 실패하였습니다.', err);
+          this.$root.showErrorToast('이벤트 배너 정보를 불러오는데 실패하였습니다.', err);
           this.isLoading = false;
           this.checkedRows = [];
         });
@@ -257,11 +257,11 @@ export default {
           .then((res) => {
             this.getAllPosts();
             this.checkedRows = [];
-            this.showSuccessToast(`${checkedIds.length} 개의 배너를 정상적으로 삭제하였습니다.`);
+            this.$root.showSuccessToast(`${checkedIds.length} 개의 배너를 정상적으로 삭제하였습니다.`);
             this.isLoading = false;
           })
           .catch((err) => {
-            this.showErrorToast('삭제에 실패하였습니다', err);
+            this.$root.showErrorToast('삭제에 실패하였습니다', err);
             this.isLoading = false;
           });
       }
@@ -290,20 +290,7 @@ export default {
     },
     showDetail(row) {
       this.openForm(row, 'modify');
-    },
-    showSuccessToast(message) {
-      this.$buefy.toast.open({
-        message,
-        type: 'is-primary',
-      });
-    },
-    showErrorToast(message, err) {
-      this.$buefy.toast.open({
-        message,
-        type: 'is-danger',
-      });
-      console.log(err.response);
-    },
+    }
   },
 };
 </script>

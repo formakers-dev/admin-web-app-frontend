@@ -326,7 +326,7 @@ export default {
         })
         .catch(error => {
           this.isLoading = false;
-          this.showErrorToast('회원 조회에 실패하였습니다.', error);
+          this.$root.showErrorToast('회원 조회에 실패하였습니다.', error);
         });
     },
     getUsers(){
@@ -344,7 +344,7 @@ export default {
         });
         if(keywords.length === 0){
           const text = this.getSearchTypeText(this.search.multiple.type);
-          this.showErrorToast(text + '을 1개이상 입력해주세요.', '');
+          this.$root.showErrorToast(text + '을 1개이상 입력해주세요.', '');
           this.isLoading = false;
           return;
         }
@@ -367,10 +367,10 @@ export default {
           })
           .catch(error => {
             this.isLoading = false;
-            this.showErrorToast('회원 조회에 실패하였습니다.', error);
+            this.$root.showErrorToast('회원 조회에 실패하였습니다.', error);
           });
       }else{
-        this.showErrorToast('이메일을 1개이상 입력해주세요.', '');
+        this.$root.showErrorToast('이메일을 1개이상 입력해주세요.', '');
       }
     },
     getUser(){
@@ -385,24 +385,11 @@ export default {
         this.result.getUser = res.data;
         console.log(res);
         if( this.result.getUser.length === 0){
-          this.showSuccessToast('사용자가 존재하지 않습니다.');
+          this.$root.showSuccessToast('사용자가 존재하지 않습니다.');
         }
       }).catch(error => {
-        this.showErrorToast('회원 조회에 실패하였습니다.', error);
+        this.$root.showErrorToast('회원 조회에 실패하였습니다.', error);
       });
-    },
-    showSuccessToast(message) {
-      this.$buefy.toast.open({
-        message: message,
-        type: 'is-success',
-      });
-    },
-    showErrorToast(message, error) {
-      this.$buefy.toast.open({
-        message: message,
-        type: 'is-danger',
-      });
-      console.log(error);
     },
     showExcelDownloadModal(type){
       const users = type === 'all' ? this.result.getUsers : this.checkedResult.byMultiple

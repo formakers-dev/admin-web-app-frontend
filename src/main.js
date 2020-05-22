@@ -47,7 +47,7 @@ const app = new Vue({
       const secure = true;
       const sameSite = 'none';
       this.$cookies.set('access_token', token, expires, null, null, secure, sameSite);
-      // this.$cookies.set('access_token', token, expires);
+      this.$cookies.set('access_token', token, expires);
     },
     removeCookie(){
       this.$cookies.remove('access_token');
@@ -65,6 +65,12 @@ const app = new Vue({
         });
       });
     },
+    showToast(type, message){
+      this.$buefy.toast.open({
+        message: message,
+        type: type,
+      });
+    },
     showSuccessToast(message){
       this.$buefy.toast.open({
         message: message,
@@ -76,7 +82,7 @@ const app = new Vue({
         message: message,
         type: 'is-danger',
       });
-      console.log(error);
+      console.log(error.response);
     },
   }
 });
