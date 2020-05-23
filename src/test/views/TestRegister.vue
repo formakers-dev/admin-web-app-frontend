@@ -8,7 +8,7 @@
       <div class="level-right">
         <div class="level-item">
             <b-button v-if="type==='add'" type='is-primary' @click="registerBetaTest" size="is-medium">테스트 등록</b-button>
-            <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest" size="is-medium">테스트 수정</b-button>
+            <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest" size="is-medium" :disabled="activeStep===4">테스트 수정</b-button>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
             <b-button
               outlined
               icon-right="arrow-right"
-              :disabled="activeStep===3"
+              :disabled="type==='update' ? activeStep===4 : activeStep===3"
               @click.prevent="++activeStep">
               Next
             </b-button>
@@ -304,6 +304,11 @@
           </section>
         </div>
       </b-step-item>
+      <b-step-item step="5" :visible="type==='update'" label="에필로그" clickable>
+        <div class="box">
+          <Epilogue :betaTestId="betaTest._id" :data="betaTest.epilogue"></Epilogue>
+        </div>
+      </b-step-item>
     </b-steps>
   </div>
 </template>
@@ -314,12 +319,14 @@ import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
 import Participants  from '../components/Participants';
+import Epilogue from '../components/Epilogue';
 
 export default {
   name: 'TestRegister',
   components: {
     RewardItem,
     Draggable,
+    Epilogue
   },
   props:{
     step:{
@@ -442,7 +449,6 @@ export default {
         this.isTargetToFomesMembers = this.betaTest.status === 'test';
         this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
         console.log(result.data);
-        console.log(this.isCustomizedProgressText);
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
       });
@@ -468,6 +474,9 @@ export default {
       if(this.validate()){
         this.prepareDataToRegister();
         const body = this.betaTest;
+        if(body.epilogue){
+          delete body.epilogue;
+        }
         console.log(body);
         request.put('/api/beta-test/'+body._id, body)
           .then((result) => {
