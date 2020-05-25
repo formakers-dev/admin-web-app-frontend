@@ -2,16 +2,6 @@
   <div>
     <h1 v-if="type==='add'" class="title">🎮 게임 테스트 등록하기 🎮</h1>
     <h1 v-if="type==='update'" class="title">🎮 게임 테스트 수정하기 🎮</h1>
-    <div class="level">
-      <div class="level-left">
-      </div>
-      <div class="level-right">
-        <div class="level-item">
-            <b-button v-if="type==='add'" type='is-primary' @click="registerBetaTest" size="is-medium">테스트 등록</b-button>
-            <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest" size="is-medium" :disabled="activeStep===4">테스트 수정</b-button>
-        </div>
-      </div>
-    </div>
     <b-steps
       v-model="activeStep"
       size="is-small"
@@ -19,7 +9,8 @@
       :animated="false"
     >
       <div class="level">
-        <div class="level-left"></div>
+        <div class="level-left">
+        </div>
         <div class="level-right">
           <div class="level-item">
             <b-button
@@ -34,10 +25,14 @@
             <b-button
               outlined
               icon-right="arrow-right"
-              :disabled="type==='update' ? activeStep===4 : activeStep===3"
+              :disabled="type==='update' ? activeStep===5 : activeStep===3"
               @click.prevent="++activeStep">
               Next
             </b-button>
+          </div>
+          <div class="level-item">
+            <b-button v-if="type==='add'" type='is-primary' @click="registerBetaTest" size="is-medium">테스트 등록</b-button>
+            <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest">테스트 수정</b-button>
           </div>
         </div>
       </div>
@@ -309,6 +304,11 @@
           <Epilogue :betaTestId="betaTest._id" :data="betaTest.epilogue"></Epilogue>
         </div>
       </b-step-item>
+      <b-step-item step="6" :visible="type==='update'" label="수상자" clickable>
+        <div class="box">
+          <AwardRecords :beta-test-id="betaTest._id" :betaTestTitle="betaTest.title" :reward-types="options.rewardTypes" :reward-list="betaTest.rewards.list"></AwardRecords>
+        </div>
+      </b-step-item>
     </b-steps>
   </div>
 </template>
@@ -320,10 +320,12 @@ import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
 import Participants  from '../components/Participants';
 import Epilogue from '../components/Epilogue';
+import AwardRecords from '../components/AwardRecords';
 
 export default {
   name: 'TestRegister',
   components: {
+    AwardRecords,
     RewardItem,
     Draggable,
     Epilogue
