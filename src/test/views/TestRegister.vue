@@ -25,7 +25,7 @@
             <b-button
               outlined
               icon-right="arrow-right"
-              :disabled="type==='update' ? activeStep===5 : activeStep===3"
+              :disabled="activeStep === 4"
               @click.prevent="++activeStep">
               Next
             </b-button>
@@ -299,16 +299,6 @@
           </section>
         </div>
       </b-step-item>
-      <b-step-item step="5" :visible="type==='update'" label="에필로그" clickable>
-        <div class="box">
-          <Epilogue :betaTestId="betaTest._id" :data="betaTest.epilogue"></Epilogue>
-        </div>
-      </b-step-item>
-      <b-step-item step="6" :visible="type==='update'" label="수상자" clickable>
-        <div class="box">
-          <AwardRecords :beta-test-id="betaTest._id" :betaTestTitle="betaTest.title" :reward-types="options.rewardTypes" :reward-list="betaTest.rewards.list"></AwardRecords>
-        </div>
-      </b-step-item>
     </b-steps>
   </div>
 </template>
@@ -319,16 +309,12 @@ import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
 import Participants  from '../components/Participants';
-import Epilogue from '../components/Epilogue';
-import AwardRecords from '../components/AwardRecords';
 
 export default {
   name: 'TestRegister',
   components: {
-    AwardRecords,
     RewardItem,
     Draggable,
-    Epilogue
   },
   props:{
     step:{
@@ -361,13 +347,6 @@ export default {
           {key:'game-test', text:'게임 테스트'},
           {key:'fomes-test', text:'포메스 테스트'},
           {key:'event', text:'이벤트'},
-        ],
-        rewardTypes:[
-          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
-          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
         ],
       },
       rewardType: 'best',
@@ -476,9 +455,6 @@ export default {
       if(this.validate()){
         this.prepareDataToRegister();
         const body = this.betaTest;
-        if(body.epilogue){
-          delete body.epilogue;
-        }
         console.log(body);
         request.put('/api/beta-test/'+body._id, body)
           .then((result) => {

@@ -407,12 +407,16 @@ export default {
     checkNotMatchedUser(type, req, res){
       const diff = req.length - res.length;
       for(let i = 0; i < req.length && this.notMatchedUsers.length < diff; i++){
-            for(let j =0; j< res.length; j++){
-              let value = res[j];
-              if(req[i] != value[type]){
-                this.notMatchedUsers.push(req[i]);
-                break;
-              }
+        if(res.length === 0){
+          this.notMatchedUsers.push(req[i]);
+        }else{
+          for(let j =0; j< res.length; j++){
+            let value = res[j];
+            if(req[i] != value[type]){
+              this.notMatchedUsers.push(req[i]);
+              break;
+            }
+          }
         }
       }
     }

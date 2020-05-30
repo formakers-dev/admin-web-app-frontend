@@ -1,5 +1,6 @@
 <template>
   <section>
+    <h1 class="title">🎉 {{betaTest.title}} 수상자 관리 🎉</h1>
     <section>
       <b-field grouped>
         <b-field label="User ID 타입">
@@ -48,6 +49,10 @@
           </p>
         </b-field>
       </b-field>
+      <b-message v-if="notMatchedMessage" type="is-danger">
+        총 {{requestUsersCount}}명의 사용자 중 {{requestUsersCount - responseUsersCount}} 명의 사용자 정보조회를 실패하였습니다.
+        <br>{{notMatchedUsers.join(' , ')}}
+      </b-message>
       <div class="level" style="margin-bottom: 10px;">
         <div class="level-left">
           <div class="level-item">
@@ -125,10 +130,9 @@
   import request from '../../common/utils/http';
   import XLSX from 'xlsx';
   import moment from 'moment';
-  import AwardRecordDetailForm from './AwardRecordDetailForm';
+  import AwardRecordDetailForm from '../components/AwardRecordDetailForm';
 export default {
   name: 'AwardRecords',
-  props:['betaTestTitle','betaTestId','data','rewardTypes','rewardList'],
   data() {
     return {
       type:'add',
@@ -143,35 +147,34 @@ export default {
           price:null
         }
       },
+      betaTest:{},
       testTitle:'',
       rewardType:'best',
       values:'',
       isLoading:false,
       checkedRows:[],
+      rewardList:[],
+      requestUsersCount:0,
+      responseUsersCount:0,
+      notMatchedMessage:false,
+      notMatchedUsers:[],
       options:{
         userKeys:[
           {text:'이메일', value:'email'},
           {text:'닉네임', value:'nickName'},
           {text:'유저 아이디', value:'userId'}
         ],
-        rewardTypes:[],
+        rewardTypes:[
+          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
+          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+        ],
       }
     };
   },
   watch:{
-    'betaTestId':{
-      handler(value){
-        this.getAwardRecords(value);
-        this.requestData.betaTestId = value;
-      },
-      deep:true
-    },
-    'data':{
-      handler(value){
-        this.type = 'update'
-      },
-      deep:true
-    },
     'rewardList':{
       handler(value){
         this.rewardType = value[0].type ? value[0].type : 'best';
@@ -191,21 +194,20 @@ export default {
       },
       deep:true
     },
-    'betaTestTitle':{
-      handler(value){
-        this.testTitle = value;
-      },
-      deep:true
-    }
+  },
+  created() {
+    this.betaTestId = this.$route.query.betaTestId;
+    this.getAwardRecords();
   },
   mounted() {
-    this.options.rewardTypes = this.rewardTypes;
   },
   methods: {
-    getAwardRecords(betaTestId){
+    getAwardRecords(){
       this.isLoading = true;
-      request.get('/api/award-records?betaTestId='+betaTestId).then((res)=>{
-        this.awardRecords = res.data;
+      request.get('/api/award-records?betaTestId='+this.betaTestId).then((res)=>{
+        this.awardRecords = res.data.awardRecords;
+        this.betaTest = res.data.betaTest;
+        this.rewardList = res.data.betaTest.rewards.list;
         this.isLoading = false;
       }).catch((err)=>{
         this.isLoading = false;
@@ -231,7 +233,7 @@ export default {
     },
     closeForm(refresh){
       if(refresh){
-        this.getAwardRecords(this.betaTestId);
+        this.getAwardRecords();
       }
     },
     register(){
@@ -260,9 +262,15 @@ export default {
           price: this.requestData.reward.price
         }
       };
+      this.requestUsersCount = keywords.length;
       request.post('/api/award-records',body).then((res)=>{
+        this.responseUsersCount = res.data.length;
+        this.notMatchedMessage = (this.requestUsersCount-this.responseUsersCount) > 0;
+        if(this.notMatchedMessage){
+          this.checkNotMatchedUser(this.requestData.key, keywords, res.data);
+        }
         this.isLoading = false;
-        this.getAwardRecords(this.betaTestId);
+        this.getAwardRecords();
       }).catch(err=>{
         this.isLoading = false;
         this.$root.showErrorToast('수상 내역 등록에 실패하였습니다.', err);
@@ -275,7 +283,7 @@ export default {
       request.post('/api/award-records/delete', checkedIds).then((res)=>{
         this.checkedRows = [];
         this.isLoading = false;
-        this.getAwardRecords(this.betaTestId);
+        this.getAwardRecords();
       }).catch(err=>{
         this.isLoading = false;
         this.$root.showErrorToast('수상 내역 삭제에 실패하였습니다.', err);
@@ -299,6 +307,22 @@ export default {
       const date = moment(new Date()).format('YYYYMMDDHHmmss');
       const filename = this.testTitle + '-수상자 내역정보('+date+').xlsx';
       XLSX.writeFile(wb, filename);
+    },
+    checkNotMatchedUser(type, req, res){
+      const diff = req.length - res.length;
+      for(let i = 0; i < req.length && this.notMatchedUsers.length < diff; i++){
+        if(res.length === 0){
+          this.notMatchedUsers.push(req[i]);
+        }else{
+          for(let j =0; j< res.length; j++){
+            let value = res[j];
+            if(req[i] != value[type]){
+              this.notMatchedUsers.push(req[i]);
+              break;
+            }
+          }
+        }
+      }
     }
   },
 };
