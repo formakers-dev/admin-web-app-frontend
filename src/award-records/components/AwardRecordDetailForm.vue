@@ -1,14 +1,14 @@
 <template>
-  <div class="modal-card award-detail-container" style="width: auto">
+  <div class="modal-card award-record-detail-container" style="width: auto">
     <header class="modal-card-head">
       <p class="modal-card-title">수상자 정보 수정하기</p>
     </header>
     <div class="modal-card-body">
-      <section>
+      <section style="width: 100%">
         <div class="columns">
           <div class="column is-one-third">
             <b-field label="보상 유형">
-              <b-select v-model="rewardType">
+              <b-select v-model="rewardType" expanded>
                 <option v-for="option in options.rewardTypes" :key="option.key" :value="option.value.type">
                   {{ option.value.title }}
                 </option>
@@ -104,7 +104,4 @@
 </script>
 
 <style scoped>
-  .award-detail-container{
-
-  }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <div class="modal-card award-detail-container" style="width: auto">
+  <div class="modal-card" style="width: auto">
     <header class="modal-card-head">
-      <p v-if="type==='update'" class="modal-card-title">수상자 정보 수정하기</p>
-      <p v-if="type==='add'" class="modal-card-title">수상자 정보 등록하기</p>
+      <p v-if="type==='update'" class="modal-card-title">에필로그 정보 수정하기</p>
+      <p v-if="type==='add'" class="modal-card-title">에필로그 정보 등록하기</p>
     </header>
     <div class="modal-card-body">
       <section style="width: 100%">
