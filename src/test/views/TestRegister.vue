@@ -236,11 +236,11 @@
               <div class="level-left">
                 <b-field label="테스트 구성" horizontal custom-class="is-small">
                   <b-field>
-                    <b-radio-button v-model="betaTest.type"
+                    <b-radio-button v-model="testType"
                                     v-for="type in options.testTypes"
                                     :key="type.key"
                                     :native-value="type.key"
-                                    @input="setTestTemplateByTestType"
+                                    @input="setMissionsByTestType"
                                     type="is-primary"
                     size="is-small">
                       {{type.text}}
@@ -335,6 +335,13 @@ export default {
           {key:'simple', text:'Simple'},
           {key:'standard', text:'Standard'},
         ],
+        rewardTypes:[
+          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
+          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+        ],
         testTypes:[
           {key:'default', text:'자유선택'},
           {key:'short', text:'약식설문형'},
@@ -407,9 +414,8 @@ export default {
       closeDate.setSeconds(59);
       this.betaTest.openDate = openDate;
       this.betaTest.closeDate = closeDate;
+      this.setMissionsByTestType();
     }
-    this.setTestTemplateByTestType();
-
   },
   mounted() {
     this.activeStep = this.step > 0 ? this.step : this.activeStep;
@@ -555,67 +561,7 @@ export default {
         delete this.betaTest.progressText;
       }
     },
-    setTestTemplateByTestType() {
-      // Set rewards
-      const rewardList = [];
-      switch (this.testType) {
-        case 'short':
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: '',
-            title: '참가상',
-            content: '',
-            price:0,
-            count:0,
-            type:'participated'
-          });
-          break;
-        case 'simple':
-        case 'application+simple':
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/ybuI732.png',
-            title: '테스트 수석',
-            content: '문화상품권 5천원 (1명 선정)',
-            price:5000
-          });
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
-            title: '테스트 성실상',
-            content: '문화상품권 1천원 (20명 선정)',
-            price:1000
-          });
-          break;
-
-        case 'normal':
-        case 'application+normal':
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/ybuI732.png',
-            title: '테스트 수석',
-            content: '문화상품권 3만원 (1명 선정)',
-            price:30000
-          });
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/6RaZ7vI.png',
-            title: '테스트 차석',
-            content: '문화상품권 5천원 (5명 선정)',
-            price:5000
-          });
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
-            title: '테스트 성실상',
-            content: '문화상품권 1천원 (참여자 전원)',
-            price:1000
-          });
-          break;
-        default: // Do nothing
-      }
-      this.betaTest.rewards.list = rewardList;
-      // Set missions
+    setMissionsByTestType() {
       const missions = [];
       switch (this.testType) {
         case 'application+simple':
