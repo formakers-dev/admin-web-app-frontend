@@ -99,7 +99,7 @@
             {{ props.row.nickName }}
           </b-table-column>
           <b-table-column field="type" label="수상 유형">
-            {{ props.row.type }}
+            {{ convertedType(props.row.type) }}
           </b-table-column>
           <b-table-column field="reward.description" label="보상 설명">
             {{ props.row.reward.description }}
@@ -202,6 +202,13 @@ export default {
   mounted() {
   },
   methods: {
+    convertedType(type){
+      for(let i=0; i<this.options.rewardTypes.length; i++){
+        if(this.options.rewardTypes[i].key === type){
+          return this.options.rewardTypes[i].value.title;
+        }
+      }
+    },
     getAwardRecords(){
       this.isLoading = true;
       request.get('/api/award-records?betaTestId='+this.betaTestId).then((res)=>{
