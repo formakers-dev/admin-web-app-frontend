@@ -9,6 +9,20 @@
         <b-field horizontal>
           <template slot="label">
             <span class="has-text-danger">*</span> 딥링크
+
+            <b-tooltip type="is-dark"
+                       label="에필로그 클릭시에 수행될 액션입니다. Deeplink 포맷에 대한 자세한 내용은 클릭하여 도움말을 살펴보세요."
+                       position="is-right"
+                       multilined>
+              <b-button class="is-white"
+                        style="margin-left: -15px; background: transparent;"
+                        rounded
+                        tag="a"
+                        href="https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7"
+                        target="_blank">
+                <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+              </b-button>
+            </b-tooltip>
           </template>
           <b-input v-model="epilogue.deeplink"
                    ref="deeplink"
