@@ -90,7 +90,7 @@
                      placeholder="[게임명] 게임 테스트"
                      required></b-input>
           </b-field>
-          <b-field label="설명" horizontal>
+          <b-field label="게임 소개" horizontal>
             <b-input type="textarea" v-model="betaTest.description"></b-input>
           </b-field>
           <b-field horizontal>
@@ -106,7 +106,15 @@
             :required="betaTest.tags.length === 0">
             </b-taginput>
           </b-field>
-          <b-field label="목적" horizontal>
+          <b-field horizontal>
+            <template slot="label">
+              <span class="has-text-danger">*</span> 미션 요약 설명
+            </template>
+            <b-input v-model="betaTest.missionsSummary"
+                     placeholder="사전 신청  /  30분 플레이  /  설문 참여 (객20/주5)"
+                     required></b-input>
+          </b-field>
+          <b-field label="테스트 목적" horizontal>
             <b-input v-model="betaTest.purpose"></b-input>
           </b-field>
           <b-field label="버그리포트 설문 URL" horizontal>
@@ -379,6 +387,7 @@ export default {
           list: [],
         },
         missions: [],
+        missionsSummary: '',
         status: 'test',
         bugReport: {
           url: '',
