@@ -234,7 +234,7 @@
           <section>
             <div class="level">
               <div class="level-left">
-                <b-field label="테스트 구성" horizontal custom-class="is-small">
+                <b-field label="테스트 구성" horizontal custom-class="is-small" v-if="type==='add'">
                   <b-field>
                     <b-radio-button v-model="testType"
                                     v-for="type in options.testTypes"
