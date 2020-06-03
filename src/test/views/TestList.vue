@@ -121,7 +121,7 @@ export default {
       return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
     },
     showDetail(row){
-      this.$router.push({path:'/test/register', query:{id: row._id, p: String(this.currentPage)}});
+      this.$router.push({path:'/test/detail', query:{id: row._id, p: String(this.currentPage)}});
     },
     getOpeningStatus(open, close){
       const current = new Date().getTime();
