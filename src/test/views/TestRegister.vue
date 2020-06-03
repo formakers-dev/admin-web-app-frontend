@@ -2,16 +2,6 @@
   <div>
     <h1 v-if="type==='add'" class="title">🎮 게임 테스트 등록하기 🎮</h1>
     <h1 v-if="type==='update'" class="title">🎮 게임 테스트 수정하기 🎮</h1>
-    <div class="level">
-      <div class="level-left">
-      </div>
-      <div class="level-right">
-        <div class="level-item">
-            <b-button v-if="type==='add'" type='is-primary' @click="registerBetaTest" size="is-medium">테스트 등록</b-button>
-            <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest" size="is-medium">테스트 수정</b-button>
-        </div>
-      </div>
-    </div>
     <b-steps
       v-model="activeStep"
       size="is-small"
@@ -19,7 +9,8 @@
       :animated="false"
     >
       <div class="level">
-        <div class="level-left"></div>
+        <div class="level-left">
+        </div>
         <div class="level-right">
           <div class="level-item">
             <b-button
@@ -34,10 +25,14 @@
             <b-button
               outlined
               icon-right="arrow-right"
-              :disabled="activeStep===3"
+              :disabled="activeStep === 4"
               @click.prevent="++activeStep">
               Next
             </b-button>
+          </div>
+          <div class="level-item">
+            <b-button v-if="type==='add'" type='is-primary' @click="registerBetaTest" size="is-medium">테스트 등록</b-button>
+            <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest">테스트 수정</b-button>
           </div>
         </div>
       </div>
@@ -95,7 +90,7 @@
                      placeholder="[게임명] 게임 테스트"
                      required></b-input>
           </b-field>
-          <b-field label="설명" horizontal>
+          <b-field label="게임 소개" horizontal>
             <b-input type="textarea" v-model="betaTest.description"></b-input>
           </b-field>
           <b-field horizontal>
@@ -111,7 +106,15 @@
             :required="betaTest.tags.length === 0">
             </b-taginput>
           </b-field>
-          <b-field label="목적" horizontal>
+          <b-field horizontal>
+            <template slot="label">
+              <span class="has-text-danger">*</span> 미션 요약 설명
+            </template>
+            <b-input v-model="betaTest.missionsSummary"
+                     placeholder="사전 신청  /  30분 플레이  /  설문 참여 (객20/주5)"
+                     required></b-input>
+          </b-field>
+          <b-field label="테스트 목적" horizontal>
             <b-input v-model="betaTest.purpose"></b-input>
           </b-field>
           <b-field label="버그리포트 설문 URL" horizontal>
@@ -207,6 +210,13 @@
             </div>
             <div class="level-right">
               <div class="level-item">
+                <b-select v-model="rewardType" size="is-small" style="margin-right: 5px">
+                  <option v-for="type in options.rewardTypes"
+                          :key="type.key"
+                          :value="type.key">
+                    {{type.value.title}}
+                  </option>
+                </b-select>
                 <b-button  type='is-info' @click="addRewardCard" size="is-small">리워드 추가</b-button>
               </div>
             </div>
@@ -220,6 +230,7 @@
                           ref="rewardItem"
                           :key="index"
                           :reward="reward"
+                          :reward-types="options.rewardTypes"
                           class="column is-one-third rewards"
                           @remove-reward-item="removeRewardCard"/>
             </draggable>
@@ -231,13 +242,13 @@
           <section>
             <div class="level">
               <div class="level-left">
-                <b-field label="테스트 구성" horizontal custom-class="is-small">
+                <b-field label="테스트 구성" horizontal custom-class="is-small" v-if="type==='add'">
                   <b-field>
-                    <b-radio-button v-model="betaTest.type"
+                    <b-radio-button v-model="testType"
                                     v-for="type in options.testTypes"
                                     :key="type.key"
                                     :native-value="type.key"
-                                    @input="setTestTemplateByTestType"
+                                    @input="setMissionsByTestType"
                                     type="is-primary"
                     size="is-small">
                       {{type.text}}
@@ -332,6 +343,13 @@ export default {
           {key:'simple', text:'Simple'},
           {key:'standard', text:'Standard'},
         ],
+        rewardTypes:[
+          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
+          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+        ],
         testTypes:[
           {key:'default', text:'자유선택'},
           {key:'short', text:'약식설문형'},
@@ -344,8 +362,9 @@ export default {
           {key:'game-test', text:'게임 테스트'},
           {key:'fomes-test', text:'포메스 테스트'},
           {key:'event', text:'이벤트'},
-        ]
+        ],
       },
+      rewardType: 'best',
       result: '',
       isLoading: true,
       isTargetToFomesMembers: true,
@@ -368,6 +387,7 @@ export default {
           list: [],
         },
         missions: [],
+        missionsSummary: '',
         status: 'test',
         bugReport: {
           url: '',
@@ -403,9 +423,8 @@ export default {
       closeDate.setSeconds(59);
       this.betaTest.openDate = openDate;
       this.betaTest.closeDate = closeDate;
+      this.setMissionsByTestType();
     }
-    this.setTestTemplateByTestType();
-
   },
   mounted() {
     this.activeStep = this.step > 0 ? this.step : this.activeStep;
@@ -426,7 +445,6 @@ export default {
         this.isTargetToFomesMembers = this.betaTest.status === 'test';
         this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
         console.log(result.data);
-        console.log(this.isCustomizedProgressText);
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
       });
@@ -474,14 +492,15 @@ export default {
     },
     addRewardCard() {
       const rewardListLength = this.betaTest.rewards.list.length;
-      this.betaTest.rewards.list.push({
-        order: rewardListLength > 0
-          ? Number(this.betaTest.rewards.list[rewardListLength - 1].order) + 1 : 1,
-        iconImageUrl: '',
-        title: '',
-        content: '',
-        price:0
+      let item = {};
+      this.options.rewardTypes.forEach((i)=>{
+        if(i.key === this.rewardType){
+          item = Object.assign({}, i.value);
+        }
       });
+      item.order = rewardListLength > 0
+        ? Number(this.betaTest.rewards.list[rewardListLength - 1].order) + 1 : 1;
+      this.betaTest.rewards.list.push(item);
     },
     removeRewardCard(order) {
       const item = this.betaTest.rewards.list.find(i => i.order === order);
@@ -551,65 +570,7 @@ export default {
         delete this.betaTest.progressText;
       }
     },
-    setTestTemplateByTestType() {
-      // Set rewards
-      const rewardList = [];
-      switch (this.testType) {
-        case 'short':
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
-            title: '테스트 참여상',
-            content: '게임 인앱 아이템',
-            price:0
-          });
-          break;
-        case 'simple':
-        case 'application+simple':
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/ybuI732.png',
-            title: '테스트 수석',
-            content: '문화상품권 5천원 (1명 선정)',
-            price:5000
-          });
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
-            title: '테스트 성실상',
-            content: '문화상품권 1천원 (20명 선정)',
-            price:1000
-          });
-          break;
-
-        case 'normal':
-        case 'application+normal':
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/ybuI732.png',
-            title: '테스트 수석',
-            content: '문화상품권 3만원 (1명 선정)',
-            price:30000
-          });
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/6RaZ7vI.png',
-            title: '테스트 차석',
-            content: '문화상품권 5천원 (5명 선정)',
-            price:5000
-          });
-          rewardList.push({
-            order: rewardList.length + 1,
-            iconImageUrl: 'https://i.imgur.com/btZZHRp.png',
-            title: '테스트 성실상',
-            content: '문화상품권 1천원 (참여자 전원)',
-            price:1000
-          });
-          break;
-        default: // Do nothing
-      }
-      this.betaTest.rewards.list = rewardList;
-      // Set missions
+    setMissionsByTestType() {
       const missions = [];
       switch (this.testType) {
         case 'application+simple':

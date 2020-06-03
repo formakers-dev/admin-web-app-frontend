@@ -31,9 +31,6 @@
       @select="showDetail"
       selectable>
       <template slot-scope="props">
-<!--        <b-table-column field="_id" label="ID" width="60" searchable>-->
-<!--          {{ props.row._id }}-->
-<!--        </b-table-column>-->
         <b-table-column field="iconImageUrl" label="" width="60">
           <img :src="props.row.iconImageUrl" width="40"/>
         </b-table-column>
@@ -52,7 +49,11 @@
         <b-table-column field="closeDate" label="종료 날짜" sortable centered>
           {{ props.row.closeDateDisplay }}
         </b-table-column>
-        <b-table-column field="openingStatus" label="상태" centered sortable>
+        <b-table-column field="" label="관리" centered>
+          <b-button outlined type="is-info" size="is-small" style="margin-right: 10px" @click.stop="showEpilogue(props.row._id)">에필로그</b-button>
+          <b-button outlined type="is-success" size="is-small" @click.stop="goAwardRecords(props.row._id)">수상자</b-button>
+        </b-table-column>
+        <b-table-column field="openingStatus" label="상태" sortable>
           <strong v-if="props.row.isTestingMode" class="tag is-primary" style="margin-right:10px">테스트 모드</strong>
           <strong v-if="props.row.openingStatus === 1" class="tag is-danger">오픈</strong>
           <strong v-else-if="props.row.openingStatus === 2" class="tag is-warning">대기</strong>
@@ -66,7 +67,7 @@
 <script>
 import moment from 'moment';
 import request from '../../common/utils/http';
-
+import Epilogue from '../components/EpilogueForm';
 export default {
   name: 'TestList',
   data() {
@@ -136,6 +137,22 @@ export default {
     },
     convertedSubjectType(value){
       return this.subjectTypes[value] ? this.subjectTypes[value] : value;
+    },
+    showEpilogue(id){
+      this.$buefy.modal.open({
+        parent: this,
+        props: {
+          betaTestId: id,
+        },
+        component: Epilogue,
+        hasModalCard: true,
+        trapFocus: true,
+        canCancel: false,
+        events: {
+        }})
+    },
+    goAwardRecords(id){
+      this.$router.push({path:'/award-records', query:{betaTestId:id}});
     }
   },
 };

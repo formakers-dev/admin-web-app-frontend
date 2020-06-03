@@ -85,7 +85,7 @@
           </div>
         </div>
         <div class="columns">
-          <div class="column">
+          <div class="column is-one-quarter">
             <p><strong class="large">Wish List</strong><br>
               <b-taglist>
                 <b-tag type="is-primary"
@@ -93,6 +93,11 @@
                        :key="wish"
                 >{{wish}}</b-tag>
               </b-taglist>
+            </p>
+          </div>
+          <div class="column is-one-quarter">
+            <p><strong class="large">Award Records</strong><br>
+              <b-button type="is-primary" @click="showAwardRecords(result.userId)">수상내역 조회</b-button>
             </p>
           </div>
         </div>
@@ -104,7 +109,8 @@
 
 <script>
   import moment from 'moment';
-
+  import request from '../../common/utils/http';
+  import AwardRecords from './AwardRecords';
   export default {
     name: 'UserDetail.vue',
     props:{
@@ -158,6 +164,29 @@
         return '만 ' + age + "세(" + value + ")"
       }
     },
+    methods:{
+      showAwardRecords(id){
+        request.get('/api/award-records?userId='+id).then((res)=>{
+          if(res.data.awardRecords.length === 0){
+            this.$root.showToast('수상 내역이 존재하지 않습니다.', 'is-primary');
+          }else{
+            this.$buefy.modal.open({
+              parent: this,
+              props: {
+                awardRecords: res.data.awardRecords,
+              },
+              component: AwardRecords,
+              hasModalCard: true,
+              trapFocus: true,
+              canCancel: false,
+              events: {
+              }})
+          }
+        }).catch((err)=>{
+          this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
+        });
+      }
+    }
   };
 </script>
 
