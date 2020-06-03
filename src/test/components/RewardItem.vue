@@ -67,8 +67,15 @@
             </template>
             <b-input ref="reward.price" v-model.number="reward.price" placeholder="보상 가격을 입력하세요." required/>
           </b-field>
-          <b-field label="인원">
-            <b-input ref="reward.price" v-model.number="reward.count" placeholder="인원 수를 입력하세요."/>
+          <b-field>
+            <template slot="label">
+              <span class="has-text-danger">*</span> 인원
+              <b-switch size="is-small" v-model="isForEveryone">전체지급</b-switch>
+            </template>
+            <div>
+              <b-input v-show="!isForEveryone"
+                       ref="reward.price" v-model.number="reward.count" placeholder="인원 수를 입력하세요." required/>
+            </div>
           </b-field>
         </div>
       </div>
@@ -89,11 +96,11 @@ export default {
           {key:'pencil', img:'https://i.imgur.com/btZZHRp.png'},
           {key:'manual', img:'', text:'직접입력'}
         ],
-        types:[]
+        types:[],
       },
       icon:{},
       type:{prev:'', current:''},
-
+      isForEveryone: false,
     };
   },
   watch:{
@@ -114,6 +121,11 @@ export default {
       },
       deep: true
     },
+    isForEveryone(newValue) {
+      if (newValue) {
+        delete this.reward.count;
+      }
+    }
   },
   created() {
     this.initIcon();
