@@ -98,13 +98,13 @@
           <b-table-column field="nickName" label="닉네임" searchable>
             {{ props.row.nickName }}
           </b-table-column>
-          <b-table-column field="type" label="수상 유형">
-            {{ convertedType(props.row.type) }}
+          <b-table-column field="typeString" label="수상 유형" searchable>
+            {{ props.row.typeString }}
           </b-table-column>
-          <b-table-column field="reward.description" label="보상 설명">
+          <b-table-column field="reward.description" label="보상 설명" searchable>
             {{ props.row.reward.description }}
           </b-table-column>
-          <b-table-column field="reward.price" label="보상 금액">
+          <b-table-column field="reward.price" label="보상 금액" searchable>
             {{ props.row.reward.price ? props.row.reward.price : '-'}}
           </b-table-column>
         </template>
@@ -213,6 +213,10 @@ export default {
       this.isLoading = true;
       request.get('/api/award-records?betaTestId='+this.betaTestId).then((res)=>{
         this.awardRecords = res.data.awardRecords;
+        this.awardRecords = this.awardRecords.map(awardRecord => {
+          awardRecord.typeString = this.convertedType(awardRecord.type);
+          return awardRecord;
+        });
         this.betaTest = res.data.betaTest;
         this.rewardList = res.data.betaTest.rewards.list;
         this.isLoading = false;
