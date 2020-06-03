@@ -73,8 +73,8 @@
               <b-switch size="is-small" v-model="isForEveryone">전체지급</b-switch>
             </template>
             <div>
-              <b-input v-show="!isForEveryone"
-                       ref="reward.price" v-model.number="reward.count" placeholder="인원 수를 입력하세요." required/>
+              <b-input v-if="!isForEveryone" :required="!isForEveryone"
+                       ref="reward.price" v-model.number="reward.count" placeholder="인원 수를 입력하세요." />
             </div>
           </b-field>
         </div>
@@ -100,7 +100,7 @@ export default {
       },
       icon:{},
       type:{prev:'', current:''},
-      isForEveryone: false,
+      isForEveryone: !!!this.reward.count || this.reward.count < 0,
     };
   },
   watch:{
@@ -123,7 +123,9 @@ export default {
     },
     isForEveryone(newValue) {
       if (newValue) {
-        delete this.reward.count;
+        this.reward.count = -1;
+      } else {
+        this.reward.count = 1;
       }
     }
   },
