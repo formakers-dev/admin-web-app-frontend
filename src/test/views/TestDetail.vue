@@ -612,7 +612,7 @@ export default {
       return isValid;
     },
     goRegister(){
-      this.$router.push({path:'/test/register', query:this.$route.query});
+      this.$router.replace({path:'/test/register', query:this.$route.query});
     },
     showBetaTester(missionId, betaTestId){
       this.$buefy.modal.open({
