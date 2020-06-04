@@ -231,6 +231,7 @@
                           :key="index"
                           :reward="reward"
                           :reward-types="options.rewardTypes"
+                          :disabled="false"
                           class="column is-one-third rewards"
                           @remove-reward-item="removeRewardCard"/>
             </draggable>
@@ -475,7 +476,7 @@ export default {
           .then((result) => {
             this.result = result;
             this.$root.showSuccessToast('정상적으로 수정하였습니다.');
-            this.$router.push({path:'/test/list', query:{page:this.$route.query.p}});
+            this.$router.replace({path:'/test/detail', query:this.$route.query});
           })
           .catch((err) => {
             this.$root.showErrorToast('수정에 실패하였습니다.',err);

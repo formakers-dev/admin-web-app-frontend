@@ -1,7 +1,7 @@
 <template>
   <section class="modal-card" style="width: auto">
-    <header class="modal-card-head">
-      <p class="modal-card-title">미션 정보 {{modalType === 'modify'? "수정하기" : "등록하기"}}</p>
+    <header v-if="type != 'readonly'" class="modal-card-head">
+      <p class="modal-card-title">미션 정보 {{type === 'modify'? "수정하기" : "등록하기"}}</p>
       <p class="has-text-danger">필수 값 *</p>
     </header>
     <section class="modal-card-body">
@@ -11,8 +11,8 @@
             <template slot="label">
               <span class="has-text-danger">*</span> 타입
             </template>
-            <b-select v-model="type"
-                      v-on:input="setMissionType">
+            <b-select v-model="missionType"
+                      v-on:input="setMissionType" :disabled="disabled">
               <option
                 v-for="type in missionTypes"
                 :value="type"
@@ -26,7 +26,7 @@
               <span class="has-text-danger">*</span> 제목
             </template>
             <div>
-              <b-input ref='mission.title' v-model="mission.title" required></b-input>
+              <b-input ref='mission.title' v-model="mission.title" required :disabled="disabled"></b-input>
             </div>
           </b-field>
           <b-field>
@@ -34,12 +34,12 @@
               <span class="has-text-danger">*</span> 내용
             </template>
             <b-input ref='mission.description' type="textarea" v-model="mission.description"
-                     placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요." required></b-input>
+                     placeholder="[2048] 에 대한 구체적인 의견을 작성해주세요." required :disabled="disabled"></b-input>
           </b-field>
 
           <b-field label="내용 이미지">
             <b-input v-model="mission.descriptionImageUrl"
-                     placeholder="https://i.imgur.com/NBfLCwq.png"></b-input>
+                     placeholder="https://i.imgur.com/NBfLCwq.png" :disabled="disabled"></b-input>
           </b-field>
           <img v-if="mission.descriptionImageUrl"
                style="width: 500px" :src="mission.descriptionImageUrl"/>
@@ -49,10 +49,10 @@
             <template slot="label">
               <span class="has-text-danger">*</span> 가이드 문구
             </template>
-            <b-input ref='mission.guide'  type="textarea" v-model="mission.guide" required></b-input>
+            <b-input ref='mission.guide'  type="textarea" v-model="mission.guide" required :disabled="disabled"></b-input>
           </b-field>
 
-          <b-field v-if="type === 'play'">
+          <b-field v-if="missionType === 'play'">
             <template slot="label">
               <span class="has-text-danger">*</span> 플레이 할 게임의 패키지명
             </template>
@@ -61,7 +61,7 @@
               ref='mission.packageName'
               placeholder="com.formakers.fomes"
               @input="setPlayTypeAction"
-              required></b-input>
+              required :disabled="disabled"></b-input>
           </b-field>
 
           <b-field>
@@ -70,7 +70,7 @@
             </template>
             <b-select v-model="actionType"
                       @input="setMissionActionType"
-                      required>
+                      required :disabled="disabled">
               <option
                 v-for="type in missionActionTypes"
                 :value="type"
@@ -84,9 +84,9 @@
               <span class="has-text-danger">*</span> 액션
             </template>
             <div>
-              <b-checkbox v-if="type === 'play'"
+              <b-checkbox v-if="missionType === 'play'"
                           v-model="isGooglePlayUrl"
-                          @input="setPlayTypeAction()">
+                          @input="setPlayTypeAction()" :disabled="disabled">
                 구글플레이 기본 마켓 URL 사용하기
               </b-checkbox>
               <b-input
@@ -94,7 +94,8 @@
                 v-model="mission.action"
                 placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"
                 @input="setDeeplink"
-                required></b-input>
+                required
+              :disabled="disabled"></b-input>
             </div>
           </b-field>
           <b-field label="옵션">
@@ -103,16 +104,17 @@
               :data="missionOptions"
               autocomplete
               icon="label"
-              placeholder="미션 아이템의 옵션을 추가해주세요">
+              placeholder="미션 아이템의 옵션을 추가해주세요"
+              :disabled="disabled">
             </b-taginput>
           </b-field>
         </div>
       </div>
     </section>
-    <footer class="modal-card-foot">
+    <footer v-if="type != 'readonly'" class="modal-card-foot">
       <b-button @click="$emit('close', false)">닫기</b-button>
-      <b-button v-if="modalType==='modify'" type="is-primary" @click="update"><b>미션 수정</b></b-button>
-      <b-button v-if="modalType==='add'" type="is-primary" @click="create"><b>미션 등록</b></b-button>
+      <b-button v-if="type==='modify'" type="is-primary" @click="update"><b>미션 수정</b></b-button>
+      <b-button v-if="type==='add'" type="is-primary" @click="create"><b>미션 등록</b></b-button>
     </footer>
   </section>
 </template>
@@ -127,7 +129,7 @@ export default {
         return null;
       }
     },
-    modalType:{
+    type:{
       type: String,
       default(){
         return 'add'
@@ -145,18 +147,20 @@ export default {
       mission:{},
       isGooglePlayUrl: true,
       actionType: 'default',
-      type: 'survey',
+      missionType: 'survey',
       missionOptions: ['mandatory', 'repeatable', 'recheckable'],
       missionTypes: ['play', 'survey'],
       missionActionTypes: ['default', 'internal_web'],
+      disabled:false
     };
   },
   mounted() {
     this.mission = Object.assign({}, this.item);
     this.setMissionType(this.mission.type || 'survey');
     this.actionType = this.mission.actionType.length > 0 ? this.mission.actionType : 'default';
-    this.type = this.mission.type.length > 0 ? this.mission.type : 'survey';
+    this.missionType = this.mission.type.length > 0 ? this.mission.type : 'survey';
     this.mission.packageName = this.packageName;
+    this.disabled = this.type === 'readonly'
   },
   methods: {
     setMissionType(selected) {

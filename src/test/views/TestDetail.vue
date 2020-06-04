@@ -189,6 +189,7 @@
                       :key="index"
                       :reward="reward"
                       :reward-types="options.rewardTypes"
+                      :disabled="true"
                       class="column is-one-third rewards"
                       @remove-reward-item="removeRewardCard"/>
         </draggable>
@@ -197,46 +198,37 @@
     <div class="box">
       <h4 class="title is-4">리워드</h4>
       <section>
-        <draggable class="columns is-multiline"
-                   draggable=".mission"
-                   v-model="betaTest.missions"
-                   @change="changeOrder(betaTest.missions)">
-          <div class="column is-one-third mission"
-               v-for="(mission, index) in betaTest.missions"
-               :key="index"
-               @click="openMissionForm('modify', mission)"
-          >
-            <div class="card" style="cursor: pointer">
-              <div class="card-content">
-                <div class="media">
-                  <div class="media-content">
-                    <div  style="position: absolute; right:20px">
-                      <b-button v-if="type==='update'"
-                                class="button"
-                                type="is-info"
-                                style="margin-right: 5px"
-                                size="is-small"
-                                @click.stop="showBetaTester(mission._id, mission.betaTestId)"
-                                outlined>미션 이용자 관리</b-button>
-                      <b-button class="button"
-                                type="is-danger"
-                                size="is-small"
-                                @click.stop="removeMissionCard(mission.order)"
-                                outlined>삭제</b-button>
-                    </div>
+        <div class="column"
+             v-for="(mission, index) in betaTest.missions"
+             :key="index"
+        >
+          <div class="card" style="cursor: pointer">
+            <div class="card-content">
+              <div class="media">
+                <div class="media-content">
+                  <div  style="position: absolute; right:20px">
+                    <b-button v-if="type==='update'"
+                              class="button"
+                              type="is-info"
+                              style="margin-right: 5px"
+                              size="is-small"
+                              @click.stop="showBetaTester(mission._id, mission.betaTestId)"
+                              outlined>미션 이용자 관리</b-button>
+                    <b-button class="button"
+                              type="is-danger"
+                              size="is-small"
+                              @click.stop="removeMissionCard(mission.order)"
+                              outlined disabled>삭제</b-button>
                   </div>
                 </div>
-                <div class="content" style="margin-top: 40px">
-                  <span class="order-wrapper">{{mission.order}}</span>
-                  <p class="title is-5">{{mission.title ? mission.title : '제목을 입력해주세요.'}}
-                    <b-tag type="is-warning">{{mission.type}}</b-tag>
-                  </p>
-                  <p class="subtitle is-6" style="color:gray; margin-top:10px">{{mission.description ? mission.description : '내용을 입력해주세요.'}}</p>
-                </div>
+              </div>
+              <div class="content" style="margin-top: 40px">
+                <span class="order-wrapper">{{mission.order}}</span>
+                <Mission :item="mission" :type="'readonly'" :packageName="packageName"></Mission>
               </div>
             </div>
           </div>
-        </draggable>
+        </div>
       </section>
     </div>
   </div>
@@ -254,6 +246,7 @@ export default {
   components: {
     RewardItem,
     Draggable,
+    Mission
   },
   props:{
     step:{
