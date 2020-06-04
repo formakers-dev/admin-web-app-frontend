@@ -410,12 +410,16 @@ export default {
         if(res.length === 0){
           this.notMatchedUsers.push(req[i]);
         }else{
+          let isExisted = false;
           for(let j =0; j< res.length; j++){
             let value = res[j];
-            if(req[i] != value[type]){
-              this.notMatchedUsers.push(req[i]);
+            if(req[i] === value[type]){
+              isExisted = true;
               break;
             }
+          }
+          if(!isExisted){
+            this.notMatchedUsers.push(req[i]);
           }
         }
       }
