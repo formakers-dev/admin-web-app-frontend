@@ -134,21 +134,6 @@
     </div>
     <div class="box">
       <h4 class="title is-4">테스트 모드 설정</h4>
-      <b-field v-if="betaTest.subjectType === 'game-test'"
-               horizontal>
-        <template slot="label">
-          게임 패키지명
-        </template>
-        <b-input
-          v-model="packageName"
-          ref="packageName"
-          placeholder="com.formakers.fomes" disabled></b-input>
-      </b-field>
-      <b-field v-if="betaTest.subjectType === 'game-test'" label="앱 아이콘 가져오기" horizontal>
-        <b-button type="is-primary" @click="getApp(packageName)" disabled>
-          apps 정보에서 앱 아이콘 가져오기
-        </b-button>
-      </b-field>
       <b-field horizontal>
         <template slot="label">
           <span class="has-text-danger">*</span> 앱 아이콘
@@ -214,11 +199,6 @@
                               size="is-small"
                               @click.stop="showBetaTester(mission._id, mission.betaTestId)"
                               outlined>미션 이용자 관리</b-button>
-                    <b-button class="button"
-                              type="is-danger"
-                              size="is-small"
-                              @click.stop="removeMissionCard(mission.order)"
-                              outlined disabled>삭제</b-button>
                   </div>
                 </div>
               </div>
