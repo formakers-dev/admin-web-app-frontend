@@ -30,6 +30,16 @@
         </b-field>
         <b-field horizontal>
           <template slot="label">
+            <span class="has-text-danger">*</span> 게임사 이름
+          </template>
+          <b-input ref="companyName"
+                   v-model="epilogue.companyName"
+                   style="width: 100%"
+                   required
+          ></b-input>
+        </b-field>
+        <b-field horizontal>
+          <template slot="label">
             <span class="has-text-danger">*</span> 게임사 소감
           </template>
           <b-input type="textarea"
@@ -38,6 +48,20 @@
                    style="width: 100%"
                    required
           ></b-input>
+        </b-field>
+        <b-field horizontal>
+          <template slot="label">
+            게임사 아이콘
+            <b-tooltip type="is-dark" label="입력하지 않으면 포메스 기본 아이콘이 표시됩니다.">
+              <b-icon size="is-small" icon="help-circle-outline"></b-icon>
+            </b-tooltip>
+          </template>
+          <b-input v-model="epilogue.companyImageUrl"
+                   ref="companyImageUrl"
+                   placeholder="https://i.imgur.com/EgdSiW6.png"></b-input>
+        </b-field>
+        <b-field v-if="epilogue.companyImageUrl"  label="게임사 아이콘 Preview" horizontal>
+          <img v-if="epilogue.companyImageUrl" style="width: 150px" :src="epilogue.companyImageUrl"/>
         </b-field>
       </section>
     </div>
@@ -71,9 +95,10 @@ export default {
     return {
       type:'add',
       epilogue: {
-        companySays:'',
         deeplink:'',
-        betaTestId:''
+        companySays:'',
+        companyName:'',
+        companyImageUrl:'',
       }
     };
   },
@@ -86,12 +111,12 @@ export default {
   },
   methods: {
     getEpilogue(){
-      request.get('/api/epilogues?betaTestId='+ this.betaTestId).then((res)=>{
+      request.get('/api/beta-test/' + this.betaTestId + '/epilogue').then((res)=>{
         if(res.data){
+          console.log(res.data);
           this.type='update';
-          this.epilogue = Object.assign({}, res.data);
+          this.epilogue = res.data;
         }else{
-          this.epilogue.betaTestId = this.betaTestId;
           this.type='add';
         }
       }).catch(err=>{
@@ -103,11 +128,9 @@ export default {
         this.$root.showToast('is-danger', '필수 입력값을 확인해주세요.');
         return;
       }
-      const body = Object.assign({}, this.epilogue);
-      if(this.type === 'add'){
-        body.betaTestId = this.betaTestId;
-      }
-      request.post('/api/epilogues', body).then(res=>{
+      const body = this.epilogue;
+
+      request.post('/api/beta-test/' + this.betaTestId + '/epilogue', body).then(res=>{
         this.$root.showSuccessToast('에필로그를 정상적으로 저장하였습니다.');
         this.$parent.close();
       }).catch(err => {
@@ -115,7 +138,7 @@ export default {
       });
     },
     deleteEpilogue(){
-      request.delete('/api/epilogues/'+this.epilogue._id).then(res=>{
+      request.delete('/api/beta-test/' + this.betaTestId + '/epilogue').then(res=>{
         this.$root.showSuccessToast('에필로그를 정상적으로 삭제하였습니다.');
         this.$parent.close();
       }).catch((err)=>{
