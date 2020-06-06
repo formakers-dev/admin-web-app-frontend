@@ -25,7 +25,7 @@
             <b-button
               outlined
               icon-right="arrow-right"
-              :disabled="activeStep === 4"
+              :disabled="activeStep === 3"
               @click.prevent="++activeStep">
               Next
             </b-button>
