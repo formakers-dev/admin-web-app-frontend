@@ -29,7 +29,6 @@
   <b-table
     ref="reservedNotiTable"
     :data="reservedNotiList"
-    :loading="isLoading"
     :checked-rows.sync="checkedRows"
     :bordered="false"
     :hoverable="true"
@@ -78,7 +77,7 @@
     </template>
 
     <template slot="empty">
-      <section v-if="!isLoading" class="section">
+      <section v-if="!$root.isLoading" class="section">
         <div class="content has-text-grey has-text-centered">
           <p>
             <b-icon
@@ -104,7 +103,6 @@ export default {
   name: 'notification-management',
   data() {
     return {
-      isLoading: true,
       selected: null,
       reservedNotiList: [],
       channelList: [
@@ -152,7 +150,6 @@ export default {
             result.nextRunAt = moment(result.nextRunAt).format('YYYY-MM-DD (ddd) HH:mm:ss');
             return result;
           });
-          this.isLoading = false;
           this.checkedRows = [];
         })
         .catch((err) => {

@@ -10,19 +10,33 @@
             bg-color="#00bfba"
             :has-outline="false"
     ></go-top>
+    <div class="vld-parent">
+      <loading :active.sync="$root.isLoading"
+               :can-cancel="false"
+               :is-full-page="true"
+               color="#00BFBA"
+               :height="64"
+               :width="64"
+               :z-index="9999"
+               loader="dots"
+      ></loading>
+    </div>
   </section>
 </template>
 
 <script>
 import Headers from './common/components/Headers.vue';
 import GoTop from '@inotom/vue-go-top';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 const packageJson = require('../package.json');
 
 export default {
   components: {
     'header-nav': Headers,
-    'go-top': GoTop
+    'go-top': GoTop,
+    'loading': Loading
   },
   data() {
     return {

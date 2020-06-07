@@ -8,7 +8,15 @@ const instance = axios.create({
 });
 
 function create(axiosInstance) {
-  const interceptor = axiosInstance.interceptors.response.use(function(response){
+  const requestInterceptor = axiosInstance.interceptors.request.use(function(config){
+    app.isLoading = true;
+    return config;
+  }, function(error){
+    app.isLoading = false;
+    return Promise.reject(error);
+  });
+  const responseInterceptor = axiosInstance.interceptors.response.use(function(response){
+    app.isLoading = false;
     if(response.request.responseURL.indexOf('/api/auth/sign-up') > -1){
       return response;
     }

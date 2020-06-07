@@ -270,7 +270,6 @@ export default {
       },
       rewardType: 'best',
       result: '',
-      isLoading: true,
       isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
       packageName: '',

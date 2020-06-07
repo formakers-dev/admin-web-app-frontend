@@ -79,7 +79,6 @@
       <b-table
         ref="awardRecordsTable"
         :data="awardRecords"
-        :loading="isLoading"
         :bordered="false"
         :hoverable="true"
         :paginated="true"
@@ -109,7 +108,7 @@
           </b-table-column>
         </template>
         <template slot="empty">
-          <section v-if="!isLoading" class="section">
+          <section v-if="!$root.isLoading" class="section">
             <div class="content has-text-grey has-text-centered">
               <p>
                 <b-icon
@@ -151,7 +150,6 @@ export default {
       testTitle:'',
       rewardType:'best',
       values:'',
-      isLoading:false,
       checkedRows:[],
       rewardList:[],
       requestUsersCount:0,
@@ -210,7 +208,6 @@ export default {
       }
     },
     getAwardRecords(){
-      this.isLoading = true;
       request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
         this.awardRecords = res.data.awardRecords;
         this.awardRecords = this.awardRecords.map(awardRecord => {
@@ -219,9 +216,7 @@ export default {
         });
         this.betaTest = res.data.betaTest;
         this.rewardList = res.data.betaTest.rewards.list;
-        this.isLoading = false;
       }).catch((err)=>{
-        this.isLoading = false;
         this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
       });
     },
@@ -248,7 +243,6 @@ export default {
       }
     },
     register(){
-      this.isLoading = true;
       const splitedKeywords = this.values ? this.values.split(/[,\s\n]+/) : [];
       const keywords = [];
       splitedKeywords.forEach(value => {
@@ -260,7 +254,6 @@ export default {
       if(keywords.length === 0){
         const text = this.getSearchTypeText(this.requestData.type);
         this.$root.showErrorToast(text + '을 1개이상 입력해주세요.', '');
-        this.isLoading = false;
         return;
       }
       const body = {
@@ -280,23 +273,18 @@ export default {
         if(this.notMatchedMessage){
           this.checkNotMatchedUser(this.requestData.key, keywords, res.data);
         }
-        this.isLoading = false;
         this.getAwardRecords();
       }).catch(err=>{
-        this.isLoading = false;
         this.$root.showErrorToast('수상 내역 등록에 실패하였습니다.', err);
       });
 
     },
     remove(){
-      this.isLoading = true;
       const checkedIds = this.checkedRows.map(row => row._id);
       request.post('/api/award-records/delete', checkedIds).then((res)=>{
         this.checkedRows = [];
-        this.isLoading = false;
         this.getAwardRecords();
       }).catch(err=>{
-        this.isLoading = false;
         this.$root.showErrorToast('수상 내역 삭제에 실패하였습니다.', err);
       });
     },
