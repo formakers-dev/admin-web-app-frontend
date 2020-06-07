@@ -211,7 +211,7 @@ export default {
     },
     getAwardRecords(){
       this.isLoading = true;
-      request.get('/api/award-records?betaTestId='+this.betaTestId).then((res)=>{
+      request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
         this.awardRecords = res.data.awardRecords;
         this.awardRecords = this.awardRecords.map(awardRecord => {
           awardRecord.typeString = this.convertedType(awardRecord.type);

@@ -166,14 +166,14 @@
     },
     methods:{
       showAwardRecords(id){
-        request.get('/api/award-records?userId='+id).then((res)=>{
+        request.get('/api/award-records?userId='+id+"&path=user").then((res)=>{
           if(res.data.awardRecords.length === 0){
             this.$root.showToast('수상 내역이 존재하지 않습니다.', 'is-primary');
           }else{
             this.$buefy.modal.open({
               parent: this,
               props: {
-                awardRecords: res.data.awardRecords,
+                awardRecords: res.data.awardRecords
               },
               component: AwardRecords,
               hasModalCard: true,

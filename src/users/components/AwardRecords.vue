@@ -22,6 +22,9 @@
             <b-table-column field="nickName" label="닉네임">
               {{ props.row.nickName }}
             </b-table-column>
+            <b-table-column field="type" label="게임 타이틀">
+              {{ props.row.betaTest[0].title }}
+            </b-table-column>
             <b-table-column field="type" label="수상 유형">
               {{ convertedType(props.row.type) }}
             </b-table-column>
@@ -57,7 +60,7 @@ export default {
       default() {
         return [];
       }
-    },
+    }
   },
   data() {
     return {
@@ -77,6 +80,7 @@ export default {
   created() {
   },
   mounted() {
+    console.log(this.awardRecords)
   },
   methods: {
     convertedType(type){
