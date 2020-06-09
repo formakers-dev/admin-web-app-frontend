@@ -458,8 +458,6 @@ export default {
               break;
           }
         });
-
-        console.log("prepareDataToRegister for reward", this.betaTest);
       }
     },
     getBetaTest(){

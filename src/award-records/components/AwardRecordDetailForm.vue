@@ -9,7 +9,7 @@
           <div class="column is-one-third">
             <b-field label="보상 유형">
               <b-select v-model="rewardType" expanded>
-                <option v-for="option in options.rewardTypes" :key="option.key" :value="option.value.type">
+                <option v-for="option in options.rewardTypes" :key="option.key" :value="option.value.typeCode">
                   {{ option.value.title }}
                 </option>
               </b-select>
@@ -47,7 +47,7 @@
     watch:{
       'rewardList':{
         handler(value){
-          this.rewardType = value[0].type ? value[0].type : 'best';
+          this.rewardType = value[0].typeCode ? value[0].typeCode : 9000;
           this.options.rewardList = value;
         },
         deep:true
@@ -55,19 +55,20 @@
       'rewardType':{
         handler(value){
           this.rewardList.forEach((e)=>{
-            if(e.type === value){
+            if(e.typeCode === value){
               this.awardRecord.reward.description = e.content;
               this.awardRecord.reward.price = e.price;
             }
-          })
-          this.awardRecord.type = value;
+          });
+          this.awardRecord.typeCode = value;
+          this.awardRecord.type = this.getRewardType(value);
         },
         deep:true
       },
     },
     data() {
       return {
-        rewardType:'best',
+        rewardType:9000,
         awardRecord:{
           _id: '',
           nickName:'',
@@ -83,7 +84,7 @@
     },
     mounted() {
       this.awardRecord = Object.assign({}, this.value);
-      this.rewardType = this.awardRecord.type;
+      this.rewardType = this.awardRecord.typeCode;
     },
     methods: {
       validate() {
@@ -97,6 +98,21 @@
           }).catch(err=>{
             this.$root.showErrorToast('수상 내역 수정에 실패하였습니다.', err);
           })
+        }
+      },
+      //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
+      getRewardType(typeCode) {
+        switch (typeCode) {
+          case 9000 :
+            return "best";
+          case 7000 :
+            return "good";
+          case 5000 :
+            return "normal";
+          case 3000 :
+            return "participated";
+          case 1000 :
+            return "etc";
         }
       },
     },
