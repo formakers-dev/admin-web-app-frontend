@@ -14,8 +14,8 @@
         </div>
         <div class="content" style="margin-top: 40px">
           <span class="order-wrapper">{{reward.order}}</span>
-          <b-field v-if="reward.type" label="수상 유형">
-            <b-select v-model="reward.type" :disabled="disabled">
+          <b-field v-if="reward.typeCode" label="수상 유형">
+            <b-select v-model="reward.typeCode" :disabled="disabled">
               <option v-for="type in options.types"
                       :key="type.key"
                       :value="type.key"

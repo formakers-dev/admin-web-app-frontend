@@ -345,11 +345,11 @@ export default {
           {key:'standard', text:'Standard'},
         ],
         rewardTypes:[
-          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
-          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:''}},
+          {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:''}},
         ],
         testTypes:[
           {key:'default', text:'자유선택'},
@@ -365,7 +365,7 @@ export default {
           {key:'event', text:'이벤트'},
         ],
       },
-      rewardType: 'best',
+      rewardType: 9000,
       result: '',
       isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
@@ -435,6 +435,31 @@ export default {
         this.betaTest.status = 'test';
       } else {
         delete this.betaTest.status;
+      }
+
+      //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
+      if (this.betaTest.rewards.list) {
+        this.betaTest.rewards.list.forEach(reward => {
+          switch (reward.typeCode) {
+            case 9000 :
+              reward.type = "best";
+              break;
+            case 7000 :
+              reward.type = "good";
+              break;
+            case 5000 :
+              reward.type = "normal";
+              break;
+            case 3000 :
+              reward.type = "participated";
+              break;
+            case 1000 :
+              reward.type = "etc";
+              break;
+          }
+        });
+
+        console.log("prepareDataToRegister for reward", this.betaTest);
       }
     },
     getBetaTest(){
