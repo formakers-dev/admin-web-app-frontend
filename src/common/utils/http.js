@@ -30,6 +30,7 @@ function create(axiosInstance) {
     app.isLoggedIn = true;
     return response;
   }, function(error){
+    app.isLoading = false;
     if(error.response.status === 403){
       app.removeCookie('access_token');
       delete axiosInstance.defaults.headers.common['Authorization'];
