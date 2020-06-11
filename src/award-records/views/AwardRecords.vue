@@ -12,7 +12,7 @@
         </b-field>
         <b-field label="보상 유형">
           <b-select v-model="rewardType">
-            <option v-for="option in options.rewardTypes" :key="option.key" :value="option.value.type">
+            <option v-for="option in options.rewardTypes" :key="option.key" :value="option.value.typeCode">
               {{ option.value.title }}
             </option>
           </b-select>
@@ -79,7 +79,6 @@
       <b-table
         ref="awardRecordsTable"
         :data="awardRecords"
-        :loading="isLoading"
         :bordered="false"
         :hoverable="true"
         :paginated="true"
@@ -109,7 +108,7 @@
           </b-table-column>
         </template>
         <template slot="empty">
-          <section v-if="!isLoading" class="section">
+          <section v-if="!$root.isLoading" class="section">
             <div class="content has-text-grey has-text-centered">
               <p>
                 <b-icon
@@ -141,7 +140,7 @@ export default {
         key:'userId',
         betaTestId:null,
         users:[],
-        type:'best',
+        typeCode:9000,
         reward:{
           description:'',
           price:null
@@ -149,9 +148,8 @@ export default {
       },
       betaTest:{},
       testTitle:'',
-      rewardType:'best',
+      rewardType:0,
       values:'',
-      isLoading:false,
       checkedRows:[],
       rewardList:[],
       requestUsersCount:0,
@@ -165,11 +163,11 @@ export default {
           {text:'유저 아이디', value:'userId'}
         ],
         rewardTypes:[
-          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
-          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:''}},
+          {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:''}},
         ],
       }
     };
@@ -177,20 +175,20 @@ export default {
   watch:{
     'rewardList':{
       handler(value){
-        this.rewardType = value[0].type ? value[0].type : 'best';
         this.options.rewardList = value;
+        this.rewardType = value[0].typeCode ? value[0].typeCode : 9000;
       },
       deep:true
     },
     'rewardType':{
       handler(value){
         this.rewardList.forEach((e)=>{
-          if(e.type === value){
+          if(e.typeCode === value){
             this.requestData.reward.description = e.content;
             this.requestData.reward.price = e.price;
           }
-        })
-        this.requestData.type = value;
+        });
+        this.requestData.typeCode = value;
       },
       deep:true
     },
@@ -202,26 +200,23 @@ export default {
   mounted() {
   },
   methods: {
-    convertedType(type){
+    convertedType(typeCode){
       for(let i=0; i<this.options.rewardTypes.length; i++){
-        if(this.options.rewardTypes[i].key === type){
+        if(this.options.rewardTypes[i].key === typeCode){
           return this.options.rewardTypes[i].value.title;
         }
       }
     },
     getAwardRecords(){
-      this.isLoading = true;
-      request.get('/api/award-records?betaTestId='+this.betaTestId).then((res)=>{
+      request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
         this.awardRecords = res.data.awardRecords;
         this.awardRecords = this.awardRecords.map(awardRecord => {
-          awardRecord.typeString = this.convertedType(awardRecord.type);
+          awardRecord.typeString = this.convertedType(awardRecord.typeCode);
           return awardRecord;
         });
         this.betaTest = res.data.betaTest;
         this.rewardList = res.data.betaTest.rewards.list;
-        this.isLoading = false;
       }).catch((err)=>{
-        this.isLoading = false;
         this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
       });
     },
@@ -248,7 +243,6 @@ export default {
       }
     },
     register(){
-      this.isLoading = true;
       const splitedKeywords = this.values ? this.values.split(/[,\s\n]+/) : [];
       const keywords = [];
       splitedKeywords.forEach(value => {
@@ -260,13 +254,13 @@ export default {
       if(keywords.length === 0){
         const text = this.getSearchTypeText(this.requestData.type);
         this.$root.showErrorToast(text + '을 1개이상 입력해주세요.', '');
-        this.isLoading = false;
         return;
       }
       const body = {
         userKey: this.requestData.key,
         users: keywords,
-        type: this.requestData.type,
+        typeCode: this.requestData.typeCode,
+        type: this.getRewardType(this.requestData.typeCode),  //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
         betaTestId: this.betaTestId,
         reward:{
           description: this.requestData.reward.description,
@@ -280,23 +274,32 @@ export default {
         if(this.notMatchedMessage){
           this.checkNotMatchedUser(this.requestData.key, keywords, res.data);
         }
-        this.isLoading = false;
         this.getAwardRecords();
       }).catch(err=>{
-        this.isLoading = false;
         this.$root.showErrorToast('수상 내역 등록에 실패하였습니다.', err);
       });
-
+    },
+    //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
+    getRewardType(typeCode) {
+      switch (typeCode) {
+        case 9000 :
+          return "best";
+        case 7000 :
+          return "good";
+        case 5000 :
+          return "normal";
+        case 3000 :
+          return "participated";
+        case 1000 :
+          return "etc";
+      }
     },
     remove(){
-      this.isLoading = true;
       const checkedIds = this.checkedRows.map(row => row._id);
       request.post('/api/award-records/delete', checkedIds).then((res)=>{
         this.checkedRows = [];
-        this.isLoading = false;
         this.getAwardRecords();
       }).catch(err=>{
-        this.isLoading = false;
         this.$root.showErrorToast('수상 내역 삭제에 실패하였습니다.', err);
       });
     },
@@ -306,7 +309,7 @@ export default {
         data.push({
           userId: e.userId,
           nickName: e.nickName,
-          type: e.type,
+          type: this.convertedType(e.typeCode),
           description: e.reward.description,
           price: e.reward.price
         });
@@ -325,12 +328,16 @@ export default {
         if(res.length === 0){
           this.notMatchedUsers.push(req[i]);
         }else{
+          let isExisted = false;
           for(let j =0; j< res.length; j++){
             let value = res[j];
-            if(req[i] != value[type]){
-              this.notMatchedUsers.push(req[i]);
+            if(req[i] === value[type]){
+              isExisted = true;
               break;
             }
+          }
+          if(!isExisted){
+            this.notMatchedUsers.push(req[i]);
           }
         }
       }

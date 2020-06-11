@@ -89,7 +89,6 @@
             <b-table
               ref="usersTable"
               :data="result.getUsers"
-              :loading="isLoading"
               :bordered="false"
               :hoverable="true"
               :show-detail-icon="false"
@@ -125,7 +124,7 @@
               </template>
 
               <template slot="empty">
-                <section v-if="!isLoading" class="section">
+                <section v-if="!$root.isLoading" class="section">
                   <div class="content has-text-grey has-text-centered">
                     <p>
                       <b-icon
@@ -161,7 +160,6 @@
             <b-table
               ref="allUsersTable"
               :data="result.getAllUsers"
-              :loading="isLoading"
               :bordered="false"
               :hoverable="true"
               :paginated="true"
@@ -196,7 +194,7 @@
               </template>
 
               <template slot="empty">
-                <section v-if="!isLoading" class="section">
+                <section v-if="!$root.isLoading" class="section">
                   <div class="content has-text-grey has-text-centered">
                     <p>
                       <b-icon
@@ -259,7 +257,6 @@ export default {
       },
       activeTab:0,
       emails: '',
-      isLoading: false,
       requestUsersCount:0,
       responseUsersCount:0,
       showErrorMessage: false,
@@ -317,15 +314,12 @@ export default {
       return 'http://www.google.com/s2/favicons?domain=' + url;
     },
     getAllUsers(){
-      this.isLoading = true;
       request.get('/api/users')
         .then(res => {
           this.checkedResult.byAllUsers = [];
           this.result.getAllUsers = res.data;
-          this.isLoading = false;
         })
         .catch(error => {
-          this.isLoading = false;
           this.$root.showErrorToast('회원 조회에 실패하였습니다.', error);
         });
     },
@@ -333,7 +327,6 @@ export default {
       this.showErrorMessage = false;
       this.notMatchedUsers = [];
       if(this.validation('users')) {
-        this.isLoading = true;
         const splitedKeywords = this.search.multiple.keyword ? this.search.multiple.keyword.split(/[,\s\n]+/) : [];
         const keywords = [];
         splitedKeywords.forEach(value => {
@@ -345,7 +338,6 @@ export default {
         if(keywords.length === 0){
           const text = this.getSearchTypeText(this.search.multiple.type);
           this.$root.showErrorToast(text + '을 1개이상 입력해주세요.', '');
-          this.isLoading = false;
           return;
         }
         const body = {
@@ -357,7 +349,6 @@ export default {
           .then(res => {
             this.checkedResult.byMultiple = [];
             this.result.getUsers = res.data;
-            this.isLoading = false;
             this.responseUsersCount = this.result.getUsers.length;
             this.showErrorMessage = (this.requestUsersCount-this.responseUsersCount) > 0;
             if(this.showErrorMessage){
@@ -366,7 +357,6 @@ export default {
             }
           })
           .catch(error => {
-            this.isLoading = false;
             this.$root.showErrorToast('회원 조회에 실패하였습니다.', error);
           });
       }else{
@@ -410,12 +400,16 @@ export default {
         if(res.length === 0){
           this.notMatchedUsers.push(req[i]);
         }else{
+          let isExisted = false;
           for(let j =0; j< res.length; j++){
             let value = res[j];
-            if(req[i] != value[type]){
-              this.notMatchedUsers.push(req[i]);
+            if(req[i] === value[type]){
+              isExisted = true;
               break;
             }
+          }
+          if(!isExisted){
+            this.notMatchedUsers.push(req[i]);
           }
         }
       }

@@ -18,7 +18,6 @@
     <b-table
       ref="betaTestsTable"
       :data="allBetaTests"
-      :loading="isLoading"
       :bordered="false"
       :hoverable="true"
       :paginated="true"
@@ -75,7 +74,6 @@ export default {
       allBetaTests: [],
       openedBetaTests: [],
       closedBetaTests: [],
-      isLoading: true,
       result: null,
       selected: {},
       currentPage:1,
@@ -110,7 +108,6 @@ export default {
             result.isTestingMode = betaTest.status;
             return result;
           });
-          this.isLoading = false;
           this.currentPage = this.$route.query.page ? Number(this.$route.query.page) : 1;
         })
         .catch((err) => {
@@ -121,7 +118,7 @@ export default {
       return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
     },
     showDetail(row){
-      this.$router.push({path:'/test/register', query:{id: row._id, p: String(this.currentPage)}});
+      this.$router.push({path:'/test/detail', query:{id: row._id, p: String(this.currentPage)}});
     },
     getOpeningStatus(open, close){
       const current = new Date().getTime();

@@ -1,7 +1,7 @@
 <template>
   <section class="modal-card" style="width: auto">
     <header class="modal-card-head">
-      <p class="modal-card-title">미션 이용자 관리</p>
+      <p class="modal-card-title">미션 완료자 추가/관리</p>
     </header>
     <section class="modal-card-body">
       <div class="columns" style="width: 100%">
@@ -42,7 +42,6 @@
           </b-field>
           <b-table
             ref="participantsTable"
-            :loading="isLoading"
             :data="participants"
             :bordered="false"
             :hoverable="true"
@@ -73,7 +72,7 @@
               </div>
             </template>
             <template slot="empty">
-              <section v-if="!isLoading" class="section">
+              <section v-if="!$root.isLoading" class="section">
                 <div class="content has-text-grey has-text-centered">
                   <p>
                     <b-icon
@@ -116,7 +115,6 @@ export default {
   },
   data() {
     return {
-      isLoading:false,
       values:'',
       key:'userId',
       status:'attend',
@@ -142,7 +140,6 @@ export default {
   },
   methods: {
     getParticipants(){
-      this.isLoading = true;
       const params = {
         type: 'mission',
         betaTestId: this.betaTestId,
@@ -159,10 +156,8 @@ export default {
             this.counts.complete = this.counts.complete + 1;
           }
         });
-        this.isLoading = false;
       }).catch(err=>{
         this.$root.showErrorToast('미션 참여 사용자 조회에 실패하였습니다.', err);
-        this.isLoading = false;
       });
     },
     deleteInfo(id){
@@ -174,7 +169,6 @@ export default {
       });
     },
     register(){
-      this.isLoading = true;
       const splitedValues = this.values ? this.values.split(/[,\s\n]+/) : [];
       const ids = [];
       splitedValues.forEach(value => {
@@ -185,7 +179,6 @@ export default {
       });
       if(ids.length === 0){
         this.$root.showToast('is-danger', '사용자 정보를 1개이상 입력해주세요.');
-        this.isLoading = false;
         return;
       }
       const body = {
@@ -197,11 +190,9 @@ export default {
         type:'mission'
       };
       request.post('/api/participants', body).then(res=>{
-        this.isLoading = false;
         this.getParticipants()
       }).catch(err=>{
         this.$root.showErrorToast('미션 참여 사용자 등록에 실패하였습니다.', err);
-        this.isLoading = false;
       });
     },
     convertDateTime(date){

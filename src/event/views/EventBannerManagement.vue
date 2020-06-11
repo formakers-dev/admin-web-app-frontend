@@ -40,7 +40,6 @@
       <b-table
         ref="eventBannerTable"
         :data="postList"
-        :loading="isLoading"
         :checked-rows.sync="checkedRows"
         :bordered="false"
         :hoverable="true"
@@ -89,7 +88,7 @@
         </template>
 
         <template slot="empty">
-          <section v-if="!isLoading" class="section">
+          <section v-if="!$root.isLoading" class="section">
             <div class="content has-text-grey has-text-centered">
               <p>
                 <b-icon
@@ -120,7 +119,6 @@ export default {
       openedBannerCount: 0,
       standbyBannerCount: 0,
       postList: [],
-      isLoading: true,
       checkedRows: [],
       draggingRow: null,
       draggingRowIndex: null,
@@ -186,7 +184,6 @@ export default {
       }
     },
     updateOrder() {
-      this.isLoading = true;
       request.put('/api/posts', this.postList)
         .then((res) => {
           if (res.status === 200) {
@@ -194,11 +191,9 @@ export default {
           } else {
             this.$root.showErrorToast('순서를 저장하는데 실패하였습니다', res);
           }
-          this.isLoading = false;
         })
         .catch((err) => {
           this.$root.showErrorToast('순서를 저장하는데 실패하였습니다', err);
-          this.isLoading = false;
         });
     },
     getStatus(open, close) {
@@ -217,7 +212,6 @@ export default {
       return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
     },
     getAllPosts() {
-      this.isLoading = true;
       request.get('/api/posts')
         .then((res) => {
           console.log('response', res.data);
@@ -240,29 +234,24 @@ export default {
             }
           });
           this.postList = res.data;
-          this.isLoading = false;
           this.checkedRows = [];
         })
         .catch((err) => {
           this.$root.showErrorToast('이벤트 배너 정보를 불러오는데 실패하였습니다.', err);
-          this.isLoading = false;
           this.checkedRows = [];
         });
     },
     remove() {
       if (confirm('삭제하시겠습니까?')) {
         const checkedIds = this.checkedRows.map(row => row._id);
-        this.isLoading = true;
         request.post('/api/posts/delete', checkedIds)
           .then((res) => {
             this.getAllPosts();
             this.checkedRows = [];
             this.$root.showSuccessToast(`${checkedIds.length} 개의 배너를 정상적으로 삭제하였습니다.`);
-            this.isLoading = false;
           })
           .catch((err) => {
             this.$root.showErrorToast('삭제에 실패하였습니다', err);
-            this.isLoading = false;
           });
       }
     },

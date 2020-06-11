@@ -25,7 +25,7 @@
             <b-button
               outlined
               icon-right="arrow-right"
-              :disabled="activeStep === 4"
+              :disabled="activeStep === 3"
               @click.prevent="++activeStep">
               Next
             </b-button>
@@ -231,6 +231,7 @@
                           :key="index"
                           :reward="reward"
                           :reward-types="options.rewardTypes"
+                          :disabled="false"
                           class="column is-one-third rewards"
                           @remove-reward-item="removeRewardCard"/>
             </draggable>
@@ -283,7 +284,7 @@
                                       style="margin-right: 5px"
                                       size="is-small"
                                       @click.stop="showBetaTester(mission._id, mission.betaTestId)"
-                                      outlined>미션 이용자 관리</b-button>
+                                      outlined>미션 완료자 추가/삭제</b-button>
                             <b-button class="button"
                                       type="is-danger"
                                       size="is-small"
@@ -344,11 +345,11 @@ export default {
           {key:'standard', text:'Standard'},
         ],
         rewardTypes:[
-          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
-          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
+          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:''}},
+          {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:''}},
         ],
         testTypes:[
           {key:'default', text:'자유선택'},
@@ -364,9 +365,8 @@ export default {
           {key:'event', text:'이벤트'},
         ],
       },
-      rewardType: 'best',
+      rewardType: 9000,
       result: '',
-      isLoading: true,
       isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
       packageName: '',
@@ -436,6 +436,29 @@ export default {
       } else {
         delete this.betaTest.status;
       }
+
+      //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
+      if (this.betaTest.rewards.list) {
+        this.betaTest.rewards.list.forEach(reward => {
+          switch (reward.typeCode) {
+            case 9000 :
+              reward.type = "best";
+              break;
+            case 7000 :
+              reward.type = "good";
+              break;
+            case 5000 :
+              reward.type = "normal";
+              break;
+            case 3000 :
+              reward.type = "participated";
+              break;
+            case 1000 :
+              reward.type = "etc";
+              break;
+          }
+        });
+      }
     },
     getBetaTest(){
       request.get('/api/beta-test/'+this.$route.query.id).then((result)=>{
@@ -475,7 +498,7 @@ export default {
           .then((result) => {
             this.result = result;
             this.$root.showSuccessToast('정상적으로 수정하였습니다.');
-            this.$router.push({path:'/test/list', query:{page:this.$route.query.p}});
+            this.$router.replace({path:'/test/detail', query:this.$route.query});
           })
           .catch((err) => {
             this.$root.showErrorToast('수정에 실패하였습니다.',err);

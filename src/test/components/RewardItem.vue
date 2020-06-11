@@ -9,13 +9,13 @@
                       type="is-danger"
                       size="is-small"
                       @click="$emit('remove-reward-item', reward.order)"
-                      outlined><b>삭제</b></b-button>
+                      outlined :disabled="disabled"><b>삭제</b></b-button>
           </div>
         </div>
         <div class="content" style="margin-top: 40px">
           <span class="order-wrapper">{{reward.order}}</span>
-          <b-field v-if="reward.type" label="수상 유형">
-            <b-select v-model="reward.type">
+          <b-field v-if="reward.typeCode" label="수상 유형">
+            <b-select v-model="reward.typeCode" :disabled="disabled">
               <option v-for="type in options.types"
                       :key="type.key"
                       :value="type.key"
@@ -32,7 +32,7 @@
               <b-radio v-for="option in options.icons"
                        :key="option.key"
                        :native-value="option"
-                       v-model="icon">
+                       v-model="icon" :disabled="disabled">
                 <img v-if="option.key != 'manual'" class="icon" :src="option.img">
                 <p v-if="option.key === 'manual'">{{option.text}}</p>
               </b-radio>
@@ -46,37 +46,37 @@
                        multilined
                        style="width: 100%;"
             >
-              <b-input ref="icon.img" v-model="icon.img" :readonly="icon.key !='manual'" expanded required></b-input>
+              <b-input ref="icon.img" v-model="icon.img" :readonly="icon.key !='manual'" expanded required :disabled="disabled"></b-input>
             </b-tooltip>
           </b-field>
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 제목
             </template>
-            <b-input ref="reward.title" v-model="reward.title" placeholder="제목을 입력하세요." required/>
+            <b-input ref="reward.title" v-model="reward.title" placeholder="제목을 입력하세요." required :disabled="disabled"/>
           </b-field>
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 내용
             </template>
-            <b-input ref="reward.content" v-model="reward.content" placeholder="내용을 입력하세요." required/>
+            <b-input ref="reward.content" v-model="reward.content" placeholder="내용을 입력하세요." required :disabled="disabled"/>
           </b-field>
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 가격
             </template>
-            <b-input ref="reward.price" v-model.number="reward.price" placeholder="보상 가격을 입력하세요." required/>
+            <b-input ref="reward.price" v-model.number="reward.price" placeholder="보상 가격을 입력하세요." required :disabled="disabled"/>
           </b-field>
           <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 인원
-              <b-switch size="is-small" v-model="isForEveryone">전체지급</b-switch>
+              <b-switch size="is-small" v-model="isForEveryone" :disabled="disabled">전체지급</b-switch>
             </template>
             <div>
               <b-numberinput v-if="!isForEveryone" :required="!isForEveryone"
                              min="1"
                              ref="reward.count"
-                             v-model.number="reward.count" placeholder="인원 수를 입력하세요." />
+                             v-model.number="reward.count" placeholder="인원 수를 입력하세요." :disabled="disabled"/>
             </div>
           </b-field>
         </div>
@@ -88,7 +88,7 @@
 <script>
 export default {
   name: 'RewardItem',
-  props: ['reward', 'rewardTypes'],
+  props: ['reward', 'rewardTypes', 'disabled'],
   data() {
     return {
       options:{
