@@ -1,7 +1,7 @@
 <template>
   <section class="modal-card" style="width: auto">
     <header class="modal-card-head">
-      <p class="modal-card-title">미션 이용자 관리</p>
+      <p class="modal-card-title">미션 완료자 추가/관리</p>
     </header>
     <section class="modal-card-body">
       <div class="columns" style="width: 100%">
