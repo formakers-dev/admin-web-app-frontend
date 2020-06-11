@@ -12,9 +12,6 @@
       </b-navbar-item>
     </template>
     <template slot="start" v-if="$root.isLoggedIn">
-      <b-navbar-item tag="router-link" to="/test/register">
-        테스트 등록하기
-      </b-navbar-item>
       <b-navbar-item tag="router-link" to="/test/list">
         테스트 목록
       </b-navbar-item>
