@@ -614,28 +614,28 @@ export default {
           missions.push({
             order: missions.length + 1,
             type: 'install',
-            title: '게임 설치',
-            description: '[게임명] 게임을 설치하세요.',
+            title: '게임 설치 & 플레이',
+            description: '[게임명] 게임을 설치하고 플레이하세요.',
             descriptionImageUrl: '',
-            guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
-            packageName: '',
-            deeplink: '',
-            options: [
-              'mandatory'
-            ],
-          });
-          missions.push({
-            order: missions.length + 1,
-            type: 'play',
-            title: '게임 플레이',
-            description: '[게임명] 게임을 플레이해주세요.(30분 이상 권장)',
-            descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
             packageName: '',
             deeplink: '',
             options: [
               'mandatory',
               'repeatable'
+            ],
+          });
+          missions.push({
+            order: missions.length + 1,
+            type: 'play',
+            title: '게임 플레이 인증하기',
+            description: '[게임명] 게임을 플레이하고 인증해주세요.(30분 이상 플레이 권장)',
+            descriptionImageUrl: '',
+            guide: '',
+            packageName: '',
+            deeplink: '',
+            options: [
+              'mandatory'
             ],
           });
           missions.push({
