@@ -45,11 +45,8 @@
                style="width: 500px" :src="mission.descriptionImageUrl"/>
         </div>
         <div class="column">
-          <b-field>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 가이드 문구
-            </template>
-            <b-input ref='mission.guide'  type="textarea" v-model="mission.guide" required :disabled="disabled"></b-input>
+          <b-field label="가이드 문구">
+            <b-input ref='mission.guide'  type="textarea" v-model="mission.guide" :disabled="disabled"></b-input>
           </b-field>
 
           <b-field v-if="missionType === 'install' || missionType === 'play'">
@@ -60,28 +57,11 @@
               v-model="mission.packageName"
               ref='mission.packageName'
               placeholder="com.formakers.fomes"
-              @input="resetDeeplink"
+              @input="resetAction"
               required :disabled="disabled"></b-input>
           </b-field>
-          <b-field v-if="missionType === 'install' || missionType === 'play'">
-            <template slot="label">
-              <span class="has-text-danger">*</span> 딥링크
-            </template>
-            <div>
-              <b-checkbox v-model="isGooglePlayUrl"
-                          @input="resetDeeplink" :disabled="disabled">
-                구글플레이 기본 마켓 URL 사용하기
-              </b-checkbox>
-              <b-input
-                ref='mission.deeplink'
-                v-model="mission.deeplink"
-                placeholder="https://play.google.com/store/apps/details?id=com.formakers.fomes"
-                required
-                :disabled="disabled"></b-input>
-            </div>
-          </b-field>
 
-          <b-field v-if="missionType === 'survey'">
+          <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 액션 타입
             </template>
@@ -96,11 +76,17 @@
               </option>
             </b-select>
           </b-field>
-          <b-field v-if="missionType === 'survey'">
+          <b-field>
             <template slot="label">
               <span class="has-text-danger">*</span> 액션
             </template>
             <div>
+              <b-checkbox v-if="missionType === 'install'"
+                          v-model="isGooglePlayUrl"
+                          @input="resetAction" :disabled="disabled">
+                구글플레이 기본 마켓 URL 사용하기
+              </b-checkbox>
+
               <b-input
                 ref='mission.action'
                 v-model="mission.action"
@@ -170,7 +156,7 @@ export default {
     this.missionType = this.mission.type ? this.mission.type : 'survey';
     this.mission.packageName = this.mission.packageName ? this.mission.packageName : this.packageName;
     this.setMissionType(this.missionType);
-    this.actionType = this.mission.actionType ? this.mission.actionType : 'internal_web';
+    this.actionType = this.mission.actionType ? this.mission.actionType : 'default';
     this.disabled = this.type === 'readonly'
   },
   methods: {
@@ -179,10 +165,10 @@ export default {
       if (selected === 'survey') {
         this.mission.actionType = 'internal_web';
         delete this.mission.packageName;
-        delete this.mission.deeplink;
+      } else if (selected === 'play') {
+        this.mission.actionType = 'internal_web';
       } else {
-        delete this.mission.actionType;
-        delete this.mission.action;
+        this.mission.actionType = 'default';
       }
     },
     setMissionActionType(selected) {
@@ -192,11 +178,11 @@ export default {
         this.mission.actionType = selected;
       }
     },
-    resetDeeplink() {
+    resetAction() {
       if (this.isGooglePlayUrl) {
-        this.mission.deeplink = `https://play.google.com/store/apps/details?id=${this.mission.packageName}`;
+        this.mission.action = `https://play.google.com/store/apps/details?id=${this.mission.packageName}`;
       } else {
-        this.mission.deeplink = '';
+        this.mission.action = '';
       }
     },
     create(){

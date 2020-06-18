@@ -619,7 +619,8 @@ export default {
             descriptionImageUrl: '',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
             packageName: '',
-            deeplink: '',
+            actionType: 'default',
+            action: '',
             options: [
               'mandatory',
               'repeatable'
@@ -633,7 +634,8 @@ export default {
             descriptionImageUrl: '',
             guide: '',
             packageName: '',
-            deeplink: '',
+            actionType: 'internal_web',
+            action: '',
             options: [
               'mandatory'
             ],
