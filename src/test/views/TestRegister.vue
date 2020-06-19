@@ -539,14 +539,13 @@ export default {
       }
       const mission = {
         order: this.betaTest.missions.length+1,
-        type: 'play',
+        type: 'survey',
         title: '',
         description: '',
         descriptionImageUrl: '',
         guide: '',
-        actionType: 'default',
+        actionType: 'internal_web',
         action: '',
-        packageName:'',
         options: [],
       };
       this.openMissionForm('add', mission);
@@ -605,7 +604,7 @@ export default {
             description: '[게임명] 클로즈드 베타 테스터 참여 신청',
             descriptionImageUrl: 'https://i.imgur.com/F3EJAOs.png',
             guide: '• 참여 신청 후 설치권한 부여까지 약 1일이 소요됩니다.',
-            actionType: '',
+            actionType: 'internal_web',
             action: '',
             options: ['mandatory'],
           });
@@ -614,15 +613,32 @@ export default {
         case 'normal':
           missions.push({
             order: missions.length + 1,
-            type: 'play',
-            title: '게임 플레이',
-            description: '[게임명] 게임을 플레이해주세요.(30분 이상 권장)',
-            descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
+            type: 'install',
+            title: '게임 설치 & 플레이',
+            description: '[게임명] 게임을 설치하고 플레이하세요.',
+            descriptionImageUrl: 'https://i.imgur.com/7ElrcO4.png',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
             packageName: '',
-            actionType: '',
+            actionType: 'default',
             action: '',
-            options: ['repeatable'],
+            options: [
+              'mandatory',
+              'repeatable'
+            ],
+          });
+          missions.push({
+            order: missions.length + 1,
+            type: 'play',
+            title: '게임 플레이 인증하기',
+            description: '[게임명] 게임을 플레이하고 인증해주세요.(30분 이상 플레이 권장)',
+            descriptionImageUrl: 'https://i.imgur.com/GXpQhAj.png',
+            guide: '',
+            packageName: '',
+            actionType: 'internal_web',
+            action: '',
+            options: [
+              'mandatory'
+            ],
           });
           missions.push({
             order: missions.length + 1,
@@ -631,7 +647,7 @@ export default {
             description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
             descriptionImageUrl: 'https://i.imgur.com/XfqTB0K.png',
             guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
-            actionType: '',
+            actionType: 'internal_web',
             action: '',
             options: [
               'mandatory',
