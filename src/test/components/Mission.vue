@@ -81,19 +81,28 @@
               <span class="has-text-danger">*</span> 액션
             </template>
             <div>
-              <b-checkbox v-if="missionType === 'install'"
-                          v-model="isGooglePlayUrl"
-                          @input="resetAction" :disabled="disabled">
-                구글플레이 기본 마켓 URL 사용하기
-              </b-checkbox>
+              <div class="level" v-if="missionType === 'install'">
+                <div class="level-left">
+                  <b-checkbox v-model="isGooglePlayUrl"
+                              @input="resetAction" :disabled="disabled">
+                    구글플레이 기본 마켓 URL 사용하기
+                  </b-checkbox>
+                </div>
+                <div class="level-right">
+                  <b-button @click="addReferrer" :disabled="disabled">
+                    Referrer 추가
+                  </b-button>
+                </div>
+              </div>
 
               <b-input
                 ref='mission.action'
                 v-model="mission.action"
                 placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"
                 required
-              :disabled="disabled"></b-input>
+                :disabled="disabled"></b-input>
             </div>
+
           </b-field>
           <b-field label="옵션">
             <b-taginput
@@ -183,6 +192,11 @@ export default {
         this.mission.action = `https://play.google.com/store/apps/details?id=${this.mission.packageName}`;
       } else {
         this.mission.action = '';
+      }
+    },
+    addReferrer() {
+      if(this.mission.action && this.mission.action.indexOf("referrer=utm_source") < 0) {
+        this.mission.action += "&referrer=utm_source%3Dformakers";
       }
     },
     create(){
