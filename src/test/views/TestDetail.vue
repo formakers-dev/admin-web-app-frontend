@@ -1,6 +1,52 @@
 <template>
   <div>
     <h1 class="title">🎮 게임 테스트 상세정보 🎮</h1>
+    <section v-if="type === 'update'" style="margin-bottom: 10px">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item"></div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <b-button type="is-text"
+                      size="is-small"
+                      tag="router-link"
+                      to="/statistics"
+            >더 보기</b-button>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column is-one-fifth">
+          <div class="notification is-primary stats-card">
+            <p class="title is-5">총 베타테스트 수</p>
+            <p class="title has-text-right">{{ statistics.totalBetaTests | comma}}</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalBetaTests ==='-'"></b-loading>
+          </div>
+        </div>
+        <div class="column">
+          <div class="notification is-white stats-card">
+            <p class="title is-5">플랜</p>
+            <div id="planStatsChart"></div>
+            <b-loading :is-full-page="false" :active.sync="loading.planStatsChart"></b-loading>
+          </div>
+        </div>
+        <div class="column is-one-fifth">
+          <div class="notification is-info stats-card">
+            <p class="title is-5">총 누적 참여자 수</p>
+            <p class="title has-text-right">{{statistics.totalParticipants | comma}}</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipants ==='-'"></b-loading>
+          </div>
+        </div>
+        <div class="column is-one-fifth">
+          <div class="notification is-warning stats-card">
+            <p class="title is-5">총 리워드 금액</p>
+            <p class="title has-text-right">&#8361; {{statistics.totalAwardRecordPrice | comma}}</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalAwardRecordPrice ==='-'"></b-loading>
+          </div>
+        </div>
+      </div>
+    </section>
     <div class="level">
       <div class="level-left">
       </div>
@@ -220,6 +266,8 @@ import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
 import Participants  from '../components/Participants';
+import Apexchart from 'vue-apexcharts';
+import moment from 'moment';
 
 export default {
   name: 'TestDetail',
@@ -238,6 +286,108 @@ export default {
   },
   data() {
     return {
+      allBetaTests: [],
+      subjectTypes:{
+        'game-test': '게임 테스트',
+        'event' : '이벤트',
+        'fomes-test' : '포메스 테스트'
+      },
+      statistics:{
+        totalBetaTests:'-',
+        plan:{
+          trial:'-',
+          starter:'-',
+          lite:'-',
+          simple:'-',
+          standard:'-'
+        },
+        totalParticipants:'-',
+        totalAwardRecordPrice:'-'
+      },
+      loading:{
+        planStatsChart:true
+      },
+      planStatsChart:{
+        chart: {
+          type: 'bar',
+          height: '110',
+          stacked: true,
+          stackType: '100%',
+          toolbar:{
+            show:false
+          },
+          offsetX:0,
+          offsetY:-45,
+          parentHeightOffset:0
+        },
+        grid:{
+          yaxis: {
+            lines: {
+              show: false,
+            }
+          }
+        },
+        xaxis:{
+          labels:{
+            show:false
+          },
+          categories: ['플랜'],
+          axisBorder:{
+            show:false
+          },
+          axisTicks: {
+            show:false
+          }
+        },
+        yaxis:{
+          categories:[''],
+          labels:{
+            show:false
+          },
+          axisBorder:{
+            show:false
+          },
+          axisTicks: {
+            show:false
+          }
+        },
+        plotOptions: {
+          bar: {
+            horizontal: true,
+          },
+        },
+        stroke: {
+          width: 1,
+          colors: ['#fff']
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val
+            }
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        legend: {
+          position: 'top',
+          horizontalAlign: 'right',
+          offsetX:0,
+          offsetY:30,
+          itemMargin: {
+            horizontal: 5,
+            vertical: 0
+          }
+        },
+        series:[
+          {name:'트라이얼', data:[], key:'trial'},
+          {name:'스타터', data:[], key:'starter'},
+          {name:'라이트', data:[], key:'lite'},
+          {name:'심플', data:[], key:'simple'},
+          {name:'스탠다드', data:[], key:'standard'},
+        ]
+      },
       activeStep:0,
       options:{
         plan:[
@@ -314,6 +464,7 @@ export default {
     if(this.$route.query.id){
       this.type='update';
       this.getBetaTest();
+      this.getAllBetaTests();
     }else{
       this.type='add';
       const openDate = new Date();
@@ -331,6 +482,11 @@ export default {
   },
   mounted() {
     this.activeStep = this.step > 0 ? this.step : this.activeStep;
+  },
+  filters:{
+    comma(val){
+      return String(val).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
   },
   methods: {
     prepareDataToRegister() {
@@ -606,7 +762,65 @@ export default {
         canCancel: false,
         events: {
         }})
-    }
+    },
+    setStatistics(){
+      this.loading.planStatsChart = true;
+      this.setTotalParticipants();
+      this.setTotalAwardRecordPrice();
+      this.statistics.totalBetaTests = this.allBetaTests.length
+      Object.keys(this.statistics.plan).forEach((i)=>{
+        this.statistics.plan[i] = 0
+      })
+      this.allBetaTests.forEach(item=>{
+        if(item.plan){
+          this.statistics.plan[item.plan] += 1
+        }
+      });
+
+      const data = [];
+      Object.keys(this.statistics.plan).forEach((i)=>{
+        const key = i;
+        const value = this.statistics.plan[i];
+        this.planStatsChart.series.forEach(item=>{
+          if(item.key === key){
+            item.data[0] = value;
+            data.push(item)
+          }
+        });
+      })
+      this.$set(this.planStatsChart.series, data);
+      const planChart = new ApexCharts(document.querySelector("#planStatsChart"), this.planStatsChart);
+      planChart.render();
+      this.loading.planStatsChart = false;
+    },
+    setTotalParticipants(){
+      request.get('/api/statistics/participants?path=overview&type=beta-test&status=complete').then(res=>{
+        this.statistics.totalParticipants = res.data.participants.length;
+      }).catch(err=>{
+        console.log(err);
+        this.$root.showErrorToast('총 참여자 수를 조회하는데 실패하였습니다.', err);
+      })
+    },
+    setTotalAwardRecordPrice(){
+      request.get('/api/statistics/award-records?filters=totalPrice').then(res=>{
+        this.statistics.totalAwardRecordPrice = res.data.totalAwardRecordPrice;
+      }).catch(err=>{
+        this.$root.showErrorToast('총 수상 금액을 조회하는데 실패하였습니다.', err);
+      })
+    },
+    getAllBetaTests() {
+      request.get('/api/beta-test')
+        .then((res) => {
+          this.allBetaTests = res.data;
+          this.setStatistics();
+        })
+        .catch((err) => {
+          this.$root.showErrorToast('테스트 목록을 조회하는데 실패하였습니다.', err);
+        });
+    },
+    convertDateTime(date){
+      return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
+    },
   },
 };
 </script>
@@ -622,5 +836,8 @@ export default {
     color: white;
     width: 60px;
     text-align: center;
+  }
+  .stats-card{
+    height: 130px;
   }
 </style>
