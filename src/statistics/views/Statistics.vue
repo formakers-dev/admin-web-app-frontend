@@ -389,6 +389,7 @@ export default {
       },
       awardRecordsChartByTest:{
         series: [{
+          name: '',
           data: []
         }],
         chart: {
@@ -661,7 +662,7 @@ export default {
         //테스트별 누적 리워즈 금액
         this.awardRecordsChartByTest.xaxis.categories = [];
         this.awardRecordsChartByTest.series[0].data = [];
-        const awardRecordsChartByTestData = res.data.betaTests.length >= 10 ? res.data.betaTests.slice(0,10) : res.data.betaTests;
+        const awardRecordsChartByTestData = res.data.betaTests.length >= 10 ? res.data.betaTests.slice(res.data.betaTests.length-10,res.data.betaTests.length) : res.data.betaTests;
         awardRecordsChartByTestData.forEach(betaTest => {
           this.awardRecordsChartByTest.xaxis.categories.push(betaTest.title);
           let point = 0;
