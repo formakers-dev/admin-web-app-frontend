@@ -59,6 +59,13 @@
             <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChart"></b-loading>
           </div>
         </div>
+        <div class="column is-half">
+          <div class="notification is-white">
+            <p class="title is-5">테스트별 리워즈 금액</p>
+            <div id="awardRecordsChartByTest"></div>
+            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChartByTest"></b-loading>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -107,7 +114,8 @@ export default {
         age:true,
         signUp:true,
         participants: true,
-        awardRecordsChart: true
+        awardRecordsChart: true,
+        awardRecordsChartByTest: true
       },
       options:{
         subjectTypes:{
@@ -379,6 +387,41 @@ export default {
           },
         },
       },
+      awardRecordsChartByTest:{
+        series: [{
+          data: []
+        }],
+        chart: {
+          type: 'bar',
+          toolbar:{
+            show:false
+          },
+        },
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            dataLabels: {
+              position: 'top',
+            },
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          offsetX: -6,
+          style: {
+            fontSize: '12px',
+            colors: ['#fff']
+          }
+        },
+        stroke: {
+          show: true,
+          width: 1,
+          colors: ['#fff']
+        },
+        xaxis: {
+          categories: [],
+        },
+      },
     };
   },
   created() {
@@ -614,6 +657,25 @@ export default {
         const awardRecordsChart = new ApexCharts(document.querySelector("#awardRecordsChart"), this.awardRecordsChart);
         awardRecordsChart.render();
         this.loading.awardRecordsChart = false;
+
+        //테스트별 누적 리워즈 금액
+        this.awardRecordsChartByTest.xaxis.categories = [];
+        this.awardRecordsChartByTest.series[0].data = [];
+        const awardRecordsChartByTestData = res.data.betaTests.length >= 10 ? res.data.betaTests.slice(0,10) : res.data.betaTests;
+        awardRecordsChartByTestData.forEach(betaTest => {
+          this.awardRecordsChartByTest.xaxis.categories.push(betaTest.title);
+          let point = 0;
+          betaTest.awardRecords.forEach(awardRecord => {
+            if(awardRecord.reward && awardRecord.reward.price){
+              point += awardRecord.reward.price;
+            }
+          })
+          this.awardRecordsChartByTest.series[0].data.push(point);
+        });
+        const awardRecordsChartByTest = new ApexCharts(document.querySelector("#awardRecordsChartByTest"), this.awardRecordsChartByTest);
+        awardRecordsChartByTest.render();
+        this.loading.awardRecordsChartByTest = false;
+
       }).catch(err=>{
         this.$root.showErrorToast('수상 금액정보를 조회하는데 실패하였습니다.', err);
       })

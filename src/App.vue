@@ -6,8 +6,8 @@
     </p>
     <router-view class="container is-fluid" style="padding-top: 30px"/>
     <go-top :size="50"
-            :right="250"
-            bg-color="#00bfba"
+            :right="100"
+            bg-color="#000"
             :has-outline="false"
     ></go-top>
     <div class="vld-parent">
