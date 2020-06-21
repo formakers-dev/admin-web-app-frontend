@@ -179,7 +179,7 @@
       </div>
     </div>
     <div class="box">
-      <h4 class="title is-4">테스트 모드 설정</h4>
+      <h4 class="title is-4">의뢰 게임 정보</h4>
       <b-field horizontal>
         <template slot="label">
           <span class="has-text-danger">*</span> 앱 아이콘
@@ -209,7 +209,7 @@
       </b-field>
     </div>
     <div class="box">
-      <h4 class="title is-4">의뢰 게임 정보</h4>
+      <h4 class="title is-4">리워드</h4>
       <section>
         <draggable class="columns is-multiline"
                    draggable=".rewards"
@@ -227,7 +227,7 @@
       </section>
     </div>
     <div class="box">
-      <h4 class="title is-4">리워드</h4>
+      <h4 class="title is-4">미션</h4>
       <section>
         <div class="column"
              v-for="(mission, index) in betaTest.missions"
@@ -244,7 +244,7 @@
                               style="margin-right: 5px"
                               size="is-small"
                               @click.stop="showBetaTester(mission._id, mission.betaTestId)"
-                              outlined>미션 이용자 관리</b-button>
+                              outlined>미션 완료자 추가/삭제</b-button>
                   </div>
                 </div>
               </div>
