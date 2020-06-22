@@ -7,119 +7,132 @@
   <section class="modal-card-body">
     <div class="columns" style="width: 100%; height: max-content">
       <div class="column" style="overflow-y: auto">
-        <img v-if='data.coverImageUrl' :src="data.coverImageUrl" alt="커버 이미지가 보여집니다"/>
-        <div v-else class="preview-container">
-          <strong>커버 이미지 URL을 입력해주세요.</strong>
-        </div>
-        <div v-if="contentType==='deeplink'" class="preview-container" style="min-height: 500px">
-          <strong>Deeplink는 미리보기를 할 수 없습니다.</strong><br>
-          <a href="https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7" target="_blank">* Deeplink 스펙보러가기</a>
-        </div>
-        <div v-else-if="data.contents && contentType==='html'" v-html="data.contents"></div>
-        <div v-else-if="data.contents && contentType==='url'">
-          <strong>아래의 링크를 클릭하여 확인해주세요.</strong><br>
-          <a :href="data.contents" target="_blank">{{data.contents}}</a>
-        </div>
-        <div v-else-if="data.contents && contentType==='image'">
-          <img :src="data.contents"/>
-        </div>
-        <div v-else class="preview-container" style="min-height: 500px">
-          <strong>내용을 입력해주세요.</strong>
-        </div>
-      </div>
-      <div class="column">
-        <b-field>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 오픈 시각
-          </template>
-          <b-datetimepicker v-model="data.openDate"
-                            rounded
-                            icon="calendar-today"
-                            placeholder="오픈할 시각를 선택해주세요.">
-          </b-datetimepicker>
+        <b-field v-if="data._id" label="이벤트 배너 아이디" horizontal
+                 style="background: #f5f5f5; padding: 10px">
+          {{data._id}}
         </b-field>
-        <b-field>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 종료 시각
-          </template>
-          <b-datetimepicker v-model="data.closeDate"
-                            rounded
-                            icon="calendar-today"
-                            placeholder="종료할 시각를 선택해주세요.">
-          </b-datetimepicker>
-        </b-field>
-        <b-field>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 제목
-          </template>
-          <b-input v-model="data.title"
-                   validation-message="필수 입력 값입니다."
-                   required
-          ></b-input>
-        </b-field>
-        <b-field>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 커버 이미지 URL
-            <b-tooltip type="is-dark"
-                       label="메인화면에서 보여지는 커버 이미지입니다."
-                       position="is-right"
-            >
-              <b-button class="is-white"
-                        style="margin-left: -15px; background: transparent;"
-                        rounded>
-                <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
-              </b-button>
-            </b-tooltip>
-          </template>
-          <b-input v-model="data.coverImageUrl"
-                   validation-message="필수 입력 값입니다."
-                   required
-          ></b-input>
-        </b-field>
-        <b-field>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 내용
-            <b-tooltip type="is-dark"
-                       label="배너 클릭시 보여질 디테일 화면 입니다."
-                       position="is-right"
-                       multilined>
-              <b-button class="is-white"
-                        style="margin-left: -15px; background: transparent;"
-                        rounded>
-                <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
-              </b-button>
-            </b-tooltip>
-          </template>
-          <b-field>
-            <b-radio-button v-for="type in contentTypes"
-                            :key="type.value"
-                            v-model="contentType"
-                            :native-value="type.value" required>
-              <span>{{type.text}}</span>
-            </b-radio-button>
-          </b-field>
-        </b-field>
-        <b-field v-if="contentType === 'url'">
-          <b-checkbox v-model="checkedExternalBrowser">
-            외부 브라우져로 띄우기
-          </b-checkbox>
-        </b-field>
-        <b-field v-if="contentType != 'deeplink'">
+        <div class="columns" style="width: 100%; height: max-content">
+          <div class="column" style="overflow-y: auto">
+            <img v-if='data.coverImageUrl' :src="data.coverImageUrl" alt="커버 이미지가 보여집니다"/>
+            <div v-else class="preview-container">
+              <strong>커버 이미지 URL을 입력해주세요.</strong>
+            </div>
+            <div v-if="contentType==='deeplink'" class="preview-container"
+                 style="min-height: 500px">
+              <strong>Deeplink는 미리보기를 할 수 없습니다.</strong><br>
+              <a
+                href="https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7"
+                target="_blank">* Deeplink 스펙보러가기</a>
+            </div>
+            <div v-else-if="data.contents && contentType==='html'" v-html="data.contents"></div>
+            <div v-else-if="data.contents && contentType==='url'">
+              <strong>아래의 링크를 클릭하여 확인해주세요.</strong><br>
+              <a :href="data.contents" target="_blank">{{data.contents}}</a>
+            </div>
+            <div v-else-if="data.contents && contentType==='image'">
+              <img :src="data.contents"/>
+            </div>
+            <div v-else class="preview-container" style="min-height: 500px">
+              <strong>내용을 입력해주세요.</strong>
+            </div>
+          </div>
+          <div class="column">
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 오픈 시각
+              </template>
+              <b-datetimepicker v-model="data.openDate"
+                                rounded
+                                icon="calendar-today"
+                                placeholder="오픈할 시각를 선택해주세요.">
+              </b-datetimepicker>
+            </b-field>
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 종료 시각
+              </template>
+              <b-datetimepicker v-model="data.closeDate"
+                                rounded
+                                icon="calendar-today"
+                                placeholder="종료할 시각를 선택해주세요.">
+              </b-datetimepicker>
+            </b-field>
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 제목
+              </template>
+              <b-input v-model="data.title"
+                       validation-message="필수 입력 값입니다."
+                       required
+              ></b-input>
+            </b-field>
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 커버 이미지 URL
+                <b-tooltip type="is-dark"
+                           label="메인화면에서 보여지는 커버 이미지입니다."
+                           position="is-right"
+                >
+                  <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded>
+                    <b-icon size="is-small" icon="help-circle-outline"></b-icon>
+                  </b-button>
+                </b-tooltip>
+              </template>
+              <b-input v-model="data.coverImageUrl"
+                       validation-message="필수 입력 값입니다."
+                       required
+              ></b-input>
+            </b-field>
+            <b-field>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 내용
+                <b-tooltip type="is-dark"
+                           label="배너 클릭시 보여질 디테일 화면 입니다."
+                           position="is-right"
+                           multilined>
+                  <b-button class="is-white"
+                            style="margin-left: -15px; background: transparent;"
+                            rounded>
+                    <b-icon size="is-small" icon="help-circle-outline"></b-icon>
+                  </b-button>
+                </b-tooltip>
+              </template>
+              <b-field>
+                <b-radio-button v-for="type in contentTypes"
+                                :key="type.value"
+                                v-model="contentType"
+                                :native-value="type.value" required>
+                  <span>{{type.text}}</span>
+                </b-radio-button>
+              </b-field>
+            </b-field>
+            <b-field v-if="contentType === 'url'">
+              <b-checkbox v-model="checkedExternalBrowser">
+                외부 브라우져로 띄우기
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="contentType != 'deeplink'">
            <textarea v-if="contentType === 'html'"
-                     v-model="data.contents" style="margin: 0px; height: 270px; width: 415px; resize: vertical;"
+                     v-model="data.contents"
+                     style="margin: 0px; height: 270px; width: 415px; resize: vertical;"
            ></textarea>
-            <b-input v-else v-model="data.contents"
-                     validation-message="필수 입력 값입니다."
-                     required
-            ></b-input>
-        </b-field>
-        <b-field v-else>
-          <b-input v-model="data.deeplink"
-                   validation-message="필수 입력 값입니다."
-                   required
-          ></b-input>
-        </b-field>
-        <strong v-if="contentType==='url'" class="has-text-danger">* 이미지 파일의 경우 Image URL 을 선택해주세요.</strong>
+              <b-input v-else v-model="data.contents"
+                       validation-message="필수 입력 값입니다."
+                       required
+              ></b-input>
+            </b-field>
+            <b-field v-else>
+              <b-input v-model="data.deeplink"
+                       validation-message="필수 입력 값입니다."
+                       required
+              ></b-input>
+            </b-field>
+            <strong v-if="contentType==='url'" class="has-text-danger">* 이미지 파일의 경우 Image URL 을
+              선택해주세요.</strong>
+          </div>
+        </div>
       </div>
     </div>
   </section>
