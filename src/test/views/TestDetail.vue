@@ -58,7 +58,7 @@
     </div>
     <div class="box">
       <h4 class="title is-4">테스트 기본 정보</h4>
-      <b-field label="테스트 아이디" horizontal>
+      <b-field label="테스트 아이디" horizontal style="background: #f5f5f5; padding: 10px">
         {{betaTest._id}}
       </b-field>
       <b-field label="테스트 모드 설정" horizontal>

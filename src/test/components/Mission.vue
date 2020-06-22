@@ -6,6 +6,12 @@
     </header>
     <section class="modal-card-body">
       <div class="columns" style="width: 100%; height: max-content">
+      <div class="column">
+        <b-field v-if="mission._id" label="미션 아이디" horizontal style="background: #f5f5f5; padding: 10px">
+          {{mission._id}}
+        </b-field>
+      <div class="columns" style="width: 100%; height: max-content">
+
         <div class="column">
           <b-field>
             <template slot="label">
@@ -115,6 +121,8 @@
             </b-taginput>
           </b-field>
         </div>
+      </div>
+      </div>
       </div>
     </section>
     <footer v-if="type != 'readonly'" class="modal-card-foot">
