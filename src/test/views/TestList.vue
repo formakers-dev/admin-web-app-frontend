@@ -94,10 +94,10 @@
         <b-table-column field="title" label="제목" searchable>
            {{ props.row.title }}
         </b-table-column>
-        <b-table-column field="subjectType" label="유형">
-          {{ convertedSubjectType(props.row.subjectType)}}
+        <b-table-column field="subjectTypeDisplay" label="유형" searchable>
+          {{ props.row.subjectTypeDisplay }}
         </b-table-column>
-        <b-table-column field="title" label="플랜">
+        <b-table-column field="plan" label="플랜" searchable>
           {{ props.row.plan ? props.row.plan.toUpperCase() : '-' }}
         </b-table-column>
         <b-table-column field="openDate" label="오픈 날짜" sortable centered>
@@ -110,11 +110,9 @@
           <b-button outlined type="is-info" size="is-small" style="margin-right: 10px" @click.stop="showEpilogue(props.row._id)">에필로그</b-button>
           <b-button outlined type="is-success" size="is-small" @click.stop="goAwardRecords(props.row._id)">수상자</b-button>
         </b-table-column>
-        <b-table-column field="openingStatus" label="상태" sortable>
+        <b-table-column field="openingStatus" label="상태" sortable searchable>
           <strong v-if="props.row.isTestingMode" class="tag is-primary" style="margin-right:10px">테스트 모드</strong>
-          <strong v-if="props.row.openingStatus === 1" class="tag is-danger">오픈</strong>
-          <strong v-else-if="props.row.openingStatus === 2" class="tag is-warning">대기</strong>
-          <strong v-else class="tag is-black">종료</strong>
+          <strong class="tag" :class="getOpeningStatusStyle(props.row.openingStatus)">{{ props.row.openingStatus }}</strong>
         </b-table-column>
       </template>
     </b-table>
@@ -292,6 +290,7 @@ export default {
             result.closeDateDisplay = this.convertDateTime(betaTest.closeDate);
             result.openingStatus = this.getOpeningStatus(betaTest.openDate, betaTest.closeDate);
             result.isTestingMode = betaTest.status;
+            result.subjectTypeDisplay = this.convertedSubjectType(betaTest.subjectType);
             return result;
           });
           this.filteredBetaTests = this.allBetaTests;
@@ -311,13 +310,22 @@ export default {
       const current = new Date().getTime();
       const openDate = new Date(open).getTime();
       const closeDate = new Date(close).getTime();
-      if(openDate <= current && closeDate >= current){
-        return 1;
+      if (openDate <= current && closeDate >= current) {
+        return "오픈";
       }
-      if(closeDate < current){
-        return 3;
+      if (closeDate < current) {
+        return "종료";
       }
-      return 2;
+      return "대기";
+    },
+    getOpeningStatusStyle(value) {
+      if (value === '오픈') {
+        return 'is-danger'
+      } else if (value === '대기') {
+        return 'is-warning'
+      } else {
+        return 'is-black'
+      }
     },
     convertedSubjectType(value){
       return this.subjectTypes[value] ? this.subjectTypes[value] : value;
