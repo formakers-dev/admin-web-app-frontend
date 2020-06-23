@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1 class="title">🎮 통계 🎮</h1>
+    <h1 class="title">🎮 테스트 상세 통계 🎮</h1>
     <section style="margin-bottom: 10px">
       <div class="columns is-multiline">
         <div class="column is-one-third">
           <div class="notification is-white">
-            <p class="title is-5">베타 테스트</p>
+            <p class="title is-5">테스트 종류</p>
             <div id="betaTestChart"></div>
             <b-loading :is-full-page="false" :active.sync="loading.totalBetaTests"></b-loading>
           </div>
