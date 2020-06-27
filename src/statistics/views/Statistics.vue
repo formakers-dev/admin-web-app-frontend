@@ -49,7 +49,7 @@
           <div class="notification is-white">
             <p class="title is-5">테스트별 참여자</p>
             <div id="participantsChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.participantsChart"></b-loading>
+            <b-loading :is-full-page="false" :active.sync="loading.participants"></b-loading>
           </div>
         </div>
         <div class="column is-half">
