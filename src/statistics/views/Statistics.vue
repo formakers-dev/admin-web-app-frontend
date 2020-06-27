@@ -5,67 +5,69 @@
       <div class="columns is-multiline">
         <div class="column is-one-third">
           <div class="notification is-white">
-            <p class="title is-5">베타 테스트</p>
-            <div id="betaTestChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.totalBetaTests"></b-loading>
+            <BetaTestChart :items="allBetaTests"></BetaTestChart>
           </div>
         </div>
         <div class="column is-one-third">
           <div class="notification is-white">
-            <p class="title is-5">플랜</p>
-            <div id="planChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.plan"></b-loading>
+            <PlanChart :items="allBetaTests"></PlanChart>
           </div>
         </div>
         <div class="column is-one-third">
           <div class="notification is-white">
-            <p class="title is-5">성별</p>
-            <div id="genderChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.gender"></b-loading>
+            <GenderChart :items="participants"></GenderChart>
           </div>
         </div>
         <div class="column is-half">
           <div class="notification is-white">
-            <p class="title is-5">연령</p>
-            <div id="ageChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.age"></b-loading>
+            <AgeChart :items="participants"></AgeChart>
           </div>
         </div>
         <div class="column is-half">
           <div class="notification is-white">
-            <p class="title is-5">직업</p>
-            <div id="jobChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.job"></b-loading>
+            <AccumulatedParticipantsChart :items="participants"></AccumulatedParticipantsChart>
           </div>
         </div>
         <div class="column is-half">
           <div class="notification is-white">
-            <p class="title is-5">누적 가입자 - 총 {{statistics.users.total | comma}} 명</p>
-            <div id="signUpChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.signUp"></b-loading>
+            <AccumulatedRewardsPriceChart :items="awardRecords"></AccumulatedRewardsPriceChart>
           </div>
         </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <p class="title is-5">테스트별 참여자</p>
-            <div id="participantsChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.participants"></b-loading>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <p class="title is-5">누적 리워즈 금액 - 총 {{statistics.awardRecords.totalPrice | comma}} 원</p>
-            <div id="awardRecordsChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChart"></b-loading>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <p class="title is-5">테스트별 리워즈 금액</p>
-            <div id="awardRecordsChartByTest"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChartByTest"></b-loading>
-          </div>
-        </div>
+<!--        <div class="column is-half">-->
+<!--          <div class="notification is-white">-->
+<!--            <p class="title is-5">직업</p>-->
+<!--            <div id="jobChart"></div>-->
+<!--            <b-loading :is-full-page="false" :active.sync="loading.job"></b-loading>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="column is-half">-->
+<!--          <div class="notification is-white">-->
+<!--            <p class="title is-5">누적 가입자 - 총 {{statistics.users.total | comma}} 명</p>-->
+<!--            <div id="signUpChart"></div>-->
+<!--            <b-loading :is-full-page="false" :active.sync="loading.signUp"></b-loading>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="column is-half">-->
+<!--          <div class="notification is-white">-->
+<!--            <p class="title is-5">테스트별 참여자</p>-->
+<!--            <div id="participantsChart"></div>-->
+<!--            <b-loading :is-full-page="false" :active.sync="loading.participants"></b-loading>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="column is-half">-->
+<!--          <div class="notification is-white">-->
+<!--            <p class="title is-5">누적 리워즈 금액 - 총 {{statistics.awardRecords.totalPrice | comma}} 원</p>-->
+<!--            <div id="awardRecordsChart"></div>-->
+<!--            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChart"></b-loading>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="column is-half">-->
+<!--          <div class="notification is-white">-->
+<!--            <p class="title is-5">테스트별 리워즈 금액</p>-->
+<!--            <div id="awardRecordsChartByTest"></div>-->
+<!--            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChartByTest"></b-loading>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
     </section>
   </div>
@@ -75,14 +77,27 @@
 import moment from 'moment';
 import request from '../../common/utils/http';
 import Apexchart from 'vue-apexcharts';
-
+import BetaTestChart from '../components/BetaTestChart';
+import PlanChart from '../components/PlanChart';
+import AgeChart from '../components/AgeChart';
+import AccumulatedParticipantsChart from '../components/AccumulatedParticipantsChart';
+import GenderChart from '../components/GenderChart';
+import AccumulatedRewardsPriceChart from '../components/AccumulatedRewardsPriceChart';
 export default {
   name: 'statistics',
   components:{
+    BetaTestChart,
+    PlanChart,
+    AgeChart,
+    AccumulatedParticipantsChart,
+    GenderChart,
+    AccumulatedRewardsPriceChart
   },
   data() {
     return {
       allBetaTests: [],
+      participants:[],
+      awardRecords:[],
       openedBetaTests: [],
       closedBetaTests: [],
       statistics:{
@@ -175,125 +190,6 @@ export default {
           categories: [],
         }
       },
-      ageChart:{
-        series: [{
-          name: '남',
-          data: []
-        }, {
-          name: '여',
-          data: []
-        }],
-        chart: {
-          type: 'bar',
-          toolbar:{
-            show:false
-          },
-        },
-        plotOptions: {
-          bar: {
-            horizontal: false,
-            columnWidth: '70%',
-            dataLabels: {
-              position: 'top',
-            },
-          },
-        },
-        dataLabels: {
-          enabled: true,
-          style: {
-            fontSize: '12px',
-            colors: ['#fff']
-          }
-        },
-        stroke: {
-          show: true,
-          width: 2,
-          colors: ['transparent']
-        },
-        fill: {
-          opacity: 1
-        },
-        xaxis: {
-          // categories: ['60+','55-59','50-54','45-49','40-44','35-39','30-34','25-29','20-24','15-19','10-14','0-9'],
-          categories: ['0-9','10-14','15-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60+'],
-        },
-      },
-      genderChart:{
-        series: [],
-        chart: {
-          type: 'pie',
-          height: 300
-        },
-        labels: ['남', '여'],
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
-      },
-      betaTestChart:{
-        chart: {
-          type: 'donut',
-          height: 300
-        },
-        series:[],
-        labels:['게임 테스트','이벤트','포메스 테스트','미정의'],
-        plotOptions:{
-          pie:{
-            donut:{
-              labels:{
-                show:true,
-                total:{
-                  show:true,
-                  showAlways:true,
-                  formatter: function (w) {
-                    return w.globals.seriesTotals.reduce((a, b) => {
-                      return a + b
-                    }, 0)
-                  }
-                }
-              }
-            }
-          }
-        },
-      },
-      planChart:{
-        chart: {
-          type: 'donut',
-          height: 300
-        },
-        labels:['트라이얼','스타터','라이트','심플','스탠다드'],
-        yaxis: {
-          labels: {
-            show: false
-          }
-        },
-        plotOptions:{
-          pie:{
-            donut:{
-              labels:{
-                show:true,
-                total:{
-                  show:true,
-                  showAlways:true,
-                  formatter: function (w) {
-                    return w.globals.seriesTotals.reduce((a, b) => {
-                      return a + b
-                    }, 0)
-                  }
-                }
-              }
-            }
-          }
-        },
-        series:[{data:[]}]
-      },
       signUpChart:{
         chart:{
           type:'area',
@@ -319,45 +215,6 @@ export default {
           x: {
             format: 'yyyy-MM-dd HH:mm'
           },
-        },
-      },
-      participantsChart:{
-        series: [{
-          name: '베타 테스트 참여',
-          data: []
-        }, {
-          name: '베타 테스트 완료',
-          data: []
-        }],
-        chart: {
-          type: 'bar',
-          toolbar:{
-            show:false
-          },
-        },
-        plotOptions: {
-          bar: {
-            horizontal: true,
-            dataLabels: {
-              position: 'top',
-            },
-          }
-        },
-        dataLabels: {
-          enabled: true,
-          offsetX: -6,
-          style: {
-            fontSize: '10px',
-            colors: ['#fff']
-          }
-        },
-        stroke: {
-          show: true,
-          width: 1,
-          colors: ['#fff']
-        },
-        xaxis: {
-          categories: [],
         },
       },
       awardRecordsChart:{
@@ -455,10 +312,11 @@ export default {
       return this.options.subjectTypes[value] ? this.options.subjectTypes[value] : value;
     },
     setStatistics(){
-      this.setBetaTests();
-      this.setParticipants();
-      this.setUsers();
-      this.setAwardRecords();
+      this.getAllBetaTests();
+      this.getParticipants();
+      this.getAwardRecords();
+      // this.setUsers();
+      // this.setAwardRecords();
     },
     setUsers(){
       request.get('/api/statistics/users').then((res)=>{
@@ -475,28 +333,6 @@ export default {
         const genderChart = new ApexCharts(document.querySelector("#genderChart"), this.genderChart);
         genderChart.render();
         this.loading.gender = false;
-
-        //set age chart
-        this.ageChart.series[0].data = Array(this.ageChart.xaxis.categories.length).fill(0);
-        this.ageChart.series[1].data = Array(this.ageChart.xaxis.categories.length).fill(0);
-        const currentYear = new Date().getFullYear();
-        users.forEach(user => {
-          if(user.birthday && user.gender){
-            const age = currentYear - user.birthday;
-            const genderIndex = user.gender === 'male' ? 0 : 1;
-            if(age <= 9){
-              this.ageChart.series[genderIndex].data[0] += 1;
-            }else if(age >= 60){
-              this.ageChart.series[genderIndex].data[this.ageChart.xaxis.categories.length-1] += 1;
-            }else{
-              const index = Math.floor(age/5)-1;
-              this.ageChart.series[genderIndex].data[index] += 1;
-            }
-          }
-        });
-        const ageChart = new ApexCharts(document.querySelector("#ageChart"), this.ageChart);
-        ageChart.render();
-        this.loading.age = false;
 
         //set job chart
         this.jobChart.series[0].data = Array(18).fill(0);
@@ -545,120 +381,27 @@ export default {
         this.$root.showErrorToast('사용자 정보 조회하는데 실패하였습니다.', err);
       })
     },
-    setBetaTests(){
+    getAllBetaTests(){
       request.get('/api/statistics/beta-tests')
         .then((res) => {
           this.allBetaTests = res.data.betaTests;
-          this.statistics.betaTests.total = res.data.betaTests.length;
-          const subjectTypeStats = {
-            'game-test':0,
-            'event':0,
-            'fomes-test':0,
-            'undefinded':0,
-          }
-          this.allBetaTests.forEach(item=>{
-            if(item.plan){
-              this.statistics.betaTests.plan[item.plan] += 1
-            }
-            if(item.subjectType){
-              subjectTypeStats[item.subjectType] += 1
-            }else{
-              subjectTypeStats['undefinded'] += 1
-            }
-          });
-          this.betaTestChart.series = [];
-          Object.keys(subjectTypeStats).forEach((i)=>{
-            this.betaTestChart.series.push(subjectTypeStats[i])
-          })
-          const betaTestChart = new ApexCharts(document.querySelector("#betaTestChart"), this.betaTestChart);
-          betaTestChart.render();
-          this.loading.totalBetaTests = false;
-
-          const planStats = {
-            trial:0,
-            starter:0,
-            lite:0,
-            simple:0,
-            standard:0,
-          };
-          this.allBetaTests.forEach(item=>{
-            if(item.plan){
-              planStats[item.plan] += 1;
-            }
-          });
-          this.planChart.series = [];
-          Object.keys(planStats).forEach((i)=>{
-            this.planChart.series.push(planStats[i]);
-          });
-          const planChart = new ApexCharts(document.querySelector("#planChart"), this.planChart);
-          planChart.render();
-          this.loading.plan = false;
         })
         .catch((err) => {
           this.$root.showErrorToast('테스트 목록을 조회하는데 실패하였습니다.', err);
         });
     },
-    setParticipants(){
-      request.get('/api/statistics/participants').then(res=>{
-        const data = res.data.betaTests;
-        this.participantsChart.xaxis.categories = [];
-        this.participantsChart.series[0].data = [];
-        this.participantsChart.series[1].data = [];
-        data.forEach(i =>{
-          this.participantsChart.xaxis.categories.push(i.title);
-          let attendCount = 0;
-          let completeCount = 0;
-          i.participants.forEach(participant =>{
-            if(participant.type === 'beta-test'){
-              if(participant.status === 'attend'){
-                attendCount += 1;
-              }else if(participant.status === 'complete'){
-                completeCount += 1;
-              }
-            }
-          });
-          this.participantsChart.series[0].data.push(attendCount);
-          this.participantsChart.series[1].data.push(completeCount);
-        });
-        const participantsChart = new ApexCharts(document.querySelector("#participantsChart"), this.participantsChart);
-        participantsChart.render();
-        this.loading.participants = false;
+    getParticipants(){
+      request.get('/api/statistics/participants?type=beta-test').then(res=>{
+        this.participants = res.data.participants;
       }).catch(err=>{
         console.log(err);
         this.$root.showErrorToast('참여자 정보를를 조회하는데 실패하였습니다.', err);
       })
     },
-    setAwardRecords(){
+    getAwardRecords(){
       request.get('/api/statistics/award-records').then(res=>{
-        //누적 참여 완료자 리워즈 통계
-        const stackedRewardsStats = {};
-        this.statistics.awardRecords.totalPrice = 0;
-        res.data.betaTests.forEach(betaTest => {
-          const closeTimestamp = new Date(betaTest.closeDate).getTime();
-          betaTest.awardRecords.forEach(awardRecord => {
-            if(awardRecord.reward && awardRecord.reward.price){
-              if(stackedRewardsStats[closeTimestamp]){
-                stackedRewardsStats[closeTimestamp] += awardRecord.reward.price;
-              }else{
-                stackedRewardsStats[closeTimestamp] = awardRecord.reward.price;
-              }
-              this.statistics.awardRecords.totalPrice += awardRecord.reward.price;
-            }
-          })
-        });
-        this.awardRecordsChart.series[0].data = [];
-        this.awardRecordsChart.xaxis.categories = [];
-        let accumulateRewardPrice = 0;
-        Object.keys(stackedRewardsStats).forEach(timestamp =>{
-          this.awardRecordsChart.xaxis.categories.push(new Date(Number(timestamp)).toISOString());
-          accumulateRewardPrice += stackedRewardsStats[timestamp];
-          this.awardRecordsChart.series[0].data.push(accumulateRewardPrice);
-        });
-
-        const awardRecordsChart = new ApexCharts(document.querySelector("#awardRecordsChart"), this.awardRecordsChart);
-        awardRecordsChart.render();
-        this.loading.awardRecordsChart = false;
-
+        console.log(res.data);
+       this.awardRecords = res.data.betaTests;
         //테스트별 누적 리워즈 금액
         this.awardRecordsChartByTest.xaxis.categories = [];
         this.awardRecordsChartByTest.series[0].data = [];
@@ -680,8 +423,8 @@ export default {
       }).catch(err=>{
         this.$root.showErrorToast('수상 금액정보를 조회하는데 실패하였습니다.', err);
       })
-    }
-  },
+    },
+  }
 };
 </script>
 
