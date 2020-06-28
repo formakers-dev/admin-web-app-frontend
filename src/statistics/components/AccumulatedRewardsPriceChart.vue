@@ -40,7 +40,7 @@
             categories: []
           },
           yaxis: {
-            opposite: true
+            opposite: true,
           },
           tooltip: {
             x: {

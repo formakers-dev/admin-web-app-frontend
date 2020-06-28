@@ -38,46 +38,11 @@
             <RewardsPriceChart :items="awardRecordsByCondition"></RewardsPriceChart>
           </div>
         </div>
-<!--        <div class="column is-full">-->
-<!--          <div class="notification is-white">-->
-<!--            <RewardsPriceChart :items="awardRecords" type="all"></RewardsPriceChart>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="column is-half">-->
-<!--          <div class="notification is-white">-->
-<!--            <p class="title is-5">직업</p>-->
-<!--            <div id="jobChart"></div>-->
-<!--            <b-loading :is-full-page="false" :active.sync="loading.job"></b-loading>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="column is-half">-->
-<!--          <div class="notification is-white">-->
-<!--            <p class="title is-5">누적 가입자 - 총 {{statistics.users.total | comma}} 명</p>-->
-<!--            <div id="signUpChart"></div>-->
-<!--            <b-loading :is-full-page="false" :active.sync="loading.signUp"></b-loading>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="column is-half">-->
-<!--          <div class="notification is-white">-->
-<!--            <p class="title is-5">테스트별 참여자</p>-->
-<!--            <div id="participantsChart"></div>-->
-<!--            <b-loading :is-full-page="false" :active.sync="loading.participants"></b-loading>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="column is-half">-->
-<!--          <div class="notification is-white">-->
-<!--            <p class="title is-5">누적 리워즈 금액 - 총 {{statistics.awardRecords.totalPrice | comma}} 원</p>-->
-<!--            <div id="awardRecordsChart"></div>-->
-<!--            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChart"></b-loading>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="column is-half">-->
-<!--          <div class="notification is-white">-->
-<!--            <p class="title is-5">테스트별 리워즈 금액</p>-->
-<!--            <div id="awardRecordsChartByTest"></div>-->
-<!--            <b-loading :is-full-page="false" :active.sync="loading.awardRecordsChartByTest"></b-loading>-->
-<!--          </div>-->
-<!--        </div>-->
+        <div class="column is-half">
+          <div class="notification is-white">
+            <JobChart :items="participants"></JobChart>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -86,7 +51,6 @@
 <script>
 import moment from 'moment';
 import request from '../../common/utils/http';
-import Apexchart from 'vue-apexcharts';
 import BetaTestChart from '../components/BetaTestChart';
 import PlanChart from '../components/PlanChart';
 import AgeChart from '../components/AgeChart';
@@ -94,6 +58,7 @@ import AccumulatedParticipantsChart from '../components/AccumulatedParticipantsC
 import GenderChart from '../components/GenderChart';
 import AccumulatedRewardsPriceChart from '../components/AccumulatedRewardsPriceChart';
 import RewardsPriceChart from '../components/RewardsPriceChart';
+import JobChart from '../components/JobChart';
 export default {
   name: 'statistics',
   components:{
@@ -103,7 +68,8 @@ export default {
     AccumulatedParticipantsChart,
     GenderChart,
     AccumulatedRewardsPriceChart,
-    RewardsPriceChart
+    RewardsPriceChart,
+    JobChart
   },
   data() {
     return {

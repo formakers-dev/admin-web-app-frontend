@@ -175,8 +175,8 @@ export default {
       //data[0] : attend, data[1]: complete
       const currentYear = new Date().getFullYear();
       this.participants.forEach(participant =>{
-        if(participant.user.length > 0){
-          const user = participant.user[0];
+        if(participant.user){
+          const user = participant.user;
           if(user.birthday){
             const age = currentYear - user.birthday;
             const type = participant.status === 'attend' ? 0 : 1;
@@ -202,8 +202,8 @@ export default {
       this.ageBarChart.series[1].data = Array(this.ageBarChart.xaxis.categories.length).fill(0);
       const currentYear = new Date().getFullYear();
       this.participants.forEach(participant => {
-        if(participant.user.length > 0){
-          const user = participant.user[0];
+        if(participant.user){
+          const user = participant.user;
           if(user.birthday){
             const age = currentYear - user.birthday;
             const type = participant.status === 'attend' ? 0 : 1;

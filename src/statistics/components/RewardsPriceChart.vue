@@ -76,7 +76,7 @@
           yaxis: {
             labels: {
               show: false
-            }
+            },
           },
           tooltip: {
             theme: 'dark',

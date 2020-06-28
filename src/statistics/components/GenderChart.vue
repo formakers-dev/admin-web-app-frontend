@@ -117,8 +117,8 @@ export default {
   methods: {
     setStatistics(){
       this.participants.forEach(participant =>{
-        if(participant.user.length > 0){
-          const user = participant.user[0];
+        if(participant.user){
+          const user = participant.user;
           if(user.gender){
             const gender = user.gender === 'male' ? 0 : 1;
             const type = participant.status === 'attend' ? 0 : 1;
