@@ -20,12 +20,12 @@
         <div class="column is-one-fifth">
           <div class="notification is-primary stats-card">
             <p class="title is-5">총 베타테스트 수</p>
-            <p class="title has-text-right">{{ statistics.totalBetaTests | comma}}</p>
+            <p class="title is-4 has-text-right">{{ statistics.totalBetaTests | comma}}</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalBetaTests ==='-'"></b-loading>
           </div>
         </div>
         <div class="column">
-          <div class="notification is-white stats-card">
+          <div class="notification is-white stats-plan-card">
             <p class="title is-5">플랜</p>
             <div id="planStatsChart"></div>
             <b-loading :is-full-page="false" :active.sync="loading.planStatsChart"></b-loading>
@@ -34,14 +34,14 @@
         <div class="column is-one-fifth">
           <div class="notification is-info stats-card">
             <p class="title is-5">총 누적 참여자 수</p>
-            <p class="title has-text-right">{{statistics.totalParticipants | comma}}</p>
+            <p class="title is-4 has-text-right">{{statistics.totalParticipants | comma}}</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalParticipants ==='-'"></b-loading>
           </div>
         </div>
         <div class="column is-one-fifth">
           <div class="notification is-warning stats-card">
             <p class="title is-5">총 리워드 금액</p>
-            <p class="title has-text-right">&#8361; {{statistics.totalAwardRecordPrice | comma}}</p>
+            <p class="title is-4 has-text-right">&#8361; {{statistics.totalAwardRecordPrice | comma}}</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalAwardRecordPrice ==='-'"></b-loading>
           </div>
         </div>
@@ -397,6 +397,9 @@ export default {
 
 <style scoped>
 .stats-card{
-  height: 130px;
+  min-height: 130px;
 }
+  .stats-plan-card{
+    height: 130px;
+  }
 </style>
