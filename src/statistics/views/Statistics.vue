@@ -33,6 +33,16 @@
             <AccumulatedRewardsPriceChart :items="awardRecords"></AccumulatedRewardsPriceChart>
           </div>
         </div>
+        <div class="column is-half">
+          <div class="notification is-white">
+            <RewardsPriceChart :items="awardRecordsByCondition"></RewardsPriceChart>
+          </div>
+        </div>
+<!--        <div class="column is-full">-->
+<!--          <div class="notification is-white">-->
+<!--            <RewardsPriceChart :items="awardRecords" type="all"></RewardsPriceChart>-->
+<!--          </div>-->
+<!--        </div>-->
 <!--        <div class="column is-half">-->
 <!--          <div class="notification is-white">-->
 <!--            <p class="title is-5">직업</p>-->
@@ -83,6 +93,7 @@ import AgeChart from '../components/AgeChart';
 import AccumulatedParticipantsChart from '../components/AccumulatedParticipantsChart';
 import GenderChart from '../components/GenderChart';
 import AccumulatedRewardsPriceChart from '../components/AccumulatedRewardsPriceChart';
+import RewardsPriceChart from '../components/RewardsPriceChart';
 export default {
   name: 'statistics',
   components:{
@@ -91,13 +102,15 @@ export default {
     AgeChart,
     AccumulatedParticipantsChart,
     GenderChart,
-    AccumulatedRewardsPriceChart
+    AccumulatedRewardsPriceChart,
+    RewardsPriceChart
   },
   data() {
     return {
       allBetaTests: [],
       participants:[],
       awardRecords:[],
+      awardRecordsByCondition:[],
       openedBetaTests: [],
       closedBetaTests: [],
       statistics:{
@@ -133,11 +146,6 @@ export default {
         awardRecordsChartByTest: true
       },
       options:{
-        subjectTypes:{
-          'game-test': '게임 테스트',
-          'event' : '이벤트',
-          'fomes-test' : '포메스 테스트'
-        },
         job:{
           '1000':{name:'관리자',index:0},
           '2000':{name:'전문가',index:1},
@@ -244,42 +252,6 @@ export default {
           },
         },
       },
-      awardRecordsChartByTest:{
-        series: [{
-          name: '',
-          data: []
-        }],
-        chart: {
-          type: 'bar',
-          toolbar:{
-            show:false
-          },
-        },
-        plotOptions: {
-          bar: {
-            horizontal: true,
-            dataLabels: {
-              position: 'top',
-            },
-          }
-        },
-        dataLabels: {
-          enabled: true,
-          offsetX: -6,
-          style: {
-            fontSize: '12px',
-            colors: ['#fff']
-          }
-        },
-        stroke: {
-          show: true,
-          width: 1,
-          colors: ['#fff']
-        },
-        xaxis: {
-          categories: [],
-        },
-      },
     };
   },
   created() {
@@ -288,33 +260,13 @@ export default {
   watch : {
   },
   filters:{
-    comma(val){
-      return String(val).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
   },
   methods: {
-    convertDateTime(date){
-      return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
-    },
-    getOpeningStatus(open, close){
-      const current = new Date().getTime();
-      const openDate = new Date(open).getTime();
-      const closeDate = new Date(close).getTime();
-      if(openDate <= current && closeDate >= current){
-        return '오픈';
-      }
-      if(closeDate < current){
-        return '종료';
-      }
-      return '대기';
-    },
-    convertedSubjectType(value){
-      return this.options.subjectTypes[value] ? this.options.subjectTypes[value] : value;
-    },
     setStatistics(){
       this.getAllBetaTests();
       this.getParticipants();
       this.getAwardRecords();
+      this.getAwardRecords({limit:10, sort:'desc'});
       // this.setUsers();
       // this.setAwardRecords();
     },
@@ -398,28 +350,17 @@ export default {
         this.$root.showErrorToast('참여자 정보를를 조회하는데 실패하였습니다.', err);
       })
     },
-    getAwardRecords(){
-      request.get('/api/statistics/award-records').then(res=>{
-        console.log(res.data);
-       this.awardRecords = res.data.betaTests;
-        //테스트별 누적 리워즈 금액
-        this.awardRecordsChartByTest.xaxis.categories = [];
-        this.awardRecordsChartByTest.series[0].data = [];
-        const awardRecordsChartByTestData = res.data.betaTests.length >= 10 ? res.data.betaTests.slice(res.data.betaTests.length-10,res.data.betaTests.length) : res.data.betaTests;
-        awardRecordsChartByTestData.forEach(betaTest => {
-          this.awardRecordsChartByTest.xaxis.categories.push(betaTest.title);
-          let point = 0;
-          betaTest.awardRecords.forEach(awardRecord => {
-            if(awardRecord.reward && awardRecord.reward.price){
-              point += awardRecord.reward.price;
-            }
-          })
-          this.awardRecordsChartByTest.series[0].data.push(point);
-        });
-        const awardRecordsChartByTest = new ApexCharts(document.querySelector("#awardRecordsChartByTest"), this.awardRecordsChartByTest);
-        awardRecordsChartByTest.render();
-        this.loading.awardRecordsChartByTest = false;
-
+    getAwardRecords(condition){
+      let query = {};
+      if(condition){
+        query = Object.assign({}, condition);
+      }
+      request.get('/api/statistics/award-records', {params:query}).then(res=>{
+        if(condition){
+          this.awardRecordsByCondition = res.data.betaTests;
+        }else{
+          this.awardRecords = res.data.betaTests;
+        }
       }).catch(err=>{
         this.$root.showErrorToast('수상 금액정보를 조회하는데 실패하였습니다.', err);
       })

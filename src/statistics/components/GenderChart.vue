@@ -126,7 +126,6 @@ export default {
           }
         }
       });
-      console.log(this.genderChart.series);
       const genderChart = new ApexCharts(document.querySelector("#genderChart"), this.genderChart);
       genderChart.render();
       this.isLoading = false;
