@@ -129,15 +129,9 @@
         this.rewardsPriceChart.xaxis.categories = [];
         this.rewardsPriceChart.series[0].data = [];
         this.awardRecords.forEach(betaTest => {
-          let point = 0;
-          betaTest.awardRecords.forEach(awardRecord => {
-            if (awardRecord.reward && awardRecord.reward.price) {
-              point += awardRecord.reward.price;
-            }
-          })
           const status = this.getOpeningStatus(betaTest.openDate, betaTest.closeDate);
           this.rewardsPriceChart.xaxis.categories.push(this.options.status[status] + ' ' + betaTest.title);
-          this.rewardsPriceChart.series[0].data.push(point);
+          this.rewardsPriceChart.series[0].data.push(betaTest.totalPrice);
           this.rewardsPriceChart.colors.push(this.options.colors[status]);
         });
         const rewardsPriceChart = new ApexCharts(document.querySelector("#rewardsPriceChart"), this.rewardsPriceChart);

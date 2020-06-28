@@ -117,15 +117,9 @@
         this.allRewardsPriceChart.xaxis.categories = [];
         this.allRewardsPriceChart.series[0].data = [];
         this.awardRecords.forEach(betaTest => {
-          let point = 0;
-          betaTest.awardRecords.forEach(awardRecord => {
-            if(awardRecord.reward && awardRecord.reward.price){
-              point += awardRecord.reward.price;
-            }
-          })
           const status = this.getOpeningStatus(betaTest.openDate, betaTest.closeDate);
           this.allRewardsPriceChart.xaxis.categories.push(this.options.status[status] + ' ' + betaTest.title);
-          this.allRewardsPriceChart.series[0].data.push(point);
+          this.allRewardsPriceChart.series[0].data.push(betaTest.totalPrice);
           this.allRewardsPriceChart.colors.push(this.options.colors[status]);
         });
         this.allRewardsPriceChart.chart.height = this.awardRecords.length * 40 + 300;

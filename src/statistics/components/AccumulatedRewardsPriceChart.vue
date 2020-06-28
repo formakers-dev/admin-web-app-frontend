@@ -73,16 +73,12 @@
         this.total = 0;
         this.awardRecords.forEach(betaTest => {
           const closeTimestamp = new Date(betaTest.closeDate).getTime();
-          betaTest.awardRecords.forEach(awardRecord => {
-            if(awardRecord.reward && awardRecord.reward.price){
-              if(stackedRewardsStats[closeTimestamp]){
-                stackedRewardsStats[closeTimestamp] += awardRecord.reward.price;
-              }else{
-                stackedRewardsStats[closeTimestamp] = awardRecord.reward.price;
-              }
-              this.total += awardRecord.reward.price;
-            }
-          })
+          if(stackedRewardsStats[closeTimestamp]){
+            stackedRewardsStats[closeTimestamp] += betaTest.totalPrice;
+          }else{
+            stackedRewardsStats[closeTimestamp] = betaTest.totalPrice;
+          }
+          this.total += betaTest.totalPrice;
         });
         this.accumulatedRewardsPriceChart.series[0].data = [];
         this.accumulatedRewardsPriceChart.xaxis.categories = [];
