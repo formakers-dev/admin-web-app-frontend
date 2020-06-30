@@ -199,33 +199,6 @@ export default {
           },
         },
       },
-      awardRecordsChart:{
-        chart:{
-          type:'area',
-        },
-        series:[{
-          name:'누적 리워즈 금액',
-          data:[]
-        }],
-        dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          curve: 'smooth'
-        },
-        xaxis: {
-          type: 'datetime',
-          categories: []
-        },
-        yaxis: {
-          opposite: true
-        },
-        tooltip: {
-          x: {
-            format: 'yyyy-MM-dd HH:mm'
-          },
-        },
-      },
     };
   },
   created() {
