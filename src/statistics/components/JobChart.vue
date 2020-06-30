@@ -45,7 +45,6 @@ export default {
         ],
         chart: {
           type: 'line',
-          height: '330',
           zoom: {
             type: 'x',
             enabled: true,

@@ -43,6 +43,11 @@
             <JobChart :items="participants"></JobChart>
           </div>
         </div>
+        <div class="column is-half">
+          <div class="notification is-white">
+            <ParticipantsChart :items="participantsGroupByBetaTest"></ParticipantsChart>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -59,6 +64,7 @@ import GenderChart from '../components/GenderChart';
 import AccumulatedRewardsPriceChart from '../components/AccumulatedRewardsPriceChart';
 import RewardsPriceChart from '../components/RewardsPriceChart';
 import JobChart from '../components/JobChart';
+import ParticipantsChart from '../components/ParticipantsChart';
 export default {
   name: 'statistics',
   components:{
@@ -69,12 +75,14 @@ export default {
     GenderChart,
     AccumulatedRewardsPriceChart,
     RewardsPriceChart,
-    JobChart
+    JobChart,
+    ParticipantsChart
   },
   data() {
     return {
       allBetaTests: [],
       participants:[],
+      participantsGroupByBetaTest:[],
       awardRecords:[],
       awardRecordsByCondition:[],
       openedBetaTests: [],
@@ -231,6 +239,7 @@ export default {
     setStatistics(){
       this.getAllBetaTests();
       this.getParticipants();
+      this.getParticipantsGroupByBetaTest();
       this.getAwardRecords();
       this.getAwardRecords({limit:10, sort:'desc'});
       // this.setUsers();
@@ -311,6 +320,14 @@ export default {
     getParticipants(){
       request.get('/api/statistics/participants?type=beta-test').then(res=>{
         this.participants = res.data.participants;
+      }).catch(err=>{
+        console.log(err);
+        this.$root.showErrorToast('참여자 정보를를 조회하는데 실패하였습니다.', err);
+      })
+    },
+    getParticipantsGroupByBetaTest(){
+      request.get('/api/statistics/participants?groupBy=beta-test&sort=desc&limit=10').then(res=>{
+        this.participantsGroupByBetaTest = res.data.participants;
       }).catch(err=>{
         console.log(err);
         this.$root.showErrorToast('참여자 정보를를 조회하는데 실패하였습니다.', err);
