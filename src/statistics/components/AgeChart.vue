@@ -50,7 +50,11 @@ export default {
           enabled: true,
           style: {
             fontSize: '12px',
-            colors: ['#fff']
+            colors: ['#000']
+          },
+          offsetY: -20,
+          formatter: function (val) {
+            return Number(val) > 0 ? val : '';
           }
         },
         title:{
@@ -82,8 +86,9 @@ export default {
           offsetY: 0,
           parentHeightOffset: 0
         },
-        colors: ['#79ceb8', '#537bc4', '#ffdb00', '#13d8aa', '#314855', '#e95f5c', '#f9a3a4', '#ff2052',
-          '#0d69af', '#e66000','#4d148c','#2facb2'
+        colors: [
+          '#79ceb8', '#537bc4', '#ffdb00', '#13d8aa', '#314855', '#e95f5c',
+          '#f9a3a4', '#ff2052', '#0d69af', '#e66000','#4d148c','#2facb2'
         ],
         grid: {
           yaxis: {
@@ -169,14 +174,14 @@ export default {
       //init
       this.options.ageRange.forEach(range=>{
         //attend : 참여한 사용자 아이디, complete : 참여완료한 사용자 아이디
-        const data = {name:range, data:[], attend:new Set([]),complete:new Set([])};
+        const data = {name:range, data:[0,0], attend:new Set([]),complete:new Set([])};
         this.ageStackChart.series.push(data)
       });
       //data[0] : attend, data[1]: complete
       const currentYear = new Date().getFullYear();
       this.participants.forEach(participant =>{
-        if(participant.user){
-          const user = participant.user;
+        const user = participant.user;
+        if(user){
           if(user.birthday){
             const age = currentYear - user.birthday;
             const type = participant.status === 'attend' ? 0 : 1;
@@ -184,7 +189,7 @@ export default {
             if(age <= 9){
               index = 0;
             }else if(age >= 60){
-              index = this.ageBarChart.xaxis.categories.length-1;
+              index = this.ageStackChart.xaxis.categories.length-1;
             }else{
               index = Math.floor(age/5)-1;
             }

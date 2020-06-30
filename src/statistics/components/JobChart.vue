@@ -1,6 +1,6 @@
 <template>
   <section>
-    <p class="title is-5">직업별 테스트 참여완료</p>
+    <p class="title is-5">직업별 테스트 참여완료 횟수</p>
     <div id="jobChart"></div>
     <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
   </section>
@@ -51,9 +51,6 @@ export default {
             enabled: true,
             autoScaleYaxis: true
           },
-          toolbar: {
-            autoSelected: 'zoom'
-          }
         },
         plotOptions: {
         },
@@ -74,9 +71,15 @@ export default {
           '#b84592', '#003666', '#7f181b'
         ],
         xaxis: {
-          type:'datetime',
+          type:'numeric',
           categories: [],
           tickPlacement: 'on',
+          labels: {
+            show : true,
+            formatter: function(val, index){
+              return moment(val).format("YYYY-MM");
+            },
+          }
         },
         yaxis: {
           labels: {

@@ -32,7 +32,7 @@
       return {
         isLoading:true,
         options:{
-          colors: ['#ffdb00','#00BFBA','#ff2052'],
+          colors: ['#ffdb00','#00BFBA','#D3D3D3'],
           status: ['(대기)','(오픈)','(종료)']
         },
         awardRecords:[],
