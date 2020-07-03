@@ -80,6 +80,13 @@ export default {
           height: 370
         },
         labels: ['남','여','미정의'],
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " 명"
+            }
+          },
+        }
       },
       jobChart:{
         series: [{
@@ -111,6 +118,13 @@ export default {
         },
         xaxis: {
           categories: [],
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " 명"
+            }
+          },
         }
       },
       signUpChart:{
@@ -138,23 +152,63 @@ export default {
           x: {
             format: 'yyyy-MM-dd HH:mm'
           },
+          y: {
+            formatter: function(value,index){
+              return value +' 명'
+            }
+          }
         },
       },
       ageChart:{
         series: [],
         chart: {
-          type: 'bubble',
+          type: 'bar',
+          toolbar:{
+            show:false
+          }
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false
+          },
         },
         dataLabels: {
           enabled: false
         },
-        fill: {
-          opacity: 0.8
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
         },
         xaxis: {
-          type: 'category',
+          categories: [],
+          title: {
+            text: '연령'
+          }
         },
         yaxis: {
+          labels: {
+            show: true,
+            formatter: function(val, index) {
+              return val.toFixed();
+            }
+          },
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " 명"
+            }
+          },
+          x: {
+            show: true,
+            formatter: function(value){
+              return '만 ' + value + '세';
+            }
+          }
         }
       }
     };
@@ -187,8 +241,9 @@ export default {
     },
     setJobChart(){
       //job length : 18
-      this.jobChart.series[0].data = Array(18).fill(0);
-      this.jobChart.xaxis.categories = Array(18).fill('');
+      const jobLength = Object.keys(this.options.job).length;
+      this.jobChart.series[0].data = Array(jobLength).fill(0);
+      this.jobChart.xaxis.categories = Array(jobLength).fill('');
       Object.keys(this.options.job).forEach(key =>{
         const job = this.options.job[key];
         this.jobChart.xaxis.categories[job.index] = job.name;
@@ -230,10 +285,32 @@ export default {
       signUpChart.render();
       this.loading.signUp = false;
     },
+    setAgeChart(){
+      this.ageChart.series = [];
+      this.ageChart.xaxis.categories = [];
+      const currentYear = new Date().getFullYear();
+      const ageMap = {}; //key: age, value: count
+      this.users.forEach(user=>{
+        if(user.birthday){
+          const age = (currentYear - user.birthday);
+          if(ageMap[age]){
+            ageMap[age] += 1;
+          }else{
+            ageMap[age] = 1;
+          }
+        }
+      });
+      this.ageChart.series.push({name:'', data: Object.values(ageMap)});
+      this.ageChart.xaxis.categories = Object.keys(ageMap);
+      const ageChart = new ApexCharts(document.querySelector("#ageChart"), this.ageChart);
+      ageChart.render();
+      this.loading.age = false;
+    },
     setStatistics(){
       this.setGenderChart();
       this.setJobChart();
       this.setSignUpChart();
+      this.setAgeChart();
     },
   }
 };

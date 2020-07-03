@@ -154,12 +154,6 @@ export default {
           }
         }
       });
-      // set to array
-      // const dateArray = Array.from(dateSet);
-      // dateArray.forEach(i=>{
-      //   const convertedDate = moment(new Date(i).toISOString()).format('YYYY-MM');
-      //   this.jobChart.xaxis.categories.push(convertedDate);
-      // })
       this.jobChart.xaxis.categories = Array.from(dateSet);
       data.sort((a,b)=>{
         return a.totalCount.complete > b.totalCount.complete ? -1 : a.totalCount.complete < b.totalCount.complete ? 1 : 0;
