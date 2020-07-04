@@ -1,48 +1,27 @@
 <template>
   <div>
     <h1 class="title">🎮 게임 테스트 상세정보 🎮</h1>
-    <section v-if="type === 'update'" style="margin-bottom: 10px">
-      <div class="level">
-        <div class="level-left">
-          <div class="level-item"></div>
-        </div>
-        <div class="level-right">
-          <div class="level-item">
-            <b-button type="is-text"
-                      size="is-small"
-                      tag="router-link"
-                      to="/statistics"
-            >더 보기</b-button>
+    <section style="margin-bottom: 10px">
+      <div class="tile is-ancestor">
+        <div class="tile is-parent is-4">
+          <div class="tile is-child notification is-white stats-card">
+            <p class="title is-5">미션 & 베타테스트 참여/참여완료</p>
+            <div id="missionAndBetaTestChart"></div>
+            <b-loading :is-full-page="false" :active.sync="loading.missionAndBetaTestChart"></b-loading>
           </div>
         </div>
-      </div>
-      <div class="columns">
-        <div class="column is-one-fifth">
-          <div class="notification is-primary stats-card">
-            <p class="title is-5">총 베타테스트 수</p>
-            <p class="title has-text-right">{{ statistics.totalBetaTests | comma}}</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalBetaTests ==='-'"></b-loading>
+        <div class="tile is-parent is-vertical is-3">
+          <div class="tile is-child notification is-primary">
+            <p class="title is-5">베타테스트 참여완료율</p>
+            <p class="title is-4 has-text-right">{{statistics.completeRatio}} %</p>
+            <b-loading :is-full-page="false" :active.sync="loading.missionAndBetaTestChart"></b-loading>
           </div>
-        </div>
-        <div class="column">
-          <div class="notification is-white stats-card">
-            <p class="title is-5">플랜</p>
-            <div id="planStatsChart"></div>
-            <b-loading :is-full-page="false" :active.sync="loading.planStatsChart"></b-loading>
-          </div>
-        </div>
-        <div class="column is-one-fifth">
-          <div class="notification is-info stats-card">
-            <p class="title is-5">총 누적 참여자 수</p>
-            <p class="title has-text-right">{{statistics.totalParticipants | comma}}</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipants ==='-'"></b-loading>
-          </div>
-        </div>
-        <div class="column is-one-fifth">
-          <div class="notification is-warning stats-card">
-            <p class="title is-5">총 리워드 금액</p>
-            <p class="title has-text-right">&#8361; {{statistics.totalAwardRecordPrice | comma}}</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalAwardRecordPrice ==='-'"></b-loading>
+          <div class="tile is-child notification is-warning">
+            <p v-if='openingStatus ==="-"' class="title is-5">-</p>
+            <p v-if="openingStatus === '대기' || openingStatus === '오픈'" class="title is-5">리워즈 총 예상 금액</p>
+            <p v-if='openingStatus ==="종료"' class="title is-5">리워즈 총 지급 금액</p>
+            <p class="title is-4 has-text-right">&#8361; {{statistics.rewards.price | comma}}</p>
+            <b-loading :is-full-page="false" :active.sync="loading.rewards"></b-loading>
           </div>
         </div>
       </div>
@@ -144,7 +123,7 @@
         <b-input v-model="betaTest.bugReport.url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}" disabled></b-input>
       </b-field>
       <b-field label="테스트 진행 상태별 문구" horizontal>
-        <b-checkbox v-model="isCustomizedProgressText" @input="initializeProgressText" disabled>
+        <b-checkbox v-model="isCustomizedProgressText" disabled>
           기본 상태별 문구 이외의 문구 출력을 원하는 경우만 체크해서 내용을 수정하세요.
         </b-checkbox>
       </b-field>
@@ -221,8 +200,7 @@
                       :reward="reward"
                       :reward-types="options.rewardTypes"
                       :disabled="true"
-                      class="column is-one-third rewards"
-                      @remove-reward-item="removeRewardCard"/>
+                      class="column is-one-third rewards"/>
         </draggable>
       </section>
     </div>
@@ -286,109 +264,103 @@ export default {
   },
   data() {
     return {
-      allBetaTests: [],
       subjectTypes:{
         'game-test': '게임 테스트',
         'event' : '이벤트',
         'fomes-test' : '포메스 테스트'
       },
-      statistics:{
-        totalBetaTests:'-',
-        plan:{
-          trial:'-',
-          starter:'-',
-          lite:'-',
-          simple:'-',
-          standard:'-'
-        },
-        totalParticipants:'-',
-        totalAwardRecordPrice:'-'
-      },
       loading:{
-        planStatsChart:true
+        missionAndBetaTestChart:true,
+        rewards:true,
       },
-      planStatsChart:{
+      betaTestCompleteRatioChart:{
+        series: [0],
+        chart: {
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              size: '50%',
+            }
+          },
+        },
+        labels: ['Cricket'],
+      },
+      missionAndBetaTestChart:{
+        series: [],
         chart: {
           type: 'bar',
-          height: '110',
-          stacked: true,
-          stackType: '100%',
           toolbar:{
             show:false
           },
-          offsetX:0,
-          offsetY:-45,
-          parentHeightOffset:0
+          height:130,
+          offsetY: 0,
+          parentHeightOffset: 0
         },
-        grid:{
+        xaxis: {
+          categories: [''],
+        },
+        grid: {
           yaxis: {
             lines: {
               show: false,
             }
           }
         },
-        xaxis:{
-          labels:{
-            show:false
+        yaxis: {
+          categories: [''],
+          labels: {
+            show: false
           },
-          categories: ['플랜'],
-          axisBorder:{
-            show:false
-          },
-          axisTicks: {
-            show:false
-          }
-        },
-        yaxis:{
-          categories:[''],
-          labels:{
-            show:false
-          },
-          axisBorder:{
-            show:false
+          axisBorder: {
+            show: false
           },
           axisTicks: {
-            show:false
+            show: false
           }
         },
         plotOptions: {
           bar: {
-            horizontal: true,
+            horizontal: false,
+            columnWidth: '70%',
+            dataLabels: {
+              position: 'top',
+            },
           },
         },
-        stroke: {
-          width: 1,
-          colors: ['#fff']
-        },
-        tooltip: {
-          y: {
-            formatter: function (val) {
-              return val
-            }
+        dataLabels: {
+          enabled: true,
+          style: {
+            fontSize: '12px',
+            colors: ['#000']
+          },
+          offsetY: -20,
+          formatter: function (val) {
+            return Number(val) > 0 ? String(val).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : 0;
           }
         },
         fill: {
           opacity: 1
         },
         legend: {
-          position: 'top',
-          horizontalAlign: 'right',
-          offsetX:0,
-          offsetY:30,
+          position: 'right',
+          horizontalAlign: 'center',
+          offsetX: -20,
+          offsetY: 0,
           itemMargin: {
-            horizontal: 5,
+            horizontal: 0,
             vertical: 0
           }
         },
-        series:[
-          {name:'트라이얼', data:[], key:'trial'},
-          {name:'스타터', data:[], key:'starter'},
-          {name:'라이트', data:[], key:'lite'},
-          {name:'심플', data:[], key:'simple'},
-          {name:'스탠다드', data:[], key:'standard'},
-        ]
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val;
+            }
+          }
+        },
       },
-      activeStep:0,
       options:{
         plan:[
           {key:'trial', text:'Trial'},
@@ -425,7 +397,9 @@ export default {
       packageName: '',
       testType: 'simple',
       type:'add',
+      openingStatus:'-',
       betaTest: {
+        _id:'',
         title: '',
         plan:'trial',
         description: '',
@@ -446,6 +420,18 @@ export default {
           url: '',
         },
       },
+      statistics:{
+        mission:{
+        },
+        'beta-test':{
+          attend:0,
+          complete:0
+        },
+        rewards:{
+          price:0,
+        },
+        completeRatio:0
+      }
     };
   },
   watch:{
@@ -461,27 +447,14 @@ export default {
     },
   },
   created() {
-    if(this.$route.query.id){
-      this.type='update';
-      this.getBetaTest();
-      this.getAllBetaTests();
-    }else{
-      this.type='add';
-      const openDate = new Date();
-      openDate.setHours(9);
-      openDate.setMinutes(0);
-      openDate.setSeconds(0);
-      const closeDate = new Date();
-      closeDate.setHours(23);
-      closeDate.setMinutes(59);
-      closeDate.setSeconds(59);
-      this.betaTest.openDate = openDate;
-      this.betaTest.closeDate = closeDate;
-      this.setMissionsByTestType();
-    }
+    this.type='update';
+    const betaTestPromise = this.getBetaTest();
+    const participantsPromise = this.getParticipants();
+    Promise.all([betaTestPromise, participantsPromise]).then((values)=>{
+      this.setMissionAndBetaTestChart();
+    });
   },
   mounted() {
-    this.activeStep = this.step > 0 ? this.step : this.activeStep;
   },
   filters:{
     comma(val){
@@ -489,59 +462,82 @@ export default {
     }
   },
   methods: {
-    prepareDataToRegister() {
-      if (this.isTargetToFomesMembers) {
-        this.betaTest.status = 'test';
-      } else {
-        delete this.betaTest.status;
+    getOpeningStatus(open, close){
+      const current = new Date().getTime();
+      const openDate = new Date(open).getTime();
+      const closeDate = new Date(close).getTime();
+      if (openDate <= current && closeDate >= current) {
+        return "오픈";
       }
+      if (closeDate < current) {
+        return "종료";
+      }
+      return "대기";
     },
     getBetaTest(){
-      request.get('/api/beta-test/'+this.$route.query.id).then((result)=>{
+      return request.get('/api/beta-test/'+this.$route.query.id).then((result)=>{
         this.betaTest = Object.assign({}, result.data);
         this.betaTest.openDate = new Date(result.data.openDate);
         this.betaTest.closeDate = new Date(result.data.closeDate);
         this.isTargetToFomesMembers = this.betaTest.status === 'test';
         this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
+        this.openingStatus = this.getOpeningStatus(result.data.openDate, result.data.closeDate);
         console.log(result.data);
+        if(this.openingStatus === '종료'){
+          this.getAwardRecords();
+        }else{
+          let totalPrice = 0;
+          this.betaTest.rewards.list.forEach(rewards=>{
+            if(rewards.count && rewards.price){
+              totalPrice += (rewards.count*rewards.price);
+            }
+          });
+          this.statistics.rewards.price = totalPrice;
+          this.loading.rewards = false;
+        }
+        return Promise.resolve();
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
+        return Promise.reject(err);
       });
     },
-    registerBetaTest() {
-      if(this.validate()){
-        this.prepareDataToRegister();
-        const body = this.betaTest;
-        request.post('/api/beta-test', body)
-          .then((result) => {
-            this.result = result;
-            this.$root.showSuccessToast('등록을 정상적으로 하였습니다.');
-            this.$router.push('/test/list');
-          })
-          .catch((err) => {
-            this.$root.showErrorToast('등록에 실패하였습니다.',err);
-          });
-      }else{
-        this.$root.showToast('is-info', '필수 입력 값을 확인해주세요');
+    getAwardRecords(){
+      const params = {
+        filters: 'totalPrice',
+        betaTestId: this.$route.query.id
       }
+      request.get('/api/statistics/award-records',{params: params}).then(result=>{
+        this.statistics.rewards.price = result.data.totalAwardRecordPrice;
+        this.loading.rewards = false;
+      }).catch(err => {
+        this.$root.showErrorToast('수상 금액 정보 조회에 실패하였습니다.',err);
+      });
     },
-    updateBetaTest() {
-      if(this.validate()){
-        this.prepareDataToRegister();
-        const body = this.betaTest;
-        console.log(body);
-        request.put('/api/beta-test/'+body._id, body)
-          .then((result) => {
-            this.result = result;
-            this.$root.showSuccessToast('정상적으로 수정하였습니다.');
-            this.$router.push({path:'/test/list', query:{page:this.$route.query.p}});
-          })
-          .catch((err) => {
-            this.$root.showErrorToast('수정에 실패하였습니다.',err);
-          });
-      }else{
-        this.$root.showToast('is-info', '필수 입력 값을 확인해주세요');
+    getParticipants(){
+      const params ={
+        path: 'overview',
+        betaTestId: this.$route.query.id
       }
+      return request.get('/api/statistics/participants',{params:params}).then(result=>{
+        const participants = result.data.participants;
+        participants.forEach(participant =>{
+          if(participant.type === 'mission'){
+            if(this.statistics.mission[participants.missionId]){
+              this.statistics.mission[participants.missionId][participants.status] += 1;
+            }else{
+              const counts = {complete:0, attend:0};
+              counts[participant.status] = 1;
+              this.statistics.mission[participants.missionId] = Object.assign({}, counts);
+            }
+          }else{
+            this.statistics['beta-test'][participant.status] += 1;
+          }
+        });
+        return Promise.resolve();
+      }).catch(err=>{
+        this.$root.showErrorToast('참여자 정보 조회에 실패하였습니다.',err);
+        return Promise.reject(err);
+      })
     },
     setSubjectType(selected) {
       this.betaTest.subjectType = selected;
@@ -549,202 +545,10 @@ export default {
         delete this.betaTest.plan;
       }
     },
-    addRewardCard() {
-      const rewardListLength = this.betaTest.rewards.list.length;
-      let item = {};
-      this.options.rewardTypes.forEach((i)=>{
-        if(i.key === this.rewardType){
-          item = Object.assign({}, i.value);
-        }
-      });
-      item.order = rewardListLength > 0
-        ? Number(this.betaTest.rewards.list[rewardListLength - 1].order) + 1 : 1;
-      this.betaTest.rewards.list.push(item);
-    },
-    removeRewardCard(order) {
-      const item = this.betaTest.rewards.list.find(i => i.order === order);
-      const itemIndex = this.betaTest.rewards.list.indexOf(item);
-      this.betaTest.rewards.list.splice(itemIndex, 1);
-      this.betaTest.rewards.list.forEach((item,index)=>{
-        item.order = index+1;
-      })
-    },
-    addMissionCard() {
-      if(!this.betaTest.missions){
-       this.betaTest.missions = [];
-      }
-      const mission = {
-        order: this.betaTest.missions.length+1,
-        type: 'play',
-        title: '',
-        description: '',
-        descriptionImageUrl: '',
-        guide: '',
-        actionType: 'default',
-        action: '',
-        packageName:'',
-        options: [],
-      };
-      this.openMissionForm('add', mission);
-    },
-    removeMissionCard(order) {
-      console.log('removeMissionCard order', order);
-      const item = this.betaTest.missions.find(i => i.order === order);
-      const itemIndex = this.betaTest.missions.indexOf(item);
-      this.betaTest.missions.splice(itemIndex, 1);
-      this.betaTest.missions.forEach((item,index)=>{
-        item.order = index+1;
-      })
-    },
-    getApp(packageName) {
-      if (!packageName) {
-        this.showToast('is-info', '게임 패키지명을 입력해주세요.')
-        this.$refs.packageName.focus();
-        return;
-      }
-
-      request.get(`/api/apps/${packageName}`)
-        .then((res) => {
-          console.log(res);
-          if (res.status === 200) {
-            this.betaTest.iconImageUrl = res.data.iconUrl;
-          } else {
-            this.showErrorToast('앱아이콘 정보를 불러오는데 실패하였습니다.');
-          }
-        })
-        .catch((err) => {
-          this.result = err;
-          this.showErrorToast();
-        });
-    },
-    initializeProgressText(checked) {
-      const isInit = this.betaTest.progressText ? false : true;
-      if (checked && isInit) {
-        this.betaTest.progressText = {
-          ready: '밑져야 본전! 재미있어 보인다면 참여해 보세요.',
-          doing: '당신을 기다리고 있었어요! 이어서 참여해볼까요?',
-          done: '굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.',
-        };
-      } else {
-        delete this.betaTest.progressText;
-      }
-    },
-    setMissionsByTestType() {
-      const missions = [];
-      switch (this.testType) {
-        case 'application+simple':
-        case 'application+normal':
-          missions.push({
-            order: missions.length + 1,
-            type: 'survey',
-            title: '참여 신청',
-            description: '[게임명] 클로즈드 베타 테스터 참여 신청',
-            descriptionImageUrl: 'https://i.imgur.com/F3EJAOs.png',
-            guide: '• 참여 신청 후 설치권한 부여까지 약 1일이 소요됩니다.',
-            actionType: '',
-            action: '',
-            options: ['mandatory'],
-          });
-        case 'short':
-        case 'simple':
-        case 'normal':
-          missions.push({
-            order: missions.length + 1,
-            type: 'play',
-            title: '게임 플레이',
-            description: '[게임명] 게임을 플레이해주세요.(30분 이상 권장)',
-            descriptionImageUrl: 'https://i.imgur.com/FDDy1WG.png',
-            guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
-            packageName: '',
-            actionType: '',
-            action: '',
-            options: ['repeatable'],
-          });
-          missions.push({
-            order: missions.length + 1,
-            type: 'survey',
-            title: '플레이 후 소감 작성',
-            description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
-            descriptionImageUrl: 'https://i.imgur.com/XfqTB0K.png',
-            guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
-            actionType: '',
-            action: '',
-            options: [
-              'mandatory',
-              'repeatable',
-              'recheckable'
-            ],
-          });
-          break;
-
-        default: // Do nothing
-      }
-      this.betaTest.missions = missions;
-    },
     changeOrder(list){
       list.forEach((e,index)=>{
         e.order = index+1;
       });
-    },
-    openMissionForm(type, item){
-          this.$buefy.modal.open({
-            parent: this,
-            props: {
-              item:item,
-              modalType: type,
-              packageName: this.packageName
-            },
-            component: Mission,
-            hasModalCard: true,
-            trapFocus: true,
-            canCancel: false,
-            events: {
-              upsertMission:(action, value) => {this.upsertMission(action, value)},
-            },
-      });
-    },
-    upsertMission(action, value){
-      if(action === 'add'){
-        this.$set(this.betaTest.missions, this.betaTest.missions.length, value);
-      }else{
-        this.$set(this.betaTest.missions, value.order-1, value);
-      }
-    },
-    validate(){
-      let isValid = true;
-      for (let ref in this.$refs) {
-        if(!this.$refs[ref]){
-          continue;
-        }
-        if(ref === 'betaTest.tags'){
-          isValid = this.$refs[ref].tags.length > 0
-          if(!isValid){
-            this.$refs[ref].focus();
-          }
-        }else{
-          if(this.$refs[ref].length > 0){
-            for(let index in this.$refs[ref]){
-              const arrayRefs = this.$refs[ref][index].$refs;
-              for(let refTag in arrayRefs){
-                if(arrayRefs[refTag]){
-                  let checkValidity = arrayRefs[refTag].checkHtml5Validity();
-                  if(!checkValidity){
-                    console.log(arrayRefs[refTag])
-                    isValid = false;
-                  }
-                }
-              }
-            }
-          }else{
-            let checkValidity = this.$refs[ref].checkHtml5Validity();
-            if(!checkValidity){
-              console.log(ref,this.$refs[ref])
-              isValid = false;
-            }
-          }
-        }
-      }
-      return isValid;
     },
     goRegister(){
       this.$router.replace({path:'/test/register', query:this.$route.query});
@@ -763,63 +567,26 @@ export default {
         events: {
         }})
     },
-    setStatistics(){
-      this.loading.planStatsChart = true;
-      this.setTotalParticipants();
-      this.setTotalAwardRecordPrice();
-      this.statistics.totalBetaTests = this.allBetaTests.length
-      Object.keys(this.statistics.plan).forEach((i)=>{
-        this.statistics.plan[i] = 0
-      })
-      this.allBetaTests.forEach(item=>{
-        if(item.plan){
-          this.statistics.plan[item.plan] += 1
+    setMissionAndBetaTestChart(){
+      this.missionAndBetaTestChart.series = [];
+      this.missionAndBetaTestChart.series.push(Object.assign({},{name:'베타테스트 참여', data:[this.statistics['beta-test'].attend]}));
+      const missions = this.betaTest.missions;
+      missions.forEach(mission=>{
+        let count = 0;
+        if(this.statistics.mission[mission._id]){
+          count = this.statistics.mission[mission._id].complete;
         }
+        this.missionAndBetaTestChart.series.push(Object.assign({},{name: mission.title, data:[count]}));
       });
+      this.missionAndBetaTestChart.series.push(Object.assign({},{name:'베타테스트 참여완료', data:[this.statistics['beta-test'].complete]}));
+      const missionAndBetaTestChart = new ApexCharts(document.querySelector("#missionAndBetaTestChart"), this.missionAndBetaTestChart);
+      missionAndBetaTestChart.render();
+      this.loading.missionAndBetaTestChart = false;
 
-      const data = [];
-      Object.keys(this.statistics.plan).forEach((i)=>{
-        const key = i;
-        const value = this.statistics.plan[i];
-        this.planStatsChart.series.forEach(item=>{
-          if(item.key === key){
-            item.data[0] = value;
-            data.push(item)
-          }
-        });
-      })
-      this.$set(this.planStatsChart.series, data);
-      const planChart = new ApexCharts(document.querySelector("#planStatsChart"), this.planStatsChart);
-      planChart.render();
-      this.loading.planStatsChart = false;
-    },
-    setTotalParticipants(){
-      request.get('/api/statistics/participants?path=overview&type=beta-test&status=complete').then(res=>{
-        this.statistics.totalParticipants = res.data.participants.length;
-      }).catch(err=>{
-        console.log(err);
-        this.$root.showErrorToast('총 참여자 수를 조회하는데 실패하였습니다.', err);
-      })
-    },
-    setTotalAwardRecordPrice(){
-      request.get('/api/statistics/award-records?filters=totalPrice').then(res=>{
-        this.statistics.totalAwardRecordPrice = res.data.totalAwardRecordPrice;
-      }).catch(err=>{
-        this.$root.showErrorToast('총 수상 금액을 조회하는데 실패하였습니다.', err);
-      })
-    },
-    getAllBetaTests() {
-      request.get('/api/beta-test')
-        .then((res) => {
-          this.allBetaTests = res.data;
-          this.setStatistics();
-        })
-        .catch((err) => {
-          this.$root.showErrorToast('테스트 목록을 조회하는데 실패하였습니다.', err);
-        });
-    },
-    convertDateTime(date){
-      return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
+      const betaTestStatistic = this.statistics['beta-test'];
+      console.log(this.statistics);
+      const ratio = ((betaTestStatistic.complete/betaTestStatistic.attend)*100);
+      this.statistics.completeRatio = ratio > 0 ? ratio.toFixed() : 0;
     },
   },
 };
@@ -838,6 +605,6 @@ export default {
     text-align: center;
   }
   .stats-card{
-    height: 130px;
+    /*min-height: 150px;*/
   }
 </style>

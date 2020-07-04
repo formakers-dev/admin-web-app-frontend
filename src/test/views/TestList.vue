@@ -11,7 +11,7 @@
             <b-button type="is-text"
                       size="is-small"
                       tag="router-link"
-                      to="/statistics"
+                      to="/statistics/beta-tests"
             >더 보기</b-button>
           </div>
         </div>
