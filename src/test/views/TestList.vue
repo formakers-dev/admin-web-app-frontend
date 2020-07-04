@@ -131,8 +131,9 @@ export default {
   data() {
     return {
       allBetaTests: [],
-      openedBetaTests: [],
-      closedBetaTests: [],
+      awardRecordsPrice:{}, //key:betaTestId, value: totalPrice
+      allParticipants:[],
+      allAwardRecords:[],
       selected: {},
       currentPage:1,
       subjectTypes:{
@@ -237,7 +238,8 @@ export default {
         ]
       },
       searchDate:[],
-      filteredBetaTests:[]
+      filteredBetaTests:[],
+      planChartObj:null,
     };
   },
   created() {
@@ -258,8 +260,11 @@ export default {
     },
     'searchDate':{
       handler(value){
+        let totalParticipants = 0;
+        let totalPrice = 0;
         if(value.length == 0){
           this.filteredBetaTests = this.allBetaTests;
+          totalParticipants = this.allParticipants.length;
         }else{
           const open = moment(new Date(value[0]).toISOString()).valueOf();
           const close = moment(new Date(value[1]).toISOString()).valueOf() + 86400000;
@@ -267,10 +272,20 @@ export default {
             const openDate = moment(i.openDate).valueOf();
             const closeDate = moment(i.closeDate).valueOf();
             if(open <= openDate && closeDate<=close){
+              this.allParticipants.forEach(participant=>{
+                if(participant.betaTestId === i._id){
+                  totalParticipants +=1;
+                }
+              });
+              totalPrice += this.awardRecordsPrice[i._id] ? this.awardRecordsPrice[i._id] : 0;
               return i;
             }
           });
         }
+        this.statistics.totalBetaTests = this.filteredBetaTests.length;
+        this.statistics.totalParticipants = totalParticipants;
+        this.statistics.totalAwardRecordPrice = totalPrice;
+        this.setPlanChart();
       },
       deep:true
     }
@@ -346,15 +361,11 @@ export default {
     goAwardRecords(id){
       this.$router.push({path:'/award-records', query:{betaTestId:id}});
     },
-    setStatistics(){
-      this.loading.planStatsChart = true;
-      this.setTotalParticipants();
-      this.setTotalAwardRecordPrice();
-      this.statistics.totalBetaTests = this.allBetaTests.length
+    setPlanChart(){
       Object.keys(this.statistics.plan).forEach((i)=>{
         this.statistics.plan[i] = 0
       })
-      this.allBetaTests.forEach(item=>{
+      this.filteredBetaTests.forEach(item=>{
         if(item.plan){
           this.statistics.plan[item.plan] += 1
         }
@@ -372,21 +383,40 @@ export default {
         });
       })
       this.$set(this.planStatsChart.series, data);
-      const planChart = new ApexCharts(document.querySelector("#planStatsChart"), this.planStatsChart);
-      planChart.render();
+      if(this.planChartObj){
+        this.planChartObj.updateSeries(this.planStatsChart.series, true);
+      }else{
+        this.planChartObj = new ApexCharts(document.querySelector("#planStatsChart"), this.planStatsChart);
+        this.planChartObj.render();
+      }
+    },
+    setStatistics(){
+      this.loading.planStatsChart = true;
+      this.setTotalParticipants();
+      this.setTotalAwardRecordPrice();
+      this.setPlanChart()
+      this.statistics.totalBetaTests = this.filteredBetaTests.length
       this.loading.planStatsChart = false;
     },
     setTotalParticipants(){
       request.get('/api/statistics/participants?path=overview&type=beta-test&status=complete').then(res=>{
         this.statistics.totalParticipants = res.data.participants.length;
+        this.allParticipants = res.data.participants;
       }).catch(err=>{
         console.log(err);
         this.$root.showErrorToast('총 참여자 수를 조회하는데 실패하였습니다.', err);
       })
     },
     setTotalAwardRecordPrice(){
-      request.get('/api/statistics/award-records?filters=totalPrice').then(res=>{
-        this.statistics.totalAwardRecordPrice = res.data.totalAwardRecordPrice;
+      request.get('/api/statistics/award-records').then(res=>{
+        this.allAwardRecords = res.data.betaTests;
+        this.statistics.totalAwardRecordPrice = 0;
+        this.allAwardRecords.forEach(i=>{
+          this.statistics.totalAwardRecordPrice += i.totalPrice;
+          if(i.totalPrice > 0){
+            this.awardRecordsPrice[i._id] = i.totalPrice;
+          }
+        });
       }).catch(err=>{
         this.$root.showErrorToast('총 수상 금액을 조회하는데 실패하였습니다.', err);
       })
