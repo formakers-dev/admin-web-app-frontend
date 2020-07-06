@@ -40,6 +40,9 @@
             <div>참여완료자 수</div>
             <p class="title is-4 has-text-right">{{statistics.totalParticipantUserCount | comma}} 명</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
+            <div>참여완료자 당 평균 참여 완료수 </div>
+            <p class="title is-4 has-text-right">{{statistics.totalParticipantCount / statistics.totalParticipantUserCount | comma}} 회</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
           </div>
         </div>
         <div class="column is-one-fifth">
