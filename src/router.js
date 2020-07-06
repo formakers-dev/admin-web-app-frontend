@@ -12,6 +12,7 @@ const Logout = () => import('./auth/views/Logout.vue');
 const Profile = () => import('./auth/views/Profile.vue');
 const Requests = () => import('./requests/views/Requests.vue');
 const AwardRecords = () => import('./award-records/views/AwardRecords.vue');
+const BetaTestsStatistics = () => import('./statistics/views/BetaTestsStatistics.vue');
 
 Vue.use(Router);
 
@@ -78,6 +79,11 @@ export default new Router({
       path: '/award-records',
       name: 'awardRecords',
       component: AwardRecords
+    },
+    {
+      path: '/statistics/beta-tests',
+      name: 'betaTestsStatistics',
+      component: BetaTestsStatistics
     },
     {
       path: '*',

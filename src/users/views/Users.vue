@@ -3,32 +3,75 @@
     <h1 class="title">사용자 정보 조회</h1>
     <section>
       <b-tabs v-model="activeTab" type="is-boxed" :animated="false">
-        <b-tab-item label="한 명 조회하기">
-          <div class="level">
+        <b-tab-item label="전체 사용자 조회하기">
+          <div class="level" style="margin-bottom: 10px;">
             <div class="level-left">
+              <button class="button is-primary"
+                      style="height: 100%"
+                      @click="getAllUsers"
+              >사용자 정보 새로 불러오기</button>
+            </div>
+            <div class="level-right">
               <div class="level-item">
-                <b-field grouped>
-                    <b-field>
-                      <b-select v-model="search.one.type">
-                        <option v-for="option in search.option.types" :key="option.value" :value="option.value">
-                          {{ option.text }}
-                        </option>
-                      </b-select>
-                      <b-input type="search"
-                               v-model="search.one.keyword"
-                               style="width: 380px"
-                               @keyup.native.enter="getUser"
-                               required>
-                      </b-input>
-                      <p class="control">
-                        <button class="button is-primary" @click="getUser">조회</button>
-                      </p>
-                    </b-field>
-                </b-field>
+                <p><strong>Total : {{result.getAllUsers.length | numberComma}}</strong></p>
               </div>
             </div>
           </div>
-          <user-detail :users="result.getUser"></user-detail>
+          <section style="margin-bottom: 10px">
+            <b-table
+              ref="allUsersTable"
+              :data="result.getAllUsers"
+              :bordered="false"
+              :hoverable="true"
+              :paginated="true"
+              detail-key="userId"
+              per-page="10"
+              current-page.sync="1"
+              :pagination-simple="false"
+              default-sort="userId"
+              detailed
+              selectable
+              show-detail-icon
+            >
+              <template slot-scope="props">
+                <b-table-column field="email" label="Email" searchable>
+                  <img :src="getFaviconUrl('google.com')"/> {{ props.row.email}}
+                </b-table-column>
+                <b-table-column field="nickName" label="Nickname" searchable>
+                  {{props.row.nickName}}
+                </b-table-column>
+                <b-table-column field="birthday" label="Age">
+                  {{props.row.birthday | convertAgeRange}}
+                </b-table-column>
+                <b-table-column field="gender" label="Gender">
+                  {{props.row.gender | convertGender}}
+                </b-table-column>
+                <b-table-column field="activatedDate" label="Activated Date">
+                  {{props.row.activatedDate | convertDatetime}}
+                </b-table-column>
+                <b-table-column field="appVersion" label="App Version">
+                  {{props.row.appVersion}}
+                </b-table-column>
+              </template>
+
+              <template slot="empty">
+                <section v-if="!$root.isLoading" class="section">
+                  <div class="content has-text-grey has-text-centered">
+                    <p>
+                      <b-icon
+                        icon="emoticon-sad"
+                        size="is-large">
+                      </b-icon>
+                    </p>
+                    <p>사용자 정보가 없습니다.</p>
+                  </div>
+                </section>
+              </template>
+              <template slot="detail" slot-scope="props">
+                <user-detail :user="props.row"></user-detail>
+              </template>
+            </b-table>
+          </section>
         </b-tab-item>
         <b-tab-item label="여러명 조회하기">
           <section style="margin-bottom: 10px">
@@ -142,74 +185,9 @@
             <user-detail :users="checkedResult.byMultiple"></user-detail>
           </section>
         </b-tab-item>
-        <b-tab-item label="전체 사용자 조회하기">
-          <div class="level" style="margin-bottom: 10px;">
-            <div class="level-left">
-              <button class="button is-primary"
-                      style="height: 100%"
-                      @click="getAllUsers"
-              >사용자 정보 새로 불러오기</button>
-            </div>
-            <div class="level-right">
-              <div class="level-item">
-                <p><strong>Total : {{result.getAllUsers.length | numberComma}}</strong></p>
-              </div>
-            </div>
-          </div>
+        <b-tab-item label="사용자 통계">
           <section style="margin-bottom: 10px">
-            <b-table
-              ref="allUsersTable"
-              :data="result.getAllUsers"
-              :bordered="false"
-              :hoverable="true"
-              :paginated="true"
-              detail-key="userId"
-              per-page="10"
-              current-page.sync="1"
-              :pagination-simple="false"
-              default-sort="userId"
-              detailed
-              selectable
-              show-detail-icon
-            >
-              <template slot-scope="props">
-                <b-table-column field="email" label="Email" searchable>
-                  <img :src="getFaviconUrl('google.com')"/> {{ props.row.email}}
-                </b-table-column>
-                <b-table-column field="nickName" label="Nickname" searchable>
-                  {{props.row.nickName}}
-                </b-table-column>
-                <b-table-column field="birthday" label="Age">
-                  {{props.row.birthday | convertAgeRange}}
-                </b-table-column>
-                <b-table-column field="gender" label="Gender">
-                  {{props.row.gender | convertGender}}
-                </b-table-column>
-                <b-table-column field="activatedDate" label="Activated Date">
-                  {{props.row.activatedDate | convertDatetime}}
-                </b-table-column>
-                <b-table-column field="appVersion" label="App Version">
-                  {{props.row.appVersion}}
-                </b-table-column>
-              </template>
-
-              <template slot="empty">
-                <section v-if="!$root.isLoading" class="section">
-                  <div class="content has-text-grey has-text-centered">
-                    <p>
-                      <b-icon
-                        icon="emoticon-sad"
-                        size="is-large">
-                      </b-icon>
-                    </p>
-                    <p>사용자 정보가 없습니다.</p>
-                  </div>
-                </section>
-              </template>
-              <template slot="detail" slot-scope="props">
-                <user-detail :user="props.row"></user-detail>
-              </template>
-            </b-table>
+            <Statistics v-if="activeTab === 2"></Statistics>
           </section>
         </b-tab-item>
       </b-tabs>
@@ -222,10 +200,12 @@ import request from '../../common/utils/http';
 import moment from 'moment';
 import UserDetail from '../components/UserDetail'
 import ExcelDownloadForm from '../components/ExcelDownloadModal';
+import Statistics from '../components/Statistics';
 export default {
   name: 'Users',
   components: {
     UserDetail,
+    Statistics
   },
   data() {
     return {
@@ -260,19 +240,22 @@ export default {
       requestUsersCount:0,
       responseUsersCount:0,
       showErrorMessage: false,
-      notMatchedUsers:[]
+      notMatchedUsers:[],
     };
   },
   watch:{
     'activeTab':{
       handler(value){
-        if(value === 2){
+        if(value === 0 || value === 2){
           //active all Users
           this.getAllUsers();
         }
       },
       deep:true
     }
+  },
+  created() {
+    this.getAllUsers();
   },
   filters:{
     convertAgeRange: function(value){
