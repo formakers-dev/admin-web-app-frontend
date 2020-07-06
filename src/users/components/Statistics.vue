@@ -1,6 +1,13 @@
 <template>
   <div>
+    <div class="notification is-white">
+      <p class="title is-5">누적 가입자 - 총 {{users.length}} 명</p>
+      <div id="signUpChart"></div>
+      <b-loading :is-full-page="false" :active.sync="loading.signUp"></b-loading>
+    </div>
+
     <div class="columns is-multiline">
+
       <div class="column is-half">
         <div class="notification is-white">
           <p class="title is-5">성별</p>
@@ -15,20 +22,12 @@
           <b-loading :is-full-page="false" :active.sync="loading.job"></b-loading>
         </div>
       </div>
-      <div class="column is-half">
-        <div class="notification is-white">
-          <p class="title is-5">연령</p>
-          <div id="ageChart"></div>
-          <b-loading :is-full-page="false" :active.sync="loading.age"></b-loading>
-        </div>
-      </div>
-      <div class="column is-half">
-        <div class="notification is-white">
-          <p class="title is-5">누적 가입자 - 총 {{users.length}} 명</p>
-          <div id="signUpChart"></div>
-          <b-loading :is-full-page="false" :active.sync="loading.signUp"></b-loading>
-        </div>
-      </div>
+    </div>
+
+    <div class="notification is-white">
+      <p class="title is-5">연령</p>
+      <div id="ageChart"></div>
+      <b-loading :is-full-page="false" :active.sync="loading.age"></b-loading>
     </div>
   </div>
 </template>
@@ -146,7 +145,7 @@ export default {
           type: 'datetime'
         },
         yaxis: {
-          opposite: true
+          // opposite: true
         },
         tooltip: {
           x: {
