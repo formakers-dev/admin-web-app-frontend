@@ -40,7 +40,7 @@
             <div>참여완료자 수</div>
             <p class="title is-4 has-text-right">{{statistics.totalParticipantUserCount | comma}} 명</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
-            <div>참여완료자 당 평균 참여 완료수 </div>
+            <div>참여완료자 당 평균 참여완료 횟수 </div>
             <p class="title is-4 has-text-right">{{statistics.totalParticipantCount / statistics.totalParticipantUserCount | comma}} 회</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
           </div>
@@ -374,7 +374,7 @@ export default {
     setPlanChart(){
       Object.keys(this.statistics.plan).forEach((i)=>{
         this.statistics.plan[i] = 0
-      })
+      });
       this.filteredBetaTests.forEach(item=>{
         if(item.plan){
           this.statistics.plan[item.plan] += 1
@@ -391,7 +391,7 @@ export default {
             data.push(item)
           }
         });
-      })
+      });
       this.$set(this.planStatsChart.series, data);
       if(this.planChartObj){
         this.planChartObj.updateSeries(this.planStatsChart.series, true);
@@ -404,8 +404,8 @@ export default {
       this.loading.planStatsChart = true;
       this.setTotalParticipants();
       this.setTotalAwardRecordPrice();
-      this.setPlanChart()
-      this.statistics.totalBetaTests = this.filteredBetaTests.length
+      this.setPlanChart();
+      this.statistics.totalBetaTests = this.filteredBetaTests.length;
       this.loading.planStatsChart = false;
     },
     setTotalParticipants(){
