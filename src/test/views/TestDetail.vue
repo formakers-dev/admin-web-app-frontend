@@ -13,7 +13,10 @@
         <div class="tile is-parent is-vertical is-3">
           <div class="tile is-child notification is-primary">
             <p class="title is-5">베타테스트 참여완료율</p>
-            <p class="title is-4 has-text-right">{{statistics.completeRatio}} %</p>
+            <div class="has-text-right">
+              <div class="title is-4">{{statistics.completeRatio}} %</div>
+              참여완료 {{statistics.completedCount}} 명 / 참여시도 {{statistics.attendCount}} 명
+            </div>
             <b-loading :is-full-page="false" :active.sync="loading.missionAndBetaTestChart"></b-loading>
           </div>
           <div class="tile is-child notification is-warning">
@@ -430,6 +433,8 @@ export default {
         rewards:{
           price:0,
         },
+        completedCount: 0,
+        attendCount: 0,
         completeRatio:0
       }
     };
@@ -505,7 +510,7 @@ export default {
       const params = {
         filters: 'totalPrice',
         betaTestId: this.$route.query.id
-      }
+      };
       request.get('/api/statistics/award-records',{params: params}).then(result=>{
         this.statistics.rewards.price = result.data.totalAwardRecordPrice;
         this.loading.rewards = false;
@@ -517,7 +522,7 @@ export default {
       const params ={
         path: 'overview',
         betaTestId: this.$route.query.id
-      }
+      };
       return request.get('/api/statistics/participants',{params:params}).then(result=>{
         const participants = result.data.participants;
         participants.forEach(participant =>{
@@ -585,7 +590,9 @@ export default {
 
       const betaTestStatistic = this.statistics['beta-test'];
       console.log(this.statistics);
-      const ratio = ((betaTestStatistic.complete/betaTestStatistic.attend)*100);
+      const ratio = ((betaTestStatistic.complete / betaTestStatistic.attend)*100);
+      this.statistics.completedCount = betaTestStatistic.complete;
+      this.statistics.attendCount = betaTestStatistic.attend;
       this.statistics.completeRatio = ratio > 0 ? ratio.toFixed() : 0;
     },
   },
