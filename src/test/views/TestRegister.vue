@@ -164,15 +164,13 @@
             <template slot="label">
               게임 패키지명
             </template>
-            <b-input
-              v-model="packageName"
-              ref="packageName"
-              placeholder="com.formakers.fomes"></b-input>
-          </b-field>
-          <b-field v-if="betaTest.subjectType === 'game-test'" label="앱 아이콘 가져오기" horizontal>
-              <b-button type="is-primary" @click="getApp(packageName)">
-                apps 정보에서 앱 아이콘 가져오기
-              </b-button>
+            <b-input v-model="packageName"
+                     @input="resetAppsCheckStatus"
+                     ref="packageName"
+                     placeholder="com.formakers.fomes"></b-input>
+            <b-button type="is-primary" @click="getApp(packageName)">
+              앱 정보 존재여부 확인
+            </b-button>
           </b-field>
           <b-field horizontal>
             <template slot="label">
@@ -182,6 +180,9 @@
                      ref="betaTest.iconImageUrl"
                      placeholder="https://i.imgur.com/NBfLCwq.png"
                      required></b-input>
+            <b-button type="is-info"
+                      :disabled="iconImageUrlFromApps === ''"
+                      @click="setIconImageUrlFromApps()">앱 정보에서 아이콘 가져오기</b-button>
           </b-field>
           <b-field v-if="betaTest.iconImageUrl"  label="앱 아이콘 Preview" horizontal>
             <img v-if="betaTest.iconImageUrl" style="width: 150px" :src="betaTest.iconImageUrl"/>
@@ -370,6 +371,7 @@ export default {
       isTargetToFomesMembers: true,
       isCustomizedProgressText: false,
       packageName: '',
+      iconImageUrlFromApps: '',
       testType: 'simple',
       type:'add',
       betaTest: {
@@ -559,26 +561,32 @@ export default {
         item.order = index+1;
       })
     },
+    resetAppsCheckStatus() {
+      this.iconImageUrlFromApps = "";
+    },
     getApp(packageName) {
       if (!packageName) {
-        this.showToast('is-info', '게임 패키지명을 입력해주세요.')
+        this.$root.showToast('is-warning', '게임 패키지명을 입력해주세요.');
         this.$refs.packageName.focus();
         return;
       }
 
       request.get(`/api/apps/${packageName}`)
         .then((res) => {
-          console.log(res);
-          if (res.status === 200) {
-            this.betaTest.iconImageUrl = res.data.iconUrl;
-          } else {
-            this.showErrorToast('앱아이콘 정보를 불러오는데 실패하였습니다.');
-          }
+          this.iconImageUrlFromApps = res.data.iconUrl;
+          this.$root.showToast('is-info', '등록된 앱 정보가 존재합니다.');
         })
         .catch((err) => {
-          this.result = err;
-          this.showErrorToast();
+          console.log(err);
+          if(err && err.response && err.response.status === 404) {
+            this.$root.showToast('is-danger', '등록된 앱 정보가 존재하지 않습니다.');
+          } else {
+            this.$root.showToast('is-danger', '앱 정보 조회 중 오류가 발생했습니다.');
+          }
         });
+    },
+    setIconImageUrlFromApps() {
+      this.betaTest.iconImageUrl = this.iconImageUrlFromApps;
     },
     initializeProgressText(checked) {
       const isInit = this.betaTest.progressText ? false : true;
