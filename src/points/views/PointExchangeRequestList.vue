@@ -47,7 +47,6 @@
         </b-table-column>
       </template>
     </b-table>
-    <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
   </div>
 </template>
 
@@ -61,7 +60,6 @@ export default {
   },
   data() {
     return {
-      isLoading:true,
       options: {
         status: [
           {
@@ -86,8 +84,7 @@ export default {
       })
       .catch((err) => {
         this.$root.showErrorToast('목록을 조회하는데 실패하였습니다.', err);
-      })
-      .finally(() => this.isLoading = false);
+      });
   },
   methods: {
     convertHumaniticDate(date) {
