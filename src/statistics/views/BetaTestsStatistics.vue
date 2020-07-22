@@ -2,50 +2,64 @@
   <div>
     <h1 class="title">🎮 테스트 상세 통계 🎮</h1>
     <section style="margin-bottom: 10px">
-      <div class="columns is-multiline">
-        <div class="column is-one-third">
-          <div class="notification is-white">
-            <BetaTestChart :items="allBetaTests"></BetaTestChart>
+      <div class="box">
+        <div class="subtitle has-text-weight-bold">테스트 관련</div>
+        <div class="columns is-multiline">
+          <div class="column is-one-third">
+            <div class="notification is-white">
+              <BetaTestChart :items="allBetaTests"></BetaTestChart>
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="notification is-white">
+              <PlanChart :items="allBetaTests"></PlanChart>
+            </div>
           </div>
         </div>
-        <div class="column is-one-third">
-          <div class="notification is-white">
-            <PlanChart :items="allBetaTests"></PlanChart>
+      </div>
+      <div class="box">
+        <div class="subtitle has-text-weight-bold">테스트 참여자 관련</div>
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <div class="notification is-white">
+              <AgeChart :items="participants"></AgeChart>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="notification is-white">
+              <GenderChart :items="participants"></GenderChart>
+              <JobChart :items="participants"></JobChart>
+            </div>
           </div>
         </div>
-        <div class="column is-one-third">
-          <div class="notification is-white">
-            <GenderChart :items="participants"></GenderChart>
+      </div>
+      <div class="box">
+        <div class="subtitle has-text-weight-bold">테스트 참여 현황 관련</div>
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <div class="notification is-white">
+              <AccumulatedParticipantsChart :items="participants"></AccumulatedParticipantsChart>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="notification is-white">
+              <ParticipantsChart :items="participantsGroupByBetaTest"></ParticipantsChart>
+            </div>
           </div>
         </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <AgeChart :items="participants"></AgeChart>
+      </div>
+      <div class="box">
+        <div class="subtitle has-text-weight-bold">리워즈 지급 현황 관련</div>
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <div class="notification is-white">
+              <AccumulatedRewardsPriceChart :items="awardRecords"></AccumulatedRewardsPriceChart>
+            </div>
           </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <AccumulatedParticipantsChart :items="participants"></AccumulatedParticipantsChart>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <AccumulatedRewardsPriceChart :items="awardRecords"></AccumulatedRewardsPriceChart>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <RewardsPriceChart :items="awardRecordsByCondition"></RewardsPriceChart>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <JobChart :items="participants"></JobChart>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="notification is-white">
-            <ParticipantsChart :items="participantsGroupByBetaTest"></ParticipantsChart>
+          <div class="column is-half">
+            <div class="notification is-white">
+              <RewardsPriceChart :items="awardRecordsByCondition"></RewardsPriceChart>
+            </div>
           </div>
         </div>
       </div>

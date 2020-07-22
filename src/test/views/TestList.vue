@@ -20,7 +20,7 @@
         <div class="column is-one-fifth">
           <div class="notification is-primary stats-card">
             <p class="title is-5">총 베타테스트 수</p>
-            <p class="title is-4 has-text-right">{{ statistics.totalBetaTests | comma}}</p>
+            <p class="title is-4 has-text-right">{{ statistics.totalBetaTests | comma}} 개</p>
             <b-loading :is-full-page="false" :active.sync="statistics.totalBetaTests ==='-'"></b-loading>
           </div>
         </div>
@@ -33,9 +33,16 @@
         </div>
         <div class="column is-one-fifth">
           <div class="notification is-info stats-card">
-            <p class="title is-5">총 누적 참여자 수</p>
-            <p class="title is-4 has-text-right">{{statistics.totalParticipants | comma}}</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipants ==='-'"></b-loading>
+            <p class="title is-5">총 누적</p>
+            <div>참여완료 횟수</div>
+            <p class="title is-4 has-text-right">{{statistics.totalParticipantCount | comma}} 번</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantCount ==='-'"></b-loading>
+            <div>참여완료자 수</div>
+            <p class="title is-4 has-text-right">{{statistics.totalParticipantUserCount | comma}} 명</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
+            <div>참여완료자 당 평균 참여완료 횟수 </div>
+            <p class="title is-4 has-text-right">{{statistics.totalParticipantCount / statistics.totalParticipantUserCount | comma}} 회</p>
+            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
           </div>
         </div>
         <div class="column is-one-fifth">
@@ -150,7 +157,8 @@ export default {
           simple:'-',
           standard:'-'
         },
-        totalParticipants:'-',
+        totalParticipantCount:'-',
+        totalParticipantUserCount:'-',
         totalAwardRecordPrice:'-'
       },
       loading:{
@@ -282,8 +290,10 @@ export default {
             }
           });
         }
+
         this.statistics.totalBetaTests = this.filteredBetaTests.length;
-        this.statistics.totalParticipants = totalParticipants;
+        this.statistics.totalParticipantCount = totalParticipants;
+        this.statistics.totalParticipantUserCount = Object.keys(this.groupBy(res.data.participants, 'userId')).length;
         this.statistics.totalAwardRecordPrice = totalPrice;
         this.setPlanChart();
       },
@@ -364,7 +374,7 @@ export default {
     setPlanChart(){
       Object.keys(this.statistics.plan).forEach((i)=>{
         this.statistics.plan[i] = 0
-      })
+      });
       this.filteredBetaTests.forEach(item=>{
         if(item.plan){
           this.statistics.plan[item.plan] += 1
@@ -381,7 +391,7 @@ export default {
             data.push(item)
           }
         });
-      })
+      });
       this.$set(this.planStatsChart.series, data);
       if(this.planChartObj){
         this.planChartObj.updateSeries(this.planStatsChart.series, true);
@@ -394,13 +404,22 @@ export default {
       this.loading.planStatsChart = true;
       this.setTotalParticipants();
       this.setTotalAwardRecordPrice();
-      this.setPlanChart()
-      this.statistics.totalBetaTests = this.filteredBetaTests.length
+      this.setPlanChart();
+      this.statistics.totalBetaTests = this.filteredBetaTests.length;
       this.loading.planStatsChart = false;
     },
     setTotalParticipants(){
-      request.get('/api/statistics/participants?path=overview&type=beta-test&status=complete').then(res=>{
-        this.statistics.totalParticipants = res.data.participants.length;
+      request.get('/api/statistics/participants?path=overview&type=beta-test&status=complete').then(res => {
+        const groupBy = function(xs, key) {
+          return xs.reduce(function(rv, x) {
+            (rv[x[key]] = rv[x[key]] || []).push(x);
+            return rv;
+          }, {});
+        };
+
+        this.statistics.totalParticipantCount = res.data.participants.length;
+        this.statistics.totalParticipantUserCount = Object.keys(this.groupBy(res.data.participants, 'userId')).length;
+
         this.allParticipants = res.data.participants;
       }).catch(err=>{
         console.log(err);
@@ -420,6 +439,12 @@ export default {
       }).catch(err=>{
         this.$root.showErrorToast('총 수상 금액을 조회하는데 실패하였습니다.', err);
       })
+    },
+    groupBy(xs, key) {
+      return xs.reduce((rv, x) => {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+      }, {});
     }
   },
 };
