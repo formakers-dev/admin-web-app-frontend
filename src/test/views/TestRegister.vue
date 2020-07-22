@@ -118,7 +118,20 @@
             <b-input v-model="betaTest.purpose"></b-input>
           </b-field>
           <b-field label="버그리포트 설문 URL" horizontal>
-            <b-input v-model="betaTest.bugReport.url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"></b-input>
+            <div>
+              <b-field>
+                <b-radio-button v-for="type in options.webDeeplinkType"
+                                :key="type.key"
+                                v-model="bugReportUrlType"
+                                :native-value="type.key"
+                                type="is-primary">
+                  {{type.text}}
+                </b-radio-button>
+              </b-field>
+              <b-input v-model="bugReportUrl"
+                       placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
+              ></b-input>
+            </div>
           </b-field>
           <b-field label="테스트 진행 상태별 문구" horizontal>
             <b-checkbox v-model="isCustomizedProgressText" @input="initializeProgressText">
@@ -365,6 +378,10 @@ export default {
           {key:'fomes-test', text:'포메스 테스트'},
           {key:'event', text:'이벤트'},
         ],
+        webDeeplinkType: [
+          {key: "internal_web", text: "인앱웹뷰"},
+          {key: "external_web", text: "외부 브라우저"},
+        ]
       },
       rewardType: 9000,
       result: '',
@@ -374,6 +391,8 @@ export default {
       iconImageUrlFromApps: '',
       testType: 'simple',
       type:'add',
+      bugReportUrlType: 'internal_web',
+      bugReportUrl: '',
       betaTest: {
         title: '',
         plan:'trial',
@@ -439,6 +458,15 @@ export default {
         delete this.betaTest.status;
       }
 
+      switch (this.bugReportUrlType) {
+        case 'internal_web':
+          this.betaTest.bugReport.url = 'fomes://web/internal?url=' + encodeURIComponent(this.bugReportUrl);
+          break;
+        case 'external_web':
+          this.betaTest.bugReport.url = 'fomes://web/external?url=' + encodeURIComponent(this.bugReportUrl);
+          break;
+      }
+
       //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
       if (this.betaTest.rewards.list) {
         this.betaTest.rewards.list.forEach(reward => {
@@ -463,13 +491,26 @@ export default {
       }
     },
     getBetaTest(){
-      request.get('/api/beta-test/'+this.$route.query.id).then((result)=>{
+      request.get('/api/beta-test/'+this.$route.query.id).then((result) => {
         this.betaTest = Object.assign({}, result.data);
         this.betaTest.openDate = new Date(result.data.openDate);
         this.betaTest.closeDate = new Date(result.data.closeDate);
         this.isTargetToFomesMembers = this.betaTest.status === 'test';
         this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
-        console.log(result.data);
+
+        if (this.type === 'update') {
+          const url = new URL(this.betaTest.bugReport.url);
+
+          switch (url.pathname) {
+            case "//web/internal":
+              this.bugReportUrlType = "internal_web";
+              break;
+            case "//web/external":
+              this.bugReportUrlType = "external_web";
+          }
+
+          this.bugReportUrl = new URLSearchParams(url.search).get("url");
+        }
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
       });
@@ -705,7 +746,7 @@ export default {
           continue;
         }
         if(ref === 'betaTest.tags'){
-          isValid = this.$refs[ref].tags.length > 0
+          isValid = this.$refs[ref].tags.length > 0;
           if(!isValid){
             this.$refs[ref].focus();
           }
@@ -717,7 +758,7 @@ export default {
                 if(arrayRefs[refTag]){
                   let checkValidity = arrayRefs[refTag].checkHtml5Validity();
                   if(!checkValidity){
-                    console.log(arrayRefs[refTag])
+                    console.log(arrayRefs[refTag]);
                     isValid = false;
                   }
                 }
@@ -726,7 +767,7 @@ export default {
           }else{
             let checkValidity = this.$refs[ref].checkHtml5Validity();
             if(!checkValidity){
-              console.log(ref,this.$refs[ref])
+              console.log(ref,this.$refs[ref]);
               isValid = false;
             }
           }
