@@ -11,6 +11,7 @@ const Login = () => import('./auth/views/Login.vue');
 const Logout = () => import('./auth/views/Logout.vue');
 const Profile = () => import('./auth/views/Profile.vue');
 const Requests = () => import('./requests/views/Requests.vue');
+const pointExchangeRequestList = () => import('./points/views/PointExchangeRequestList.vue');
 const AwardRecords = () => import('./award-records/views/AwardRecords.vue');
 const BetaTestsStatistics = () => import('./statistics/views/BetaTestsStatistics.vue');
 
@@ -69,6 +70,11 @@ export default new Router({
       path: '/requests',
       name: 'requests',
       component: Requests,
+    },
+    {
+      path: '/point-exchange',
+      name: 'pointExchange',
+      component: pointExchangeRequestList,
     },
     {
       path: '/profile',
