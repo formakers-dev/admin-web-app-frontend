@@ -40,18 +40,20 @@
           {{ props.row.phoneNumber }}
         </b-table-column>
         <b-table-column field="assign" label="담당자" sortable centered searchable>
-          {{ props.row.metaData.operatorAccountId }}
+          {{ (props.row.operationData) ? props.row.operationData.operatorAccountId : "" }}
         </b-table-column>
         <b-table-column field="status" label="처리 상태" sortable centered searchable>
           <div class="tag" :class="getStatusStyle(props.row.status)">{{ convertHumaniticStatus(props.row.status) }}</div>
         </b-table-column>
       </template>
     </b-table>
+    <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
+import request from '../../common/utils/http';
 
 export default {
   name: 'PointExchangeRequestList',
@@ -59,6 +61,7 @@ export default {
   },
   data() {
     return {
+      isLoading:true,
       options: {
         status: [
           {
@@ -72,21 +75,19 @@ export default {
           }
         ]
       },
-      requestedPointExchanges: [{
-        "userId" : "google115909938647516500511",
-        "date" : new Date("2020-07-15T08:42:02.427Z"),
-        "point" : -5000,
-        "type" : 2,
-        "status" : 1,
-        "description" : "5000원권 1장 교환",
-        "phoneNumber" : "010-1111-2222",
-        "metaData" : {
-          "operatorAccountId" : "irene@formakers.net"
-        },
-        "__v" : 0
-      }],
+      requestedPointExchanges: [],
       currentPage: 1,
     }
+  },
+  created() {
+    request.get('/api/points?type=exchange')
+      .then((res) => {
+        this.requestedPointExchanges = res.data.sort((a, b) => (a.status > b.status) ? -1 : 1);
+      })
+      .catch((err) => {
+        this.$root.showErrorToast('목록을 조회하는데 실패하였습니다.', err);
+      })
+      .finally(() => this.isLoading = false);
   },
   methods: {
     convertHumaniticDate(date) {
