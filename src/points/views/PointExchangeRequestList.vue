@@ -40,10 +40,10 @@
           {{ props.row.phoneNumber }}
         </b-table-column>
         <b-table-column field="assign" label="담당자" sortable centered searchable>
-          {{ (props.row.operationData) ? props.row.operationData.operatorAccountId : "" }}
+          {{ (props.row.operationData) ? props.row.operationData.operatorAccount : "" }}
         </b-table-column>
         <b-table-column field="status" label="처리 상태" sortable centered searchable>
-          <div class="tag" :class="getStatusStyle(props.row.status)">{{ convertHumaniticStatus(props.row.status) }}</div>
+          <div class="tag" :class="getStatusStyle(props.row.operationData.status)">{{ convertHumaniticStatus(props.row.operationData.status) }}</div>
         </b-table-column>
       </template>
     </b-table>
@@ -53,6 +53,7 @@
 <script>
 import moment from 'moment';
 import request from '../../common/utils/http';
+import PointExchangeForm from '../components/PointExchangeForm';
 
 export default {
   name: 'PointExchangeRequestList',
@@ -61,43 +62,74 @@ export default {
   data() {
     return {
       options: {
-        status: [
+        operationStatus: [
           {
-            key: 1,
+            key: 99,
             value : '완료',
             style : 'is-black'
           }, {
             key: 10,
             value: '요청',
+            style : 'is-warning'
+          }, {
+            key: -1,
+            value: '실패',
             style : 'is-danger'
           }
         ]
       },
       requestedPointExchanges: [],
+      operators: [],
       currentPage: 1,
     }
   },
   created() {
     request.get('/api/points?type=exchange')
       .then((res) => {
-        this.requestedPointExchanges = res.data.sort((a, b) => (a.status > b.status) ? -1 : 1);
+        this.requestedPointExchanges = res.data.sort((a, b) => (a.operationData.status < b.operationData.status) ? -1 : 1);
       })
       .catch((err) => {
         this.$root.showErrorToast('목록을 조회하는데 실패하였습니다.', err);
       });
+
+    request.get('/api/admin/assignees')
+      .then(res => this.operators = res.data)
+      .catch(err => console.error(err));
   },
   methods: {
     convertHumaniticDate(date) {
       return moment(date).format("YYYY-MM-DD (ddd) HH:mm:ss");
     },
     convertHumaniticStatus(statusCode) {
-      return this.options.status.filter(status => status.key === statusCode)
+      return this.options.operationStatus.filter(status => status.key === statusCode)
         .map(status => status.value)[0];
     },
     getStatusStyle(statusCode) {
-      return this.options.status.filter(status => status.key === statusCode)
+      return this.options.operationStatus.filter(status => status.key === statusCode)
         .map(status => status.style)[0];
     },
+    openForm(pointRecord, operators) {
+      this.$buefy.modal.open({
+        parent: this,
+        props: {
+          pointRecord,
+          operators
+        },
+        component: PointExchangeForm,
+        hasModalCard: true,
+        trapFocus: true,
+        canCancel: false,
+        events: {
+          close: (options) => { this.closeForm(options); },
+        },
+      });
+    },
+    showDetail(row) {
+      this.openForm(row, this.operators);
+    },
+    closeForm() {
+
+    }
   }
 };
 </script>
