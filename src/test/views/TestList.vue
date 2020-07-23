@@ -31,25 +31,56 @@
             <b-loading :is-full-page="false" :active.sync="loading.planStatsChart"></b-loading>
           </div>
         </div>
-        <div class="column is-one-fifth">
+      </div>
+      <div class="columns">
+        <div class="column">
           <div class="notification is-info stats-card">
-            <p class="title is-5">총 누적</p>
-            <div>참여완료 횟수</div>
-            <p class="title is-4 has-text-right">{{statistics.totalParticipantCount | comma}} 번</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantCount ==='-'"></b-loading>
-            <div>참여완료자 수</div>
-            <p class="title is-4 has-text-right">{{statistics.totalParticipantUserCount | comma}} 명</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
-            <div>참여완료자 당 평균 참여완료 횟수 </div>
-            <p class="title is-4 has-text-right">{{ Math.round(statistics.totalParticipantCount / (statistics.totalParticipantUserCount + 2) * 100) / 100 | comma}} 회</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
+            <p class="title is-5">누적 참여완료 현황</p>
+            <div class="columns">
+              <div class="column">
+                <div>참여완료 횟수</div>
+                <p class="title is-4 has-text-right">{{statistics.totalParticipantCount | comma}}
+                  번</p>
+                <b-loading :is-full-page="false"
+                           :active.sync="statistics.totalParticipantCount ==='-'"></b-loading>
+              </div>
+              <div class="column">
+                <div>참여완료자 수</div>
+                <p class="title is-4 has-text-right">{{statistics.totalParticipantUserCount |
+                  comma}} 명</p>
+                <b-loading :is-full-page="false"
+                           :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
+              </div>
+              <div class="column">
+                <div>1인당 평균 참여완료 횟수</div>
+                <p class="title is-4 has-text-right">{{ Math.round(statistics.totalParticipantCount
+                  / statistics.totalParticipantUserCount * 100) / 100 | comma}} 회</p>
+                <b-loading :is-full-page="false"
+                           :active.sync="statistics.totalParticipantUserCount ==='-'"></b-loading>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="column is-one-fifth">
+
+        <div class="column">
           <div class="notification is-warning stats-card">
-            <p class="title is-5">총 리워드 금액</p>
-            <p class="title is-4 has-text-right">&#8361; {{statistics.totalAwardRecordPrice | comma}}</p>
-            <b-loading :is-full-page="false" :active.sync="statistics.totalAwardRecordPrice ==='-'"></b-loading>
+            <p class="title is-5">누적 리워드 현황</p>
+            <div class="columns">
+              <div class="column">
+                <div>총 금액</div>
+                <p class="title is-4 has-text-right">&#8361; {{statistics.totalAwardRecordPrice |
+                  comma}}</p>
+                <b-loading :is-full-page="false"
+                           :active.sync="statistics.totalAwardRecordPrice ==='-'"></b-loading>
+              </div>
+              <div class="column">
+                <div>1인당 평균 리워드 금액</div>
+                <p class="title is-4 has-text-right">&#8361; {{ Math.round(statistics.totalAwardRecordPrice / statistics.totalParticipantUserCount * 100) / 100|
+                  comma}}</p>
+                <b-loading :is-full-page="false"
+                           :active.sync="statistics.totalAwardRecordPrice ==='-'"></b-loading>
+              </div>
+            </div>
           </div>
         </div>
       </div>
