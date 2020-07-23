@@ -211,7 +211,7 @@
                            type="is-dark"
                            :label="tester.email"
                            :key="tester.name"
-                           position="is-right">
+                           position="is-bottom">
                   <b-checkbox v-model="test.receivers"
                               :native-value="tester.email">
                     {{tester.name}}
@@ -330,6 +330,7 @@ export default {
           { name: 'Yenarue', email: 'yenarue@gmail.com' },
           { name: 'Jason', email: 'sryu99@gmail.com' },
           { name: 'Jake', email: 'copyx00@gmail.com' },
+          { name: 'Irene', email: 'irene.shin@formakers.net' },
           { name: 'Formakers.Dev', email: 'formakers.dev@gmail.com' }],
         receivers: [],
       },
