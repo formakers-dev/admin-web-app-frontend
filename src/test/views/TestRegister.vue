@@ -117,7 +117,7 @@
           <b-field label="테스트 목적" horizontal>
             <b-input v-model="betaTest.purpose"></b-input>
           </b-field>
-          <b-field label="버그리포트 설문 URL" horizontal>
+          <b-field label="버그리포트 설문" horizontal>
             <div>
               <b-field>
                 <b-radio-button v-for="type in options.webDeeplinkType"
@@ -128,9 +128,15 @@
                   {{type.text}}
                 </b-radio-button>
               </b-field>
-              <b-input v-model="bugReportUrl"
-                       placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
-              ></b-input>
+              <b-field v-if="bugReportUrlType === 'internal_web'"
+                       label="앱에 보여질 제목" horizontal>
+                <b-input v-model="bugReportTitle" placeholder="[게임명] 버그 제보"></b-input>
+              </b-field>
+              <b-field label="설문 URL" horizontal>
+                <b-input v-model="bugReportUrl"
+                         placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
+                ></b-input>
+              </b-field>
             </div>
           </b-field>
           <b-field label="테스트 진행 상태별 문구" horizontal>
@@ -393,6 +399,7 @@ export default {
       type:'add',
       bugReportUrlType: 'internal_web',
       bugReportUrl: '',
+      bugReportTitle: '',
       betaTest: {
         title: '',
         plan:'trial',
@@ -458,14 +465,18 @@ export default {
         delete this.betaTest.status;
       }
 
+      const bugReportUrlHost = 'fomes://web';
+      let bugReportUrlPath;
       switch (this.bugReportUrlType) {
         case 'internal_web':
-          this.betaTest.bugReport.url = 'fomes://web/internal?url=' + encodeURIComponent(this.bugReportUrl);
+          bugReportUrlPath = '/internal';
           break;
         case 'external_web':
-          this.betaTest.bugReport.url = 'fomes://web/external?url=' + encodeURIComponent(this.bugReportUrl);
+          bugReportUrlPath = '/external';
           break;
       }
+      this.betaTest.bugReport.url = bugReportUrlHost + bugReportUrlPath
+        + "?title=" + this.bugReportTitle + "&url=" + encodeURIComponent(this.bugReportUrl);
 
       //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
       if (this.betaTest.rewards.list) {
@@ -510,6 +521,7 @@ export default {
           }
 
           this.bugReportUrl = new URLSearchParams(url.search).get("url");
+          this.bugReportTitle = new URLSearchParams(url.search).get("title");
         }
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
@@ -620,7 +632,7 @@ export default {
         .catch((err) => {
           console.log(err);
           if(err && err.response && err.response.status === 404) {
-            this.$root.showToast('is-danger', '등록된 앱 정보가 존재하지 않습니다.');
+            this.showAppCrawlingConfirmDialog(packageName);
           } else {
             this.$root.showToast('is-danger', '앱 정보 조회 중 오류가 발생했습니다.');
           }
@@ -628,6 +640,22 @@ export default {
     },
     setIconImageUrlFromApps() {
       this.betaTest.iconImageUrl = this.iconImageUrlFromApps;
+    },
+    showAppCrawlingConfirmDialog(packageName) {
+      this.$buefy.dialog.confirm({
+        title: '앱 크롤링 요청',
+        message: `등록된 앱 정보가 존재하지 않습니다.<br/><br/><b>${packageName}<br/>앱 정보 크롤링을 요청하시겠습니까?</b></br><br/><i>*크롤링 요청 후 앱 정보 등록까지 약 1분 정도 소요됩니다.</i>`,
+        onConfirm: () => this.requestCrawling(packageName)
+      })
+    },
+    requestCrawling(packageName) {
+      request.post(`/api/apps/crawling/${packageName}`)
+        .then(() => {
+          this.$root.showToast('is-info', '앱 크롤링 요청이 등록되었습니다.<br/>약 1분 후에 앱 정보를 다시 조회해보세요.');
+        }).catch((err) => {
+          console.log(err);
+          this.$root.showToast('is-danger', '앱 크롤링 요청 중 오류가 발생했습니다.<br/>개발 담당자에게 문의하세요.');
+      });
     },
     initializeProgressText(checked) {
       const isInit = this.betaTest.progressText ? false : true;
