@@ -620,7 +620,7 @@ export default {
         .catch((err) => {
           console.log(err);
           if(err && err.response && err.response.status === 404) {
-            this.$root.showToast('is-danger', '등록된 앱 정보가 존재하지 않습니다.');
+            this.showAppCrawlingConfirmDialog(packageName);
           } else {
             this.$root.showToast('is-danger', '앱 정보 조회 중 오류가 발생했습니다.');
           }
@@ -628,6 +628,22 @@ export default {
     },
     setIconImageUrlFromApps() {
       this.betaTest.iconImageUrl = this.iconImageUrlFromApps;
+    },
+    showAppCrawlingConfirmDialog(packageName) {
+      this.$buefy.dialog.confirm({
+        title: '앱 크롤링 요청',
+        message: `등록된 앱 정보가 존재하지 않습니다.<br/><br/><b>${packageName}<br/>앱 정보 크롤링을 요청하시겠습니까?</b></br><br/><i>*크롤링 요청 후 앱 정보 등록까지 약 1분 정도 소요됩니다.</i>`,
+        onConfirm: () => this.requestCrawling(packageName)
+      })
+    },
+    requestCrawling(packageName) {
+      request.post(`/api/apps/crawling/${packageName}`)
+        .then(() => {
+          this.$root.showToast('is-info', '앱 크롤링 요청이 등록되었습니다.<br/>약 1분 후에 앱 정보를 다시 조회해보세요.');
+        }).catch((err) => {
+          console.log(err);
+          this.$root.showToast('is-danger', '앱 크롤링 요청 중 오류가 발생했습니다.<br/>개발 담당자에게 문의하세요.');
+      });
     },
     initializeProgressText(checked) {
       const isInit = this.betaTest.progressText ? false : true;
