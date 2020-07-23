@@ -63,19 +63,9 @@ export default {
     return {
       options: {
         operationStatus: [
-          {
-            key: 99,
-            value : '완료',
-            style : 'is-black'
-          }, {
-            key: 10,
-            value: '요청',
-            style : 'is-warning'
-          }, {
-            key: -1,
-            value: '실패',
-            style : 'is-danger'
-          }
+          { key: 99, value: '완료', style : 'is-black' },
+          { key: 10, value: '요청', style : 'is-warning' },
+          { key: -1, value: '실패', style : 'is-danger' }
         ]
       },
       requestedPointExchanges: [],

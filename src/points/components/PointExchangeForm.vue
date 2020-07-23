@@ -134,7 +134,18 @@ export default {
   },
   methods: {
     submit() {
-
+      request.put('/api/points/' + this.pointRecord._id + '/exchange', {
+        operationStatus: this.pointRecord.operationData.status,
+        operatorAccount: this.pointRecord.operationData.operatorAccount,
+        memo: this.pointRecord.operationData.memo,
+      }).then(() => {
+        this.$root.showToast('is-success', '정보가 성공적으로 저장되었습니다!');
+        this.close();
+      })
+        .catch(err => {
+          this.$root.showToast('is-danger', '정보 저장에 실패하였습니다');
+          console.error(err.message);
+        });
     },
     close() {
       this.$emit('close', false);
