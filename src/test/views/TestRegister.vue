@@ -465,18 +465,20 @@ export default {
         delete this.betaTest.status;
       }
 
-      const bugReportUrlHost = 'fomes://web';
-      let bugReportUrlPath;
-      switch (this.bugReportUrlType) {
-        case 'internal_web':
-          bugReportUrlPath = '/internal';
-          break;
-        case 'external_web':
-          bugReportUrlPath = '/external';
-          break;
+      if (this.betaTest.bugReport) {
+        const bugReportUrlHost = 'fomes://web';
+        let bugReportUrlPath;
+        switch (this.bugReportUrlType) {
+          case 'internal_web':
+            bugReportUrlPath = '/internal';
+            break;
+          case 'external_web':
+            bugReportUrlPath = '/external';
+            break;
+        }
+        this.betaTest.bugReport.url = bugReportUrlHost + bugReportUrlPath
+          + "?title=" + this.bugReportTitle + "&url=" + encodeURIComponent(this.bugReportUrl);
       }
-      this.betaTest.bugReport.url = bugReportUrlHost + bugReportUrlPath
-        + "?title=" + this.bugReportTitle + "&url=" + encodeURIComponent(this.bugReportUrl);
 
       //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
       if (this.betaTest.rewards.list) {
