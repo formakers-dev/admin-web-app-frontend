@@ -512,18 +512,20 @@ export default {
         this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
 
         if (this.type === 'update') {
-          const url = new URL(this.betaTest.bugReport.url);
+          if (this.betaTest.bugReport) {
+            const url = new URL(this.betaTest.bugReport.url);
 
-          switch (url.pathname) {
-            case "//web/internal":
-              this.bugReportUrlType = "internal_web";
-              break;
-            case "//web/external":
-              this.bugReportUrlType = "external_web";
+            switch (url.pathname) {
+              case "//web/internal":
+                this.bugReportUrlType = "internal_web";
+                break;
+              case "//web/external":
+                this.bugReportUrlType = "external_web";
+            }
+
+            this.bugReportUrl = new URLSearchParams(url.search).get("url");
+            this.bugReportTitle = new URLSearchParams(url.search).get("title");
           }
-
-          this.bugReportUrl = new URLSearchParams(url.search).get("url");
-          this.bugReportTitle = new URLSearchParams(url.search).get("title");
         }
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
