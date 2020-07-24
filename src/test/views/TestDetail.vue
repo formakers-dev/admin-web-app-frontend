@@ -123,7 +123,8 @@
         <b-input v-model="betaTest.purpose" disabled></b-input>
       </b-field>
       <b-field label="버그리포트 설문 URL" horizontal>
-        <b-input v-model="betaTest.bugReport.url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}" disabled></b-input>
+        <b-input v-if="betaTest.bugReport" v-model="betaTest.bugReport.url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}" disabled></b-input>
+        <b-input v-else placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}" disabled></b-input>
       </b-field>
       <b-field label="테스트 진행 상태별 문구" horizontal>
         <b-checkbox v-model="isCustomizedProgressText" disabled>
@@ -488,18 +489,20 @@ export default {
         this.isCustomizedProgressText = this.betaTest.progressText ? true : false;
         this.openingStatus = this.getOpeningStatus(result.data.openDate, result.data.closeDate);
         console.log(result.data);
-        if(this.openingStatus === '종료'){
+
+        if (this.openingStatus === '종료') {
           this.getAwardRecords();
-        }else{
+        } else {
           let totalPrice = 0;
-          this.betaTest.rewards.list.forEach(rewards=>{
-            if(rewards.count && rewards.price){
+          this.betaTest.rewards.list.forEach(rewards => {
+            if (rewards.count && rewards.price){
               totalPrice += (rewards.count*rewards.price);
             }
           });
           this.statistics.rewards.price = totalPrice;
           this.loading.rewards = false;
         }
+
         return Promise.resolve();
       }).catch(err => {
         this.$root.showErrorToast('테스트 항목 조회에 실패하였습니다.',err);
