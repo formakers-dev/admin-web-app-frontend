@@ -59,6 +59,9 @@
         </div>
         <div class="level-right">
           <div class="level-item">
+            <b-button @click="showBetaTestParticipants(betaTest._id)">참여자 기록 삭제하기</b-button>
+          </div>
+          <div class="level-item">
             <b-button type='is-primary' @click="goRegister">테스트 수정하기</b-button>
           </div>
         </div>
@@ -273,6 +276,7 @@ import request from '../../common/utils/http';
 import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
+import BetaTestParticipants from '../components/BetaTestParticipants';
 import MissionParticipants  from '../components/MissionParticipants';
 import Apexchart from 'vue-apexcharts';
 import moment from 'moment';
@@ -586,6 +590,19 @@ export default {
     },
     goRegister(){
       this.$router.replace({path:'/test/register', query:this.$route.query});
+    },
+    showBetaTestParticipants(betaTestId){
+      this.$buefy.modal.open({
+        parent: this,
+        props: {
+          betaTestId:betaTestId
+        },
+        component: BetaTestParticipants,
+        hasModalCard: true,
+        trapFocus: true,
+        canCancel: false,
+        events: {
+        }})
     },
     showMissionParticipants(missionId, betaTestId){
       this.$buefy.modal.open({
