@@ -61,7 +61,7 @@
               <b-button v-if="type==='add'" type='is-primary' @click="registerBetaTest"
                         size="is-medium">테스트 등록
               </b-button>
-              <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest">테스트 수정
+              <b-button v-if="type==='update'" type='is-primary' @click="updateBetaTest">저장하기
               </b-button>
             </div>
           </div>
