@@ -21,6 +21,7 @@
             </b-tag>
             <b-switch v-if="type==='update'"
                       class="has-text-weight-bold has-text-primary "
+                      @input="onChangeTestModeSwitch"
                       v-model="isTargetToFomesMembers">테스트모드
             </b-switch>
           </b-tooltip>
@@ -851,6 +852,16 @@ export default {
         canCancel: false,
         events: {
         }})
+    },
+    onChangeTestModeSwitch(isChecked) {
+      if (!isChecked) {
+        this.$buefy.dialog.alert({
+          title: '테스트모드가 해제되었습니다',
+          message: '저장 시, 오픈시각에 맞춰 포메스 유저분들께 보여집니다.<br/>' +
+            '저장 전, <strong>오픈시각</strong>과 <strong>종료시각</strong>을 다시 한번 체크해주세요! 😉',
+          confirmText: '네! 알겠습니다! 👍🏻',
+        })
+      }
     }
   },
 };
