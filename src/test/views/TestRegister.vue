@@ -391,7 +391,7 @@ export default {
       },
       rewardType: 9000,
       result: '',
-      isTargetToFomesMembers: true,
+      isTargetToFomesMembers: false,
       isCustomizedProgressText: false,
       packageName: '',
       iconImageUrlFromApps: '',
@@ -436,11 +436,12 @@ export default {
     },
   },
   created() {
-    if(this.$route.query.id){
+    if (this.$route.query.id) {
       this.type='update';
       this.getBetaTest();
-    }else{
+    } else {
       this.type='add';
+      this.isTargetToFomesMembers = true;
       const openDate = new Date();
       openDate.setHours(9);
       openDate.setMinutes(0);

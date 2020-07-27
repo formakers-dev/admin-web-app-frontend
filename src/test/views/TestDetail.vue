@@ -396,7 +396,7 @@ export default {
       },
       rewardType: 9000,
       result: '',
-      isTargetToFomesMembers: true,
+      isTargetToFomesMembers: false,
       isCustomizedProgressText: false,
       packageName: '',
       testType: 'simple',
