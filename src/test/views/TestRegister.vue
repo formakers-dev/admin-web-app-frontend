@@ -330,7 +330,7 @@
                                         type="is-info"
                                         style="margin-right: 5px"
                                         size="is-small"
-                                        @click.stop="showBetaTester(mission._id, mission.betaTestId)"
+                                        @click.stop="showMissionParticipants(mission._id, mission.betaTestId)"
                                         outlined>미션 완료자 추가/삭제
                               </b-button>
                               <b-button class="button"
@@ -368,7 +368,7 @@ import request from '../../common/utils/http';
 import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
 import Draggable from 'vuedraggable';
-import Participants  from '../components/Participants';
+import MissionParticipants  from '../components/MissionParticipants';
 
 export default {
   name: 'TestRegister',
@@ -839,14 +839,14 @@ export default {
       }
       return isValid;
     },
-    showBetaTester(missionId, betaTestId){
+    showMissionParticipants(missionId, betaTestId){
       this.$buefy.modal.open({
         parent: this,
         props: {
           betaTestId:betaTestId,
           missionId:missionId
         },
-        component: Participants,
+        component: MissionParticipants,
         hasModalCard: true,
         trapFocus: true,
         canCancel: false,
