@@ -22,15 +22,15 @@
               <b-table-column field="userId" label="유저 아이디" searchable>
                 {{ props.row.userId }}
               </b-table-column>
-              <b-table-column field="status" label="참여 상태" sortable>
-                {{ convertStatus(props.row.status) }}
+              <b-table-column field="nickName" label="닉네임" sortable>
+                {{ props.row.nickName }}
               </b-table-column>
               <b-table-column field="date" label="참여일시" centered sortable>
                 {{ convertDateTime(props.row.date) }}
               </b-table-column>
-<!--              <b-table-column field="" label="" centered sortable>-->
-<!--                <b-button type='is-danger' size="is-small" @click="deleteInfo(props.row._id)">참여기록 삭제</b-button>-->
-<!--              </b-table-column>-->
+              <!--              <b-table-column field="" label="" centered sortable>-->
+              <!--                <b-button type='is-danger' size="is-small" @click="deleteInfo(props.row._id)">참여기록 삭제</b-button>-->
+              <!--              </b-table-column>-->
             </template>
             <template slot="footer">
               <div class="has-text-right">
@@ -46,7 +46,7 @@
                       size="is-large">
                     </b-icon>
                   </p>
-                  <p>테스트에 참여한 사용자 정보가 없습니다.</p>
+                  <p>테스트 참여자 정보가 없습니다.</p>
                 </div>
               </section>
             </template>
@@ -63,67 +63,83 @@
 <script>
   import request from '../../common/utils/http';
   import moment from 'moment';
-export default {
-  name: 'BetaTestParticipants',
-  props: {
-    betaTestId:{
-      type: String,
-      default(){
-        return null;
+
+  export default {
+    name: 'BetaTestParticipants',
+    props: {
+      betaTestId: {
+        type: String,
+        default() {
+          return null;
+        }
       }
-    }
-  },
-  data() {
-    return {
-      values:'',
-      key:'userId',
-      status:'attend',
-      participants:[],
-      options:{
-        status:[
-          {text:'참여', value:'attend'},
-          {text:'완료', value:'complete'}
-        ]
-      }
-    };
-  },
-  mounted() {
-    this.getParticipants()
-  },
-  methods: {
-    getParticipants(){
-      const params = {
-        type: 'beta-test',
-        betaTestId: this.betaTestId,
-        status: this.status
+    },
+    data() {
+      return {
+        values: '',
+        key: 'userId',
+        status: 'attend',
+        participants: []
       };
-      request.get('/api/participants',{params:params}).then(res=>{
-        console.log(res.data);
-        this.participants = res.data;
-      }).catch(err=>{
-        this.$root.showErrorToast('테스트 참여자 조회에 실패하였습니다.', err);
-      });
     },
-    deleteInfo(id){
-      request.delete('/api/participants/'+id).then(res=>{
-        this.$root.showSuccessToast('테스트 참여자를 정상적으로 삭제하였습니다.');
-        this.getParticipants();
-      }).catch(err => {
-        this.$root.showErrorToast('테스트 참여자 삭제에 실패하였습니다.', err);
-      });
+    mounted() {
+      this.getParticipants();
     },
-    convertStatus(status){
-      return this.options.status.filter(el => el.value === status)[0].text;
+    methods: {
+      getParticipants() {
+        let participantsResult;
+
+        const params = {
+          type: 'beta-test',
+          betaTestId: this.betaTestId,
+          status: this.status
+        };
+
+        request.get('/api/participants', { params: params })
+          .then(res => {
+            participantsResult = res.data;
+
+            const keywords = [];
+            participantsResult.forEach(participant => keywords.push(participant.userId));
+
+            return request.post('/api/users/search', {
+              type: 'userId',
+              keywords: keywords
+            });
+          })
+          .then(res => {
+            const users = res.data;
+
+            participantsResult.forEach(participant => {
+              participant.nickName = users.filter(user => user.userId === participant.userId)[0].nickName;
+            });
+
+            this.participants = participantsResult;
+          })
+          .catch(err => {
+            this.$root.showErrorToast('테스트 참여자 조회에 실패하였습니다.', err);
+          });
+      },
+      deleteInfo(id) {
+        request.delete('/api/participants/' + id)
+          .then(res => {
+            this.$root.showSuccessToast('테스트 참여자를 정상적으로 삭제하였습니다.');
+            this.getParticipants();
+          })
+          .catch(err => {
+            this.$root.showErrorToast('테스트 참여자 삭제에 실패하였습니다.', err);
+          });
+      },
+      convertDateTime(date) {
+        return moment(date)
+          .format('YYYY-MM-DD (ddd) HH:mm:ss');
+      },
     },
-    convertDateTime(date){
-      return moment(date).format('YYYY-MM-DD (ddd) HH:mm:ss');
-    },
-  },
-};
+  };
 </script>
 
 <style scoped>
-  .order-wrapper{
+  .order-wrapper {
     position: absolute;
     left: 0;
     top: 0;
