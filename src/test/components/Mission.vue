@@ -99,9 +99,10 @@
                         구글플레이 기본 마켓 URL 사용하기
                       </b-checkbox>
                     </div>
-                    <div class="level-right">
+                    <div class="level-right" style="margin-left: 10px;">
                       <b-button @click="addReferrer" :disabled="disabled">
-                        Referrer 추가
+                        <div style="font-size: 15px">URL에 Referrer 추가</div>
+                        <div style="font-size: 10px">(utm_source=formakers)</div>
                       </b-button>
                     </div>
                   </div>
