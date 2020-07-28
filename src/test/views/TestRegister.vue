@@ -351,7 +351,7 @@
                           </div>
                         </div>
                         <div class="content" style="margin-top: 40px">
-                          <span class="order-wrapper">{{mission.order}}</span>
+                          <span class="order-wrapper">{{mission.order}}번째 미션</span>
                           <p class="title is-5">{{mission.title ? mission.title : '제목을 입력해주세요.'}}
                             <b-tag type="is-warning">{{mission.type}}</b-tag>
                           </p>
@@ -909,7 +909,6 @@ export default {
     background-color: #00BFBA;
     font-weight: bold;
     color: white;
-    width: 60px;
     text-align: center;
   }
 </style>

@@ -1,7 +1,9 @@
 <template>
   <section class="modal-card" style="width: auto">
     <header v-if="type != 'readonly'" class="modal-card-head">
-      <p class="modal-card-title">미션 정보 {{type === 'modify'? '수정하기' : '등록하기'}}</p>
+      <div class="modal-card-title">
+        {{mission.order}}번째 미션 정보 {{this.type === 'modify'? '수정하기' : '등록하기'}}
+      </div>
       <p class="has-text-danger">필수 값 *</p>
     </header>
     <section class="modal-card-body">
