@@ -28,9 +28,9 @@
               <b-table-column field="date" label="참여일시" centered sortable>
                 {{ convertDateTime(props.row.date) }}
               </b-table-column>
-              <!--              <b-table-column field="" label="" centered sortable>-->
-              <!--                <b-button type='is-danger' size="is-small" @click="deleteInfo(props.row._id)">참여기록 삭제</b-button>-->
-              <!--              </b-table-column>-->
+              <b-table-column field="" label="" centered sortable>
+                <b-button type='is-danger' size="is-small" @click="deleteInfo(props.row.betaTestId, props.row.userId)">참여기록 삭제</b-button>
+              </b-table-column>
             </template>
             <template slot="footer">
               <div class="has-text-right">
@@ -120,9 +120,9 @@
             this.$root.showErrorToast('테스트 참여자 조회에 실패하였습니다.', err);
           });
       },
-      deleteInfo(id) {
-        request.delete('/api/participants/' + id)
-          .then(res => {
+      deleteInfo(betaTestId, userId) {
+        request.delete('/api/participants/beta-test/' + betaTestId + "/user/" + userId)
+          .then(() => {
             this.$root.showSuccessToast('테스트 참여자를 정상적으로 삭제하였습니다.');
             this.getParticipants();
           })
