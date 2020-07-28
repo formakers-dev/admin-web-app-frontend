@@ -239,10 +239,18 @@
                   <b-icon size="is-small" icon="help-circle-outline"></b-icon>
                 </b-tooltip>
               </template>
+              <div>
               <b-input v-model="betaTest.coverImageUrl"
                        ref="betaTest.converImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"
                        required></b-input>
+                <div class="help-link-container">
+                  ⚒️ Tools :
+                  <a class="help-link" href="https://tinypng.com/" target="_blank">tinyPNG</a>
+                  <div class="help-link divider">|</div>
+                  <a class="help-link" href="https://imgur.com/" target="_blank">imgur</a>
+                </div>
+              </div>
             </b-field>
             <b-field v-if="betaTest.coverImageUrl" label="대표 이미지 Preview" horizontal>
               <img style="width: 500px" :src="betaTest.coverImageUrl"/>
@@ -880,6 +888,18 @@ export default {
   .contents {
     margin: 0 auto !important;
     width: 85% !important;
+  }
+  .help-link-container {
+    font-size: 15px;
+    margin-top: 5px;
+  }
+  .help-link {
+    display: inline;
+  }
+  .divider {
+    margin-left: 5px;
+    margin-right: 5px;
+    color: cadetblue;
   }
   .order-wrapper{
     position: absolute;
