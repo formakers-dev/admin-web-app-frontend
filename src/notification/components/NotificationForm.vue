@@ -111,17 +111,106 @@
           </div>
           <div class="is-vertical-divider"></div>
           <div class="column">
+            <div class="box">
+              <b-field>
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 전송 대상
+                </template>
+                <b-field>
+                  <b-radio-button v-for="notiType in notiTypeList"
+                                  :key="notiType.key"
+                                  v-model="data.notiType"
+                                  :native-value="notiType.value" required>
+                    <span>{{notiType.key}}</span>
+                  </b-radio-button>
+                </b-field>
+              </b-field>
+              <b-field  v-if="data.notiType === 'individual'">
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 전송 대상자 타입
+                </template>
+                <b-field>
+                  <b-radio-button v-for="receiversType in receiversTypes"
+                                  :key="receiversType.key"
+                                  v-model="data.receiversType"
+                                  :native-value="receiversType.value" required>
+                    <span>{{receiversType.key}}</span>
+                  </b-radio-button>
+                </b-field>
+              </b-field>
+
+              <b-field v-if="data.notiType === 'individual'" label="전송 옵션">
+                <div>
+                  <b-checkbox v-model="data.isExcluded">
+                    아래 사용자들을 제외한 모두에게 보내기
+                  </b-checkbox>
+                </div>
+              </b-field>
+
+              <b-field v-if="data.notiType === 'test'">
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 테스터
+                </template>
+                <div style="padding-top: 0.375em;">
+                  <b-tooltip style="margin-right:10px"
+                             v-for="tester in test.members"
+                             type="is-dark"
+                             :label="tester.email"
+                             :key="tester.name"
+                             position="is-bottom">
+                    <b-checkbox v-model="test.receivers"
+                                :native-value="tester.email">
+                      {{tester.name}}
+                    </b-checkbox>
+                  </b-tooltip>
+                </div>
+              </b-field>
+
+              <b-field v-if="data.notiType === 'individual'">
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 대상자들의 {{data.receiversType === 'email' ? "이메일" : "유저 아이디"}}
+                  <b-tooltip type="is-dark"
+                             label="엔터(\n)와 쉼표(,)로 구분합니다."
+                             position="is-right"
+                             multilined>
+                    <b-button class="is-white"
+                              style="margin-left: -15px; background: transparent;"
+                              rounded>
+                      <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+                    </b-button>
+                  </b-tooltip>
+                </template>
+                <b-input v-model="data.receivers"
+                         type="textarea"
+                         required
+                         placeholder="엔터(\n)와 쉼표(,)로 구분합니다."
+                         validation-message="필수 입력 값입니다."></b-input>
+              </b-field>
+
+              <b-field v-if="data.notiType === 'topic'">
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 토픽
+                </template>
+                <b-radio style="padding-top: 0.375em;"
+                         v-for="topic in topicList"
+                         :key="topic.key"
+                         v-model="data.topic"
+                         :native-value="topic.value" required>
+                  <span>{{topic.key}}</span>
+                </b-radio>
+              </b-field>
+            </div>
             <b-field>
               <template slot="label">
                 발송 예약 시각
                 <b-tooltip type="is-dark"
                            label="미입력 시에는 알림이 바로 전송됩니다."
                            position="is-right">
-                    <b-button class="is-white"
+                  <b-button class="is-white"
                             style="margin-left: -15px; background: transparent;"
                             rounded>
-                      <b-icon size="is-small" icon="help-circle-outline"></b-icon>
-                    </b-button>
+                    <b-icon size="is-small" icon="help-circle-outline"></b-icon>
+                  </b-button>
                 </b-tooltip>
               </template>
               <b-field>
@@ -135,123 +224,36 @@
               </b-field>
             </b-field>
             <b-field>
-                <div class="buttons">
-                  <button class="button is-primary"
-                          @click="setTime(11,30)">
-                    <span>11:30</span>
-                  </button>
-                  <button class="button is-primary"
-                          @click="setTime(18,0)">
-                    <span>18:00</span>
-                  </button>
-                  <button class="button is-primary"
-                          @click="setTime(18,30)">
-                    <span>18:30</span>
-                  </button>
-                  <button class="button is-primary"
-                          @click="setTime(19,0)">
-                    <span>19:00</span>
-                  </button>
-                  <button class="button is-primary"
-                          @click="setTime(19,30)">
-                    <span>19:30</span>
-                  </button>
-                  <button class="button is-primary"
-                          @click="setTime(20,0)">
-                    <span>20:00</span>
-                  </button>
-                  <button class="button is-primary"
-                          @click="setTime(20,30)">
-                    <span>20:30</span>
-                  </button>
-                </div>
-            </b-field>
-            <b-field>
-              <template slot="label">
-                <span class="has-text-danger">*</span> 전송 대상
-              </template>
-              <b-field>
-                <b-radio-button v-for="notiType in notiTypeList"
-                                :key="notiType.key"
-                                v-model="data.notiType"
-                                :native-value="notiType.value" required>
-                  <span>{{notiType.key}}</span>
-                </b-radio-button>
-              </b-field>
-            </b-field>
-            <b-field  v-if="data.notiType === 'individual'">
-              <template slot="label">
-                <span class="has-text-danger">*</span> 전송 대상자 타입
-              </template>
-              <b-field>
-                <b-radio-button v-for="receiversType in receiversTypes"
-                                :key="receiversType.key"
-                                v-model="data.receiversType"
-                                :native-value="receiversType.value" required>
-                  <span>{{receiversType.key}}</span>
-                </b-radio-button>
-              </b-field>
-            </b-field>
-
-            <b-field v-if="data.notiType === 'individual'" label="전송 옵션">
-              <div>
-                <b-checkbox v-model="data.isExcluded">
-                  아래 사용자들을 제외한 모두에게 보내기
-                </b-checkbox>
+              <div class="buttons">
+                <button class="button is-primary"
+                        @click="setTime(11,30)">
+                  <span>11:30</span>
+                </button>
+                <button class="button is-primary"
+                        @click="setTime(18,0)">
+                  <span>18:00</span>
+                </button>
+                <button class="button is-primary"
+                        @click="setTime(18,30)">
+                  <span>18:30</span>
+                </button>
+                <button class="button is-primary"
+                        @click="setTime(19,0)">
+                  <span>19:00</span>
+                </button>
+                <button class="button is-primary"
+                        @click="setTime(19,30)">
+                  <span>19:30</span>
+                </button>
+                <button class="button is-primary"
+                        @click="setTime(20,0)">
+                  <span>20:00</span>
+                </button>
+                <button class="button is-primary"
+                        @click="setTime(20,30)">
+                  <span>20:30</span>
+                </button>
               </div>
-            </b-field>
-
-            <b-field v-if="data.notiType === 'test'">
-              <template slot="label">
-                <span class="has-text-danger">*</span> 테스터
-              </template>
-              <div style="padding-top: 0.375em;">
-                <b-tooltip style="margin-right:10px"
-                           v-for="tester in test.members"
-                           type="is-dark"
-                           :label="tester.email"
-                           :key="tester.name"
-                           position="is-bottom">
-                  <b-checkbox v-model="test.receivers"
-                              :native-value="tester.email">
-                    {{tester.name}}
-                  </b-checkbox>
-                </b-tooltip>
-              </div>
-            </b-field>
-
-            <b-field v-if="data.notiType === 'individual'">
-              <template slot="label">
-                <span class="has-text-danger">*</span> 대상자들의 {{data.receiversType === 'email' ? "이메일" : "유저 아이디"}}
-                <b-tooltip type="is-dark"
-                           label="엔터(\n)와 쉼표(,)로 구분합니다."
-                           position="is-right"
-                           multilined>
-                  <b-button class="is-white"
-                            style="margin-left: -15px; background: transparent;"
-                            rounded>
-                    <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
-                  </b-button>
-                </b-tooltip>
-              </template>
-              <b-input v-model="data.receivers"
-                       type="textarea"
-                       required
-                       placeholder="엔터(\n)와 쉼표(,)로 구분합니다."
-                       validation-message="필수 입력 값입니다."></b-input>
-            </b-field>
-
-            <b-field v-if="data.notiType === 'topic'">
-              <template slot="label">
-                <span class="has-text-danger">*</span> 토픽
-              </template>
-              <b-radio style="padding-top: 0.375em;"
-                       v-for="topic in topicList"
-                       :key="topic.key"
-                       v-model="data.topic"
-                       :native-value="topic.value" required>
-                <span>{{topic.key}}</span>
-              </b-radio>
             </b-field>
           </div>
         </div>
@@ -428,7 +430,7 @@ export default {
     send() {
       if (!this.validate()) {
         this.$buefy.toast.open({
-          message: '입력 값들을 다시 한번 학인해주세요.',
+          message: '입력 값들을 다시 한 번 확인해 주세요.',
           type: 'is-danger',
         });
         return;
