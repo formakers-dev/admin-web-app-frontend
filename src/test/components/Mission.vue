@@ -1,7 +1,9 @@
 <template>
   <section class="modal-card" style="width: auto">
     <header v-if="type != 'readonly'" class="modal-card-head">
-      <p class="modal-card-title">미션 정보 {{type === 'modify'? '수정하기' : '등록하기'}}</p>
+      <div class="modal-card-title">
+        {{mission.order}}번째 미션 정보 {{this.type === 'modify'? '수정하기' : '등록하기'}}
+      </div>
       <p class="has-text-danger">필수 값 *</p>
     </header>
     <section class="modal-card-body">
@@ -99,9 +101,10 @@
                         구글플레이 기본 마켓 URL 사용하기
                       </b-checkbox>
                     </div>
-                    <div class="level-right">
+                    <div class="level-right" style="margin-left: 10px;">
                       <b-button @click="addReferrer" :disabled="disabled">
-                        Referrer 추가
+                        <div style="font-size: 15px">URL에 Referrer 추가</div>
+                        <div style="font-size: 10px">(utm_source=formakers)</div>
                       </b-button>
                     </div>
                   </div>

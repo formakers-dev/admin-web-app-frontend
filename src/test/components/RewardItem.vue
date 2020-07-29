@@ -32,7 +32,9 @@
               <b-radio v-for="option in options.icons"
                        :key="option.key"
                        :native-value="option"
-                       v-model="icon" :disabled="disabled">
+                       v-model="icon"
+                       :style="option.style"
+                       :disabled="disabled">
                 <img v-if="option.key != 'manual'" class="icon" :src="option.img">
                 <p v-if="option.key === 'manual'">{{option.text}}</p>
               </b-radio>
@@ -96,6 +98,8 @@ export default {
           {key:'gold', img:'https://i.imgur.com/ybuI732.png'},
           {key:'silver', img:'https://i.imgur.com/6RaZ7vI.png'},
           {key:'pencil', img:'https://i.imgur.com/btZZHRp.png'},
+          {key:'hidden', img:'anything', style:'display:none'},
+          {key:'giftbox', img:'https://i.imgur.com/upSLF2A.png'},
           {key:'manual', img:'', text:'직접입력'}
         ],
         types:[],

@@ -5,7 +5,7 @@
           src="../../assets/logo.png"
           alt=""
           width="150px"
-        >
+        />
     </section>
     <section style="margin-top: 20px">
       <b-field label="이메일">
@@ -21,6 +21,8 @@
                  required
         ></b-input>
       </b-field>
+    </section>
+    <section style="margin-top: 20px">
       <b-field label="비밀번호">
         <b-input type="password"
                  v-model="password"
@@ -94,6 +96,11 @@ export default {
           email : this.email,
           password: this.password
         };
+
+        if (this.showSignUp) {
+          body.nickName = this.nickName;
+        }
+
         request({
           url: this.showSignUp ? '/api/auth/sign-up' : '/api/auth/login',
           method: 'post',
