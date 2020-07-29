@@ -355,8 +355,8 @@
                           <p class="title is-5">{{mission.title ? mission.title : '제목을 입력해주세요.'}}
                             <b-tag type="is-warning">{{mission.type}}</b-tag>
                           </p>
-                          <p class="subtitle is-6" style="color:gray; margin-top:10px">
-                            {{mission.description ? mission.description : '내용을 입력해주세요.'}}</p>
+                          <p class="subtitle is-6" style="margin-top:10px"><i>Preview</i></p>
+                          <MissionCardPreview :mission="mission"/>
                         </div>
                       </div>
                     </div>
@@ -375,6 +375,7 @@
 import request from '../../common/utils/http';
 import RewardItem from '../components/RewardItem.vue';
 import Mission from '../components/Mission.vue';
+import MissionCardPreview from '../components/MissionCardPreview.vue';
 import Draggable from 'vuedraggable';
 import MissionParticipants  from '../components/MissionParticipants';
 
@@ -383,6 +384,7 @@ export default {
   components: {
     RewardItem,
     Draggable,
+    MissionCardPreview
   },
   props:{
     step:{
