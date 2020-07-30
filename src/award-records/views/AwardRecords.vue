@@ -4,7 +4,7 @@
     <section>
       <b-field grouped>
         <b-field label="User ID 타입">
-          <b-select v-model="requestData.key">
+          <b-select v-model="requestData.userIdentifierType">
             <option v-for="option in options.userKeys" :key="option.value" :value="option.value">
               {{ option.text }}
             </option>
@@ -23,10 +23,29 @@
           </template>
           <b-input v-model="requestData.reward.description"></b-input>
         </b-field>
-        <b-field label="보상 가격">
+        <b-field>
+          <template slot="label">
+            <span class="has-text-danger">*</span> 보상 가격
+          </template>
           <b-input v-model="requestData.reward.price"></b-input>
         </b-field>
+        <b-field>
+          <template slot="label">
+            <span class="has-text-danger">*</span> 보상 지급 유형
+          </template>
+          <div>
+            <b-select v-model="requestData.reward.paymentType">
+              <option v-for="paymentType in options.paymentTypes"
+                      :key="paymentType.key"
+                      :value="paymentType.value">
+                {{paymentType.text}}
+              </option>
+            </b-select>
+          </div>
+        </b-field>
       </b-field>
+
+      <!-- input section -->
       <b-field style="width: 100% !important;">
         <b-field style="width: 100% !important;">
           <b-tooltip label="쉼표(,)나 엔터로 구분해주세요."
@@ -35,7 +54,7 @@
                      style="width: inherit;"
           >
             <b-input type="textarea"
-                     v-model="values"
+                     v-model="userIdentifiersString"
                      style="width: 100%"
             >
             </b-input>
@@ -44,12 +63,12 @@
             <button class="button is-primary"
                     style="height: 100%"
                     @click="register"
-                    :disabled="values.length === 0 || requestData.reward.description.trim().length === 0"
+                    :disabled="userIdentifiersString.length === 0 || requestData.reward.description.trim().length === 0"
             >등록</button>
           </p>
         </b-field>
       </b-field>
-      <b-message v-if="notMatchedMessage" type="is-danger">
+      <b-message v-if="isNotMatched" type="is-danger">
         총 {{requestUsersCount}}명의 사용자 중 {{requestUsersCount - responseUsersCount}} 명의 사용자 정보조회를 실패하였습니다.
         <br>{{notMatchedUsers.join(' , ')}}
       </b-message>
@@ -137,10 +156,11 @@ export default {
       type:'add',
       awardRecords:[],
       requestData:{
-        key:'userId',
+        userIdentifierType:'userId',
         betaTestId:null,
-        users:[],
+        userIdentifiers:[],
         typeCode:9000,
+        paymentType: '',
         reward:{
           description:'',
           price:null
@@ -149,12 +169,12 @@ export default {
       betaTest:{},
       testTitle:'',
       rewardType:0,
-      values:'',
+      userIdentifiersString:'',
       checkedRows:[],
       rewardList:[],
       requestUsersCount:0,
       responseUsersCount:0,
-      notMatchedMessage:false,
+      isNotMatched:false,
       notMatchedUsers:[],
       options:{
         userKeys:[
@@ -169,6 +189,11 @@ export default {
           {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:''}},
           {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:''}},
         ],
+        paymentTypes: [
+          {key: 'point', value: 'point', text: '포인트'},
+          {key: 'game-item', value: 'game-item', text: '게임 아이템'},
+          {key: 'etc', value: 'etc', text: '기타(현물 등)'},
+        ]
       }
     };
   },
@@ -182,10 +207,11 @@ export default {
     },
     'rewardType':{
       handler(value){
-        this.rewardList.forEach((e)=>{
-          if(e.typeCode === value){
-            this.requestData.reward.description = e.content;
-            this.requestData.reward.price = e.price;
+        this.rewardList.forEach((reward)=>{
+          if(reward.typeCode === value){
+            this.requestData.reward.description = reward.content;
+            this.requestData.reward.price = reward.price;
+            this.requestData.reward.paymentType = reward.paymentType;
           }
         });
         this.requestData.typeCode = value;
@@ -195,7 +221,7 @@ export default {
   },
   created() {
     this.betaTestId = this.$route.query.betaTestId;
-    this.getAwardRecords();
+    this.refreshAwardRecords();
   },
   mounted() {
   },
@@ -207,7 +233,7 @@ export default {
         }
       }
     },
-    getAwardRecords(){
+    refreshAwardRecords(){
       request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
         this.awardRecords = res.data.awardRecords;
         this.awardRecords = this.awardRecords.map(awardRecord => {
@@ -239,42 +265,40 @@ export default {
     },
     closeForm(refresh){
       if(refresh){
-        this.getAwardRecords();
+        this.refreshAwardRecords();
       }
     },
     register(){
-      const splitedKeywords = this.values ? this.values.split(/[,\s\n]+/) : [];
-      const keywords = [];
-      splitedKeywords.forEach(value => {
-        const keyword = value.replace(/(\s*)/g, "");
-        if(keyword.length > 0){
-          keywords.push(keyword);
-        }
-      });
-      if(keywords.length === 0){
-        const text = this.getSearchTypeText(this.requestData.type);
-        this.$root.showErrorToast(text + '을 1개이상 입력해주세요.', '');
+      const userIdentifiers = this.userIdentifiersString.split(/[,\s\n]+/)
+        .map(value => value.replace(/(\s*)/g, ''))
+        .filter(value => value.length > 0);
+
+      if (userIdentifiers.length <= 0) {
+        this.$root.showErrorToast(this.requestData.userIdentifierType + '을 1개이상 입력해주세요.', '');
         return;
       }
-      const body = {
-        userKey: this.requestData.key,
-        users: keywords,
+
+      const requestBody = {
+        userIdentifierType: this.requestData.userIdentifierType,
+        userIdentifiers: userIdentifiers,
         typeCode: this.requestData.typeCode,
         type: this.getRewardType(this.requestData.typeCode),  //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
         betaTestId: this.betaTestId,
         reward:{
           description: this.requestData.reward.description,
-          price: this.requestData.reward.price
+          price: this.requestData.reward.price,
+          paymentType: this.requestData.reward.paymentType,
         }
       };
-      this.requestUsersCount = keywords.length;
-      request.post('/api/award-records',body).then((res)=>{
+
+      this.requestUsersCount = userIdentifiers.length;
+      request.post('/api/award-records', requestBody).then((res) => {
         this.responseUsersCount = res.data.length;
-        this.notMatchedMessage = (this.requestUsersCount-this.responseUsersCount) > 0;
-        if(this.notMatchedMessage){
-          this.checkNotMatchedUser(this.requestData.key, keywords, res.data);
+        this.isNotMatched = (this.requestUsersCount - this.responseUsersCount) > 0;
+        if (this.isNotMatched) {
+          this.checkNotMatchedUser(this.requestData.userIdentifierType, userIdentifiers, res.data);
         }
-        this.getAwardRecords();
+        this.refreshAwardRecords();
       }).catch(err=>{
         this.$root.showErrorToast('수상 내역 등록에 실패하였습니다.', err);
       });
@@ -298,7 +322,7 @@ export default {
       const checkedIds = this.checkedRows.map(row => row._id);
       request.post('/api/award-records/delete', checkedIds).then((res)=>{
         this.checkedRows = [];
-        this.getAwardRecords();
+        this.refreshAwardRecords();
       }).catch(err=>{
         this.$root.showErrorToast('수상 내역 삭제에 실패하였습니다.', err);
       });
@@ -322,23 +346,29 @@ export default {
       const filename = this.testTitle + '-수상자 내역정보('+date+').xlsx';
       XLSX.writeFile(wb, filename);
     },
-    checkNotMatchedUser(type, req, res){
-      const diff = req.length - res.length;
-      for(let i = 0; i < req.length && this.notMatchedUsers.length < diff; i++){
-        if(res.length === 0){
-          this.notMatchedUsers.push(req[i]);
-        }else{
-          let isExisted = false;
-          for(let j =0; j< res.length; j++){
-            let value = res[j];
-            if(req[i] === value[type]){
-              isExisted = true;
-              break;
-            }
+    // requestedUsers : String[]
+    // completedUsers: {userId, nickName, email} []
+    // completedUsers['userId'] : "google1243235"
+    // completedUsers['nickName']
+    checkNotMatchedUser(type, requestedUserIdentifiers, completedUsers){
+      if (completedUsers.length === 0) {
+        this.notMatchedUsers = [].concat(requestedUserIdentifiers);
+        return;
+      }
+
+      // 오류 발생 유저 추출
+      const diff = requestedUserIdentifiers.length - completedUsers.length;
+      for(let i = 0; i < requestedUserIdentifiers.length && this.notMatchedUsers.length < diff; i++) {
+        let isExisted = false;
+        for (let j = 0; j < completedUsers.length; j++) {
+          let value = completedUsers[j];
+          if (requestedUserIdentifiers[i] === value[type]) {
+            isExisted = true;
+            break;
           }
-          if(!isExisted){
-            this.notMatchedUsers.push(req[i]);
-          }
+        }
+        if (!isExisted) {
+          this.notMatchedUsers.push(requestedUserIdentifiers[i]);
         }
       }
     }
