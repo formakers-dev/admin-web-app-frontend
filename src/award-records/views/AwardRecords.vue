@@ -1,6 +1,19 @@
 <template>
   <section>
-    <h1 class="title">🎉 {{betaTest.title}} 수상자 관리 🎉</h1>
+    <div class="head">
+      <div class="contents">
+        <img v-if="betaTest.iconImageUrl" style="width: 70px" :src="betaTest.iconImageUrl"/>
+        <div>
+          <h1 class="title">
+            {{betaTest.title}}
+            <div class="has-text-primary" style="display: inline">
+              수상자 관리
+            </div>
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div class="contents">
     <section>
       <b-field grouped>
         <b-field label="User ID 타입">
@@ -122,6 +135,7 @@
         </template>
       </b-table>
     </section>
+    </div>
   </section>
 </template>
 
@@ -216,6 +230,7 @@ export default {
         });
         this.betaTest = res.data.betaTest;
         this.rewardList = res.data.betaTest.rewards.list;
+        console.log(this.betaTest)
       }).catch((err)=>{
         this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
       });
@@ -347,4 +362,17 @@ export default {
 </script>
 
 <style scoped>
+  .container {
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
+  .head {
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .contents {
+    margin: 0 auto !important;
+    width: 85% !important;
+  }
 </style>
