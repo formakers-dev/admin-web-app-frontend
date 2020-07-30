@@ -359,11 +359,11 @@ export default {
           {key:'standard', text:'Standard'},
         ],
         rewardTypes:[
-          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:''}},
-          {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:''}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1, paymentType: 'point'}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1, paymentType: 'point'}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000, paymentType: 'point'}},
+          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:'', paymentType: 'point'}},
+          {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:'', paymentType: 'point'}},
         ],
         testTypes:[
           {key:'default', text:'자유선택'},
