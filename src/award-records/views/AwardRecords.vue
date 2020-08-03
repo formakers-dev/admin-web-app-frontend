@@ -283,11 +283,15 @@ export default {
           type: this.requestData.userIdentifierType,
           data: userIdentifiers
         },
-        betaTestId: this.betaTestId,
+        betaTest: {
+          id: this.betaTestId,
+          title: this.betaTest.title
+        },
         award: {
           //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
           type: this.getRewardType(this.requestData.typeCode),
           typeCode: this.requestData.typeCode,
+          typeName: this.getRewardTypeName(this.requestData.typeCode)
         },
         reward:{
           description: this.requestData.reward.description,
@@ -322,6 +326,9 @@ export default {
         case 1000 :
           return "etc";
       }
+    },
+    getRewardTypeName(typeCode) {
+      return this.options.rewardTypes.filter(rewardType => rewardType.key === typeCode)[0].value.title;
     },
     remove(){
       const checkedIds = this.checkedRows.map(row => row._id);
