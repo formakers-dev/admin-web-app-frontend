@@ -279,11 +279,16 @@ export default {
       }
 
       const requestBody = {
-        userIdentifierType: this.requestData.userIdentifierType,
-        userIdentifiers: userIdentifiers,
-        typeCode: this.requestData.typeCode,
-        type: this.getRewardType(this.requestData.typeCode),  //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
+        userIdentifier: {
+          type: this.requestData.userIdentifierType,
+          data: userIdentifiers
+        },
         betaTestId: this.betaTestId,
+        award: {
+          //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
+          type: this.getRewardType(this.requestData.typeCode),
+          typeCode: this.requestData.typeCode,
+        },
         reward:{
           description: this.requestData.reward.description,
           price: this.requestData.reward.price,
