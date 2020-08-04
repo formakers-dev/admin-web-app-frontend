@@ -70,6 +70,8 @@
 
 <script>
   import httpRequest from '../../common/utils/http';
+  import _ from 'lodash';
+
   export default {
     name: 'AwardRecordDetailForm',
     components: {},
@@ -112,7 +114,7 @@
     created() {
     },
     mounted() {
-      this.awardRecord = Object.assign({}, this.value);
+      this.awardRecord = _.cloneDeep(this.value);
     },
     methods: {
       validate() {

@@ -104,9 +104,7 @@
         per-page="10"
         :pagination-simple="false"
         pagination-position="both"
-        @select="showDetail"
         :checked-rows.sync="checkedRows"
-        selectable
         checkable
       >
         <template slot-scope="props">
