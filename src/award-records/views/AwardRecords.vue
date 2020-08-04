@@ -122,6 +122,9 @@
           <b-table-column field="reward.description" label="보상 설명" searchable>
             {{ props.row.reward.description }}
           </b-table-column>
+          <b-table-column field="reward.paymentTypeString" label="보상 지급 유형" searchable>
+            {{ props.row.reward.paymentTypeString }}
+          </b-table-column>
           <b-table-column field="reward.price" label="보상 금액" searchable>
             {{ props.row.reward.price ? props.row.reward.price : '-'}}
           </b-table-column>
@@ -235,9 +238,11 @@ export default {
     },
     refreshAwardRecords(){
       request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
+        console.log(res);
         this.awardRecords = res.data.awardRecords;
         this.awardRecords = this.awardRecords.map(awardRecord => {
           awardRecord.typeString = this.convertedType(awardRecord.typeCode);
+          awardRecord.reward.paymentTypeString = this.convertPaymentTypeName(awardRecord.reward.paymentType);
           return awardRecord;
         });
         this.betaTest = res.data.betaTest;
@@ -291,7 +296,7 @@ export default {
           //리워드 관련 임시 처리 (추후 앱 크리티컬 업데이트 시 아래 내용 삭제 필요)
           type: this.getRewardType(this.requestData.typeCode),
           typeCode: this.requestData.typeCode,
-          typeName: this.getRewardTypeName(this.requestData.typeCode)
+          typeName: this.convertRewardTypeName(this.requestData.typeCode)
         },
         reward:{
           description: this.requestData.reward.description,
@@ -327,8 +332,12 @@ export default {
           return "etc";
       }
     },
-    getRewardTypeName(typeCode) {
+    convertRewardTypeName(typeCode) {
       return this.options.rewardTypes.filter(rewardType => rewardType.key === typeCode)[0].value.title;
+    },
+    convertPaymentTypeName(key) {
+      const selectedPaymentTypes = this.options.paymentTypes.filter(paymentType => paymentType.key === key);
+      return (selectedPaymentTypes && selectedPaymentTypes.length > 0) ? selectedPaymentTypes[0].text : "";
     },
     remove(){
       const checkedIds = this.checkedRows.map(row => row._id);
