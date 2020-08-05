@@ -339,10 +339,22 @@ export default {
     },
     remove(){
       const checkedIds = this.checkedRows.map(row => row._id);
+      const checkedUserIdsForPointType = this.checkedRows.filter(row => row.reward.paymentType === 'point').map(row => row.userId);
+
       request.post('/api/award-records/delete', checkedIds).then((res)=>{
         this.checkedRows = [];
         this.refreshAwardRecords();
-      }).catch(err=>{
+
+        if (!!checkedUserIdsForPointType && checkedUserIdsForPointType.length > 0) {
+          return request.delete('/api/points/beta-test/' + this.betaTestId + '/save', {
+            data: { userIds: checkedUserIdsForPointType }
+          });
+        } else {
+          return Promise.resolve();
+        }
+      }).then(res => {
+        this.$root.showSuccessToast('수상 내역 및 포인트 지급 내역이 정상적으로 삭제되었습니다 👍🏻');
+      }).catch(err => {
         this.$root.showErrorToast('수상 내역 삭제에 실패하였습니다.', err);
       });
     },
