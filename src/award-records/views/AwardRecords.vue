@@ -108,6 +108,11 @@
           </div>
         </div>
       </div>
+
+      <b-message type="is-success">
+        수상자 삭제 시, 포인트 적립 내역도 함께 삭제됩니다 👍🏻
+      </b-message>
+
       <b-table
         ref="awardRecordsTable"
         :data="awardRecords"
