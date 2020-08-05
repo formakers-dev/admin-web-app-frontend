@@ -6,6 +6,9 @@
     <section class="modal-card-body">
       <div class="columns" style="width: 100%">
         <div class="column">
+          <b-message type="is-warning">
+            ⚠️&nbsp;️&nbsp;참여자 삭제 시, 수상자 목록에서도 해당 유저를 삭제하셔야 합니다!!
+          </b-message>
           <b-table
             ref="participantsTable"
             :data="participants"
