@@ -18,7 +18,7 @@
                         style="margin-left: -15px; background: transparent;"
                         rounded
                         tag="a"
-                        href="https://www.notion.so/formakers/5b0a7915bc7a4417a1d1e414eb3fd229?v=5a411dfdb0904d7da7e5e1582db290e7"
+                        href="https://www.notion.so/formakers/0x03_-_Deeplink_-619417f97b224fc4be4230cdcba4bea6"
                         target="_blank">
                 <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
               </b-button>
