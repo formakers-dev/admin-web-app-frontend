@@ -176,7 +176,7 @@ export default {
       type:'add',
       awardRecords:[],
       requestData:{
-        userIdentifierType:'userId',
+        userIdentifierType:'email',
         betaTestId:null,
         userIdentifiers:[],
         typeCode:9000,
