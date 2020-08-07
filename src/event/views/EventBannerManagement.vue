@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="title">🎉 이벤트 배너 🎉</h1>
+    <h1 class="title">이벤트 배너</h1>
     <div class="level">
       <div class="level-left">
         <div class="level-item">

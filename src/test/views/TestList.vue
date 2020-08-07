@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="title">🎮 게임 테스트 목록 🎮</h1>
+    <h1 class="title">게임 테스트 목록</h1>
     <section style="margin-bottom: 10px">
       <div class="level">
         <div class="level-left">
