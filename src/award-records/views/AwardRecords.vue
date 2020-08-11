@@ -93,11 +93,20 @@
                       @click="remove"
                       icon-left="delete"
             >
-              {{ checkedRows.length > 0 ? checkedRows.length + '개' : '' }} 삭제
+              {{ checkedRows.length > 0 ? checkedRows.length + '건' : '' }} 삭제
             </b-button>
           </div>
         </div>
         <div class="level-right">
+          <div class="level-item">
+            <b-button type="is-info"
+                      :disabled="!checkedPointRows.length"
+                      @click="onSendNotificationButtonClick"
+                      icon-left="bell-ring"
+            >
+              {{ checkedPointRows.length > 0 ? checkedPointRows.length + '건의' : '' }} 포인트 지급 알림 보내기
+            </b-button>
+          </div>
           <div class="level-item">
             <b-button type="is-success"
                       icon-left="download"
@@ -118,12 +127,13 @@
         :data="awardRecords"
         :bordered="false"
         :hoverable="true"
-        :paginated="true"
+        :paginated="false"
         per-page="10"
         :pagination-simple="false"
         pagination-position="both"
         :checked-rows.sync="checkedRows"
         checkable
+        style="margin-bottom: 30px"
       >
         <template slot-scope="props">
           <b-table-column field="userId" label="User ID" searchable>
@@ -216,6 +226,11 @@ export default {
         ]
       }
     };
+  },
+  computed: {
+    checkedPointRows: function() {
+      return this.checkedRows.filter(row => row.reward.paymentType === 'point');
+    }
   },
   watch:{
     'rewardList':{
@@ -376,6 +391,43 @@ export default {
         this.$root.showSuccessToast('수상 내역 및 포인트 지급 내역이 정상적으로 삭제되었습니다 👍🏻');
       }).catch(err => {
         this.$root.showErrorToast('수상 내역 삭제에 실패하였습니다.', err);
+      });
+    },
+    onSendNotificationButtonClick() {
+      this.$buefy.dialog.alert({
+        title: '포인트 지급 알림을 보내시겠습니까?',
+        message: this.checkedPointRows.length + '건의 포인트 지급 알림이 전송됩니다',
+        canCancel: true,
+        cancelText: '아뇨.. 다음에 보낼게요',
+        confirmText: '네! 보낼게요! 👍🏻',
+        onConfirm: this.sendPointNotification,
+      })
+    },
+    sendPointNotification() {
+      const requestBody = this.checkedPointRows.map(row => {
+        return {
+          userId: row.userId,
+          point: row.reward.price,
+          award: {
+            typeCode: row.typeCode,
+            title: row.typeString
+          },
+          betaTest: {
+            _id: this.betaTest._id,
+            title: this.betaTest.title
+          }
+        }
+      });
+
+      request({
+        url: '/api/noti/point',
+        method: 'post',
+        data: requestBody,
+      }).then(() => {
+        this.$root.showSuccessToast('정상적으로 전송 요청을 완료하였습니다.');
+      }).catch((err) => {
+        console.error(err);
+        this.$root.showErrorToast('전송에 실패하였습니다.', err);
       });
     },
     exportAwardRecords(){
