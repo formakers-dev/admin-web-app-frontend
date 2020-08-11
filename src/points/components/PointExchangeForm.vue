@@ -116,13 +116,7 @@ export default {
     };
   },
   created() {
-    this.options.operators = this.operators.map(operator => {
-      return {
-        key: operator._id,
-        value: operator.account,
-        text: operator.nickName
-      }
-    });
+    this.options.operators = this.operators;
   },
   mounted() {
     console.log("pointRecord:", this.pointRecord);

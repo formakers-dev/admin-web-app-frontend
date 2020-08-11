@@ -22,8 +22,6 @@
       :hoverable="true"
       :paginated="true"
       per-page="10"
-      default-sort="date"
-      :default-sort-direction="'desc'"
       :current-page.sync="currentPage"
       :pagination-simple="false"
       pagination-position="both"
@@ -40,7 +38,7 @@
           {{ props.row.phoneNumber }}
         </b-table-column>
         <b-table-column field="assign" label="담당자" sortable centered searchable>
-          {{ (props.row.operationData) ? props.row.operationData.operatorAccount : "" }}
+          {{ (props.row.operationData) ? getOperatorNickName(props.row.operationData.operatorAccount) : "" }}
         </b-table-column>
         <b-table-column field="status" label="처리 상태" sortable centered searchable>
           <div class="tag" :class="getStatusStyle(props.row.operationData.status)">{{ convertHumaniticStatus(props.row.operationData.status) }}</div>
@@ -62,6 +60,7 @@ export default {
   data() {
     return {
       options: {
+        operators: [],
         operationStatus: [
           { key: 99, value: '완료', style : 'is-black' },
           { key: 10, value: '요청', style : 'is-warning' },
@@ -69,21 +68,31 @@ export default {
         ]
       },
       requestedPointExchanges: [],
-      operators: [],
       currentPage: 1,
     }
   },
   created() {
     request.get('/api/points?type=exchange')
       .then((res) => {
-        this.requestedPointExchanges = res.data.sort((a, b) => (a.operationData.status < b.operationData.status) ? -1 : 1);
+        const all = res.data;
+        const failed = all.filter(item => item.operationData.status === -1 ).sort((a, b) => (a.date < b.date) ? -1 : 1)
+        const requested = all.filter(item => item.operationData.status === 10 ).sort((a, b) => (a.date < b.date) ? -1 : 1)
+        const completed = all.filter(item => item.operationData.status === 99 ).sort((a, b) => (a.date < b.date) ? 1 : -1)
+        this.requestedPointExchanges = failed.concat(requested).concat(completed);
+        console.log('test=', this.requestedPointExchanges);
       })
       .catch((err) => {
         this.$root.showErrorToast('목록을 조회하는데 실패하였습니다.', err);
       });
 
     request.get('/api/admin/assignees')
-      .then(res => this.operators = res.data)
+      .then(res => this.options.operators = res.data.map(operator => {
+        return {
+          key: operator._id,
+          value: operator.account,
+          text: operator.nickName,
+        };
+      }))
       .catch(err => console.error(err));
   },
   methods: {
@@ -93,6 +102,13 @@ export default {
     convertHumaniticStatus(statusCode) {
       return this.options.operationStatus.filter(status => status.key === statusCode)
         .map(status => status.value)[0];
+    },
+    getOperatorNickName(operatorAccount) {
+      if (!!!operatorAccount || operatorAccount.length <= 0) {
+        return "";
+      }
+
+      return this.options.operators.filter(operator => operator.value === operatorAccount)[0].text;
     },
     getStatusStyle(statusCode) {
       return this.options.operationStatus.filter(status => status.key === statusCode)
@@ -115,7 +131,7 @@ export default {
       });
     },
     showDetail(row) {
-      this.openForm(row, this.operators);
+      this.openForm(row, this.options.operators);
     },
     closeForm() {
 
