@@ -261,6 +261,7 @@
           <div class="box">
             <div class="level">
               <div class="level-left">
+                <a href="https://www.notion.so/formakers/v2-94f410f632484963b271d287db9219a9" target="_blank">* <u>프라이싱 플랜 별 포인트 매핑표 보기</u></a>
               </div>
               <div class="level-right">
                 <div class="level-item">
