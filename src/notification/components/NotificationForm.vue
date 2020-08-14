@@ -333,6 +333,7 @@ export default {
           { name: 'Jason', email: 'sryu99@gmail.com' },
           { name: 'Jake', email: 'copyx00@gmail.com' },
           { name: 'Irene', email: 'irene.shin@formakers.net' },
+          { name: 'Mormo', email: 'kime879643@gmail.com' },
           { name: 'Formakers.Dev', email: 'formakers.dev@gmail.com' }],
         receivers: [],
       },

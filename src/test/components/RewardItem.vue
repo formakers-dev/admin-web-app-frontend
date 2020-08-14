@@ -59,6 +59,21 @@
           </b-field>
           <b-field>
             <template slot="label">
+              <span class="has-text-danger">*</span> 보상 지급 형태
+            </template>
+            <div class="block">
+              <b-radio v-for="paymentType in options.paymentTypes"
+                       :key="paymentType.key"
+                       v-model="reward.paymentType"
+                       :native-value="paymentType.value"
+                       required
+                       :disabled="disabled">
+                <span>{{paymentType.text}}</span>
+              </b-radio>
+            </div>
+          </b-field>
+          <b-field>
+            <template slot="label">
               <span class="has-text-danger">*</span> 내용
             </template>
             <b-input ref="reward.content" v-model="reward.content" placeholder="내용을 입력하세요." required :disabled="disabled"/>
@@ -103,6 +118,11 @@ export default {
           {key:'manual', img:'', text:'직접입력'}
         ],
         types:[],
+        paymentTypes: [
+          {key: 'point', value: 'point', text: '포인트'},
+          {key: 'game-item', value: 'game-item', text: '게임 아이템'},
+          {key: 'etc', value: 'etc', text: '기타(현물 등)'},
+        ]
       },
       icon:{},
       type:{prev:'', current:''},

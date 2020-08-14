@@ -40,6 +40,9 @@
               </p>
             </b-field>
           </b-field>
+          <b-message title="삭제 시 유의사항" type="is-warning" aria-close-label="Close message">
+            ⚠️&nbsp;️&nbsp;미션 완료자 삭제 시, <strong>수상자 목록</strong>에서도 해당 유저를 삭제하셔야 합니다!!
+          </b-message>
           <b-table
             ref="participantsTable"
             :data="participants"
@@ -68,7 +71,7 @@
             </template>
             <template slot="footer">
               <div class="has-text-right">
-                Total: {{participants.length}} / 참여: {{counts.attend}} / 완료: {{counts.complete}}
+                Total: {{participants.length}}
               </div>
             </template>
             <template slot="empty">
@@ -117,19 +120,14 @@ export default {
     return {
       values:'',
       key:'userId',
-      status:'attend',
+      status:'complete',
       participants:[],
-      counts:{
-        attend:0,
-        complete:0
-      },
       options:{
         types:[
           {text:'유저 아이디', value:'userId'},
           {text:'이메일', value:'email'}
         ],
         status:[
-          {text:'참여', value:'attend'},
           {text:'완료', value:'complete'}
         ]
       }
@@ -147,15 +145,6 @@ export default {
       };
       request.get('/api/participants',{params:params}).then(res=>{
         this.participants = res.data;
-        this.counts.attend = 0;
-        this.counts.complete = 0;
-        this.participants.forEach((participant)=>{
-          if(participant.status === 'attend'){
-           this.counts.attend = this.counts.attend + 1;
-          }else if(participant.status === 'complete'){
-            this.counts.complete = this.counts.complete + 1;
-          }
-        });
       }).catch(err=>{
         this.$root.showErrorToast('미션 참여 사용자 조회에 실패하였습니다.', err);
       });
