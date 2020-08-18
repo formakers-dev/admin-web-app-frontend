@@ -26,7 +26,7 @@
               {{ props.row.betaTest[0].title }}
             </b-table-column>
             <b-table-column field="type" label="수상 유형">
-              {{ convertedType(props.row.type) }}
+              {{ convertedType(props.row.typeCode) }}
             </b-table-column>
             <b-table-column field="reward.description" label="보상 설명">
               {{ props.row.reward.description }}
@@ -66,11 +66,12 @@ export default {
     return {
       options:{
         rewardTypes:[
-          {key:'best', value:{type:'best', title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:'good', value:{type:'good', title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:'normal', value:{type:'normal', title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:'participated', value:{type:'participated', title:'참가상', iconImageUrl:'', content:''}},
-          {key:'etc', value:{type:'etc', title:'기타', iconImageUrl:'', content:''}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석'}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석'}},
+          {key:5001, value:{typeCode:5001, title:'성실 보너스'}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상'}},
+          {key:3000, value:{typeCode:3000, title:'참가상'}},
+          {key:1000, value:{typeCode:1000, title:'기타'}},
         ],
       }
     };
@@ -83,9 +84,9 @@ export default {
     console.log(this.awardRecords)
   },
   methods: {
-    convertedType(type){
+    convertedType(typeCode){
       for(let i=0; i<this.options.rewardTypes.length; i++){
-        if(this.options.rewardTypes[i].key === type){
+        if(this.options.rewardTypes[i].key === typeCode){
           return this.options.rewardTypes[i].value.title;
         }
       }
@@ -97,6 +98,7 @@ export default {
           userId: e.userId,
           nickName: e.nickName,
           type: e.type,
+          typeCode: e.typeCode,
           description: e.reward.description,
           price: e.reward.price
         });

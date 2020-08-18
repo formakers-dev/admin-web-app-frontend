@@ -144,6 +144,7 @@
             return "best";
           case 7000 :
             return "good";
+          case 5001 :
           case 5000 :
             return "normal";
           case 3000 :
