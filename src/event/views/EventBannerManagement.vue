@@ -43,11 +43,6 @@
         :checked-rows.sync="checkedRows"
         :bordered="false"
         :hoverable="true"
-        :paginated="true"
-        per-page="10"
-        current-page.sync="1"
-        :pagination-simple="false"
-        pagination-position="both"
         default-sort="order"
         @select="showDetail"
         draggable
