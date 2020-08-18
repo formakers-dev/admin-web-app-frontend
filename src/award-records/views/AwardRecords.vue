@@ -269,6 +269,8 @@ export default {
       }
     },
     refreshAwardRecords(){
+      this.checkedRows.splice(0, this.checkedRows.length);
+
       request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
         console.log(res);
         this.awardRecords = res.data.awardRecords;
