@@ -400,11 +400,13 @@ export default {
       activeStep:0,
       options:{
         plan:[
-          {key:'trial', text:'Trial'},
-          {key:'starter', text:'Starter'},
-          {key:'lite', text:'Lite'},
-          {key:'simple', text:'Simple'},
-          {key:'standard', text:'Standard'},
+          {key:'v2_indie', text:'인디플랜'},
+          {key:'v2_30', text:'30플랜'},
+          {key:'v2_50', text:'50플랜'},
+          {key:'v2_100', text:'100플랜'},
+          {key:'v2_300', text:'300플랜'},
+          {key:'v2_recruit', text:'리크루팅플랜'},
+          {key:'v2_pc', text:'PC플랜'},
         ],
         rewardTypes:[
           {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1, paymentType: 'point'}},
@@ -444,7 +446,7 @@ export default {
       bugReportTitle: '',
       betaTest: {
         title: '',
-        plan:'trial',
+        plan:'v2_indie',
         description: '',
         subjectType: 'game-test',
         tags: [],
@@ -470,7 +472,7 @@ export default {
       handler(value){
         if(value === 'game-test'){
           if(!this.betaTest.plan){
-            this.$set(this.betaTest, 'plan', 'trial');
+            this.$set(this.betaTest, 'plan', 'v2_indie');
           }
         }
       },

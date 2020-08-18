@@ -100,13 +100,7 @@
             <span class="has-text-danger">*</span> 플랜
           </template>
           <b-field>
-            <b-radio-button v-for="plan in options.plan"
-                            :key="plan.key"
-                            v-model="betaTest.plan"
-                            :native-value="plan.key"
-                            type="is-primary" disabled>
-              {{plan.text}}
-            </b-radio-button>
+            {{ betaTest.plan ? betaTest.plan.replace('v2_','').toUpperCase() + '플랜' : '-' }}
           </b-field>
         </b-field>
         <b-field horizontal>
@@ -396,13 +390,6 @@ export default {
         },
       },
       options:{
-        plan:[
-          {key:'trial', text:'Trial'},
-          {key:'starter', text:'Starter'},
-          {key:'lite', text:'Lite'},
-          {key:'simple', text:'Simple'},
-          {key:'standard', text:'Standard'},
-        ],
         rewardTypes:[
           {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
           {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
@@ -469,18 +456,6 @@ export default {
         completeRatio:0
       }
     };
-  },
-  watch:{
-    'betaTest.subjectType' : {
-      handler(value){
-        if(value === 'game-test'){
-          if(!this.betaTest.plan){
-            this.$set(this.betaTest, 'plan', 'trial');
-          }
-        }
-      },
-      deep:true
-    },
   },
   created() {
     this.type='update';

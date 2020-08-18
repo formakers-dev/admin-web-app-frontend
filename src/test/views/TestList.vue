@@ -136,7 +136,7 @@
           {{ props.row.subjectTypeDisplay }}
         </b-table-column>
         <b-table-column field="plan" label="플랜" searchable>
-          {{ props.row.plan ? props.row.plan.toUpperCase() : '-' }}
+          {{ props.row.plan ? props.row.plan.replace('v2_','').toUpperCase() + '플랜' : '-' }}
         </b-table-column>
         <b-table-column field="openDate" label="오픈 날짜" sortable centered>
           {{ props.row.openDateDisplay }}
@@ -186,7 +186,14 @@ export default {
           starter:'-',
           lite:'-',
           simple:'-',
-          standard:'-'
+          standard:'-',
+          v2_indie: '-',
+          v2_30: '-',
+          v2_50: '-',
+          v2_100: '-',
+          v2_300: '-',
+          v2_recruit: '-',
+          v2_pc: '-',
         },
         totalParticipantCount:'-',
         totalParticipantUserCount:'-',
@@ -274,6 +281,13 @@ export default {
           {name:'라이트', data:[], key:'lite'},
           {name:'심플', data:[], key:'simple'},
           {name:'스탠다드', data:[], key:'standard'},
+          {name:'인디플랜', data:[], key:'v2_indie'},
+          {name:'30플랜', data:[], key:'v2_30'},
+          {name:'50플랜', data:[], key:'v2_50'},
+          {name:'100플랜', data:[], key:'v2_100'},
+          {name:'300플랜', data:[], key:'v2_300'},
+          {name:'리크루팅플랜', data:[], key:'v2_recruit'},
+          {name:'PC플랜', data:[], key:'v2_pc'},
         ]
       },
       searchDate:[],
