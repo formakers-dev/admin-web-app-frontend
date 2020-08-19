@@ -604,7 +604,8 @@ export default {
           .then((result) => {
             this.result = result;
             this.$root.showSuccessToast('정상적으로 수정하였습니다.');
-            this.$router.replace({path:'/test/detail', query:this.$route.query});
+            // this.$router.replace({path:'/test/detail', query:this.$route.query});
+            this.$router.go(-1);
           })
           .catch((err) => {
             this.$root.showErrorToast('수정에 실패하였습니다.',err);

@@ -604,7 +604,7 @@ export default {
       });
     },
     goRegister(){
-      this.$router.replace({path:'/test/register', query:this.$route.query});
+      this.$router.push({path:'/test/register', query:this.$route.query});
     },
     showBetaTestParticipants(betaTestId){
       this.$buefy.modal.open({
