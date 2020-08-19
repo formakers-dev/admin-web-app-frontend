@@ -43,6 +43,8 @@
               <b-loading :is-full-page="false"
                          :active.sync="loading.missionAndBetaTestChart"></b-loading>
             </div>
+          </div>
+          <div class="tile is-parent is-vertical is-3">
             <div class="tile is-child notification is-warning">
               <p v-if='openingStatus ==="-"' class="title is-5">-</p>
               <p v-if="openingStatus === '대기' || openingStatus === '오픈'" class="title is-5">리워즈 총 예상
@@ -54,213 +56,249 @@
           </div>
         </div>
       </section>
-      <div class="level">
-        <div class="level-left">
-        </div>
-        <div class="level-right">
-          <div class="level-item">
-            <b-button @click="showBetaTestParticipants(betaTest._id)">참여자 기록 삭제하기</b-button>
+
+      <b-steps
+        v-model="activeStep"
+        size="is-small"
+        :has-navigation="false"
+        :animated="false"
+        style="margin-top: 50px; margin-bottom: 50px"
+      >
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <b-button
+                outlined
+                icon-left="arrow-left"
+                :disabled="activeStep === 0"
+                @click.prevent="--activeStep">
+                Previous
+              </b-button>
+            </div>
+            <div class="level-item">
+              <b-button
+                outlined
+                icon-right="arrow-right"
+                :disabled="activeStep === 3"
+                @click.prevent="++activeStep">
+                Next
+              </b-button>
+            </div>
           </div>
-          <div class="level-item">
-            <b-button type='is-primary' @click="goRegister">테스트 수정하기</b-button>
+          <div class="level-right">
+            <div class="level-item">
+              <b-button @click="showBetaTestParticipants(betaTest._id)">참여자 기록 삭제하기</b-button>
+            </div>
+            <div class="level-item">
+              <b-button type='is-primary' @click="goRegister">테스트 수정하기</b-button>
+            </div>
+        </div>
+      </div>
+        <b-step-item step="1" label="테스트 기본 정보" clickable>
+          <div class="box">
+            <h4 class="title is-4">테스트 기본 정보</h4>
+            <b-field label="테스트 아이디" horizontal style="background: #f5f5f5; padding: 10px">
+              {{betaTest._id}}
+            </b-field>
+            <b-field label="오픈 시각" horizontal>
+              <b-datetimepicker v-model="betaTest.openDate"
+                                placeholder="오픈 시각을 선택해주세요."
+                                icon="calendar-today" disabled>
+              </b-datetimepicker>
+            </b-field>
+            <b-field label="종료 시각" horizontal>
+              <b-datetimepicker v-model="betaTest.closeDate"
+                                placeholder="종료 시각을 선택해주세요."
+                                icon="calendar-today" disabled>
+              </b-datetimepicker>
+            </b-field>
+            <b-field label="유형" horizontal>
+              <b-field>
+                <b-radio-button v-for="subjectType in options.subjectTypes"
+                                :key="subjectType.key"
+                                v-model="betaTest.subjectType"
+                                :native-value="subjectType.key"
+                                @input="setSubjectType"
+                                type="is-primary" disabled>
+                  {{subjectType.text}}
+                </b-radio-button>
+              </b-field>
+            </b-field>
+            <b-field v-if="betaTest.subjectType === 'game-test'" horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 플랜
+              </template>
+              <b-field>
+                {{ betaTest.plan ? betaTest.plan.replace('v2_','').toUpperCase() + '플랜' : '-' }}
+              </b-field>
+            </b-field>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 제목
+              </template>
+              <b-input ref="betaTest.title"
+                       v-model="betaTest.title"
+                       placeholder="[게임명] 게임 테스트"
+                       required disabled></b-input>
+            </b-field>
+            <b-field label="게임 소개" horizontal>
+              <b-input type="textarea" v-model="betaTest.description" disabled></b-input>
+            </b-field>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 태그
+              </template>
+              <b-taginput
+                ref="betaTest.tags"
+                v-model="betaTest.tags"
+                ellipsis
+                icon="label"
+                placeholder="태그를 추가하세요"
+                :required="betaTest.tags.length === 0" disabled>
+              </b-taginput>
+            </b-field>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 미션 요약 설명
+              </template>
+              <b-input v-model="betaTest.missionsSummary"
+                       placeholder="사전 신청  /  30분 플레이  /  설문 참여 (객20/주5)"
+                       required disabled></b-input>
+            </b-field>
+            <b-field label="테스트 목적" horizontal>
+              <b-input v-model="betaTest.purpose" disabled></b-input>
+            </b-field>
+            <b-field label="버그리포트 설문 URL" horizontal>
+              <b-input v-if="betaTest.bugReport" v-model="betaTest.bugReport.url"
+                       placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
+                       disabled></b-input>
+              <b-input v-else
+                       placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
+                       disabled></b-input>
+            </b-field>
+            <b-field label="테스트 진행 상태별 문구" horizontal>
+              <b-checkbox v-model="isCustomizedProgressText" disabled>
+                기본 상태별 문구 이외의 문구 출력을 원하는 경우만 체크해서 내용을 수정하세요.
+              </b-checkbox>
+            </b-field>
+            <div v-if="isCustomizedProgressText">
+              <b-field horizontal>
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 참여 전
+                </template>
+                <b-input ref="betaTest.progressText.ready"
+                         v-model="betaTest.progressText.ready"
+                         placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."
+                         required disabled></b-input>
+              </b-field>
+              <b-field horizontal>
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 참여 중
+                </template>
+                <b-input v-model="betaTest.progressText.doing"
+                         ref="betaTest.progressText.doing"
+                         placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"
+                         required disabled></b-input>
+              </b-field>
+              <b-field horizontal>
+                <template slot="label">
+                  <span class="has-text-danger">*</span> 참여 완료
+                </template>
+                <b-input v-model="betaTest.progressText.done"
+                         ref="betaTest.progressText.done"
+                         placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
+                         required disabled></b-input>
+              </b-field>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="box">
-        <h4 class="title is-4">테스트 기본 정보</h4>
-        <b-field label="테스트 아이디" horizontal style="background: #f5f5f5; padding: 10px">
-          {{betaTest._id}}
-        </b-field>
-        <b-field label="오픈 시각" horizontal>
-          <b-datetimepicker v-model="betaTest.openDate"
-                            placeholder="오픈 시각을 선택해주세요."
-                            icon="calendar-today" disabled>
-          </b-datetimepicker>
-        </b-field>
-        <b-field label="종료 시각" horizontal>
-          <b-datetimepicker v-model="betaTest.closeDate"
-                            placeholder="종료 시각을 선택해주세요."
-                            icon="calendar-today" disabled>
-          </b-datetimepicker>
-        </b-field>
-        <b-field label="유형" horizontal>
-          <b-field>
-            <b-radio-button v-for="subjectType in options.subjectTypes"
-                            :key="subjectType.key"
-                            v-model="betaTest.subjectType"
-                            :native-value="subjectType.key"
-                            @input="setSubjectType"
-                            type="is-primary" disabled>
-              {{subjectType.text}}
-            </b-radio-button>
-          </b-field>
-        </b-field>
-        <b-field v-if="betaTest.subjectType === 'game-test'" horizontal>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 플랜
-          </template>
-          <b-field>
-            {{ betaTest.plan ? betaTest.plan.replace('v2_','').toUpperCase() + '플랜' : '-' }}
-          </b-field>
-        </b-field>
-        <b-field horizontal>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 제목
-          </template>
-          <b-input ref="betaTest.title"
-                   v-model="betaTest.title"
-                   placeholder="[게임명] 게임 테스트"
-                   required disabled></b-input>
-        </b-field>
-        <b-field label="게임 소개" horizontal>
-          <b-input type="textarea" v-model="betaTest.description" disabled></b-input>
-        </b-field>
-        <b-field horizontal>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 태그
-          </template>
-          <b-taginput
-            ref="betaTest.tags"
-            v-model="betaTest.tags"
-            ellipsis
-            icon="label"
-            placeholder="태그를 추가하세요"
-            :required="betaTest.tags.length === 0" disabled>
-          </b-taginput>
-        </b-field>
-        <b-field horizontal>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 미션 요약 설명
-          </template>
-          <b-input v-model="betaTest.missionsSummary"
-                   placeholder="사전 신청  /  30분 플레이  /  설문 참여 (객20/주5)"
-                   required disabled></b-input>
-        </b-field>
-        <b-field label="테스트 목적" horizontal>
-          <b-input v-model="betaTest.purpose" disabled></b-input>
-        </b-field>
-        <b-field label="버그리포트 설문 URL" horizontal>
-          <b-input v-if="betaTest.bugReport" v-model="betaTest.bugReport.url"
-                   placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
-                   disabled></b-input>
-          <b-input v-else
-                   placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
-                   disabled></b-input>
-        </b-field>
-        <b-field label="테스트 진행 상태별 문구" horizontal>
-          <b-checkbox v-model="isCustomizedProgressText" disabled>
-            기본 상태별 문구 이외의 문구 출력을 원하는 경우만 체크해서 내용을 수정하세요.
-          </b-checkbox>
-        </b-field>
-        <div v-if="isCustomizedProgressText">
-          <b-field horizontal>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 참여 전
-            </template>
-            <b-input ref="betaTest.progressText.ready"
-                     v-model="betaTest.progressText.ready"
-                     placeholder="밑져야 본전! 재미있어 보인다면 참여해 보세요."
-                     required disabled></b-input>
-          </b-field>
-          <b-field horizontal>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 참여 중
-            </template>
-            <b-input v-model="betaTest.progressText.doing"
-                     ref="betaTest.progressText.doing"
-                     placeholder="당신을 기다리고 있었어요! 이어서 참여해볼까요?"
-                     required disabled></b-input>
-          </b-field>
-          <b-field horizontal>
-            <template slot="label">
-              <span class="has-text-danger">*</span> 참여 완료
-            </template>
-            <b-input v-model="betaTest.progressText.done"
-                     ref="betaTest.progressText.done"
-                     placeholder="굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
-                     required disabled></b-input>
-          </b-field>
-        </div>
-      </div>
-      <div class="box">
-        <h4 class="title is-4">의뢰 게임 정보</h4>
-        <b-field horizontal>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 앱 아이콘
-          </template>
-          <b-input v-model="betaTest.iconImageUrl"
-                   ref="betaTest.iconImageUrl"
-                   placeholder="https://i.imgur.com/NBfLCwq.png"
-                   required disabled></b-input>
-        </b-field>
-        <b-field v-if="betaTest.iconImageUrl" label="앱 아이콘 Preview" horizontal>
-          <img v-if="betaTest.iconImageUrl" style="width: 150px" :src="betaTest.iconImageUrl"/>
-        </b-field>
-        <b-field horizontal>
-          <template slot="label">
-            <span class="has-text-danger">*</span> 대표 이미지 URL
-            <b-tooltip type="is-dark" label="메인화면에서 보여지는 커버 이미지 입니다.">
-              <b-icon size="is-small" icon="help-circle-outline"></b-icon>
-            </b-tooltip>
-          </template>
-          <b-input v-model="betaTest.coverImageUrl"
-                   ref="betaTest.converImageUrl"
-                   placeholder="https://i.imgur.com/NBfLCwq.png"
-                   required disabled></b-input>
-        </b-field>
-        <b-field v-if="betaTest.coverImageUrl" label="대표 이미지 Preview" horizontal>
-          <img style="width: 500px" :src="betaTest.coverImageUrl"/>
-        </b-field>
-      </div>
-      <div class="box">
-        <h4 class="title is-4">리워드</h4>
-        <section>
-          <draggable class="columns is-multiline"
-                     draggable=".rewards"
-                     v-model="betaTest.rewards.list"
-                     @change="changeOrder(betaTest.rewards.list)">
-            <RewardItem v-for="(reward,index) in betaTest.rewards.list"
-                        ref="rewardItem"
-                        :key="index"
-                        :reward="reward"
-                        :reward-types="options.rewardTypes"
-                        :disabled="true"
-                        class="column is-one-third rewards"/>
-          </draggable>
-        </section>
-      </div>
-      <div class="box">
-        <h4 class="title is-4">미션</h4>
-        <section>
-          <div class="column"
-               v-for="(mission, index) in betaTest.missions"
-               :key="index"
-          >
-            <div class="card" style="cursor: pointer">
-              <div class="card-content">
-                <div class="media">
-                  <div class="media-content">
-                    <div style="position: absolute; right:20px">
-                      <b-button v-if="type==='update'"
-                                class="button"
-                                type="is-info"
-                                style="margin-right: 5px"
-                                size="is-small"
-                                @click.stop="showMissionParticipants(mission._id, mission.betaTestId)"
-                                outlined>미션 완료자 추가/삭제
-                      </b-button>
+        </b-step-item>
+        <b-step-item step="2" label="의뢰 게임 정보" clickable>
+          <div class="box">
+            <h4 class="title is-4">의뢰 게임 정보</h4>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 앱 아이콘
+              </template>
+              <b-input v-model="betaTest.iconImageUrl"
+                       ref="betaTest.iconImageUrl"
+                       placeholder="https://i.imgur.com/NBfLCwq.png"
+                       required disabled></b-input>
+            </b-field>
+            <b-field v-if="betaTest.iconImageUrl" label="앱 아이콘 Preview" horizontal>
+              <img v-if="betaTest.iconImageUrl" style="width: 150px" :src="betaTest.iconImageUrl"/>
+            </b-field>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 대표 이미지 URL
+                <b-tooltip type="is-dark" label="메인화면에서 보여지는 커버 이미지 입니다.">
+                  <b-icon size="is-small" icon="help-circle-outline"></b-icon>
+                </b-tooltip>
+              </template>
+              <b-input v-model="betaTest.coverImageUrl"
+                       ref="betaTest.converImageUrl"
+                       placeholder="https://i.imgur.com/NBfLCwq.png"
+                       required disabled></b-input>
+            </b-field>
+            <b-field v-if="betaTest.coverImageUrl" label="대표 이미지 Preview" horizontal>
+              <img style="width: 500px" :src="betaTest.coverImageUrl"/>
+            </b-field>
+          </div>
+        </b-step-item>
+        <b-step-item step="3" label="리워드" clickable>
+          <div class="box">
+            <h4 class="title is-4">리워드</h4>
+            <section>
+              <draggable class="columns is-multiline"
+                         draggable=".rewards"
+                         v-model="betaTest.rewards.list"
+                         @change="changeOrder(betaTest.rewards.list)">
+                <RewardItem v-for="(reward,index) in betaTest.rewards.list"
+                            ref="rewardItem"
+                            :key="index"
+                            :reward="reward"
+                            :reward-types="options.rewardTypes"
+                            :disabled="true"
+                            class="column is-one-third rewards"/>
+              </draggable>
+            </section>
+          </div>
+        </b-step-item>
+        <b-step-item step="4" label="미션" clickable>
+          <div class="box">
+            <h4 class="title is-4">미션</h4>
+            <section>
+              <div class="column"
+                   v-for="(mission, index) in betaTest.missions"
+                   :key="index"
+              >
+                <div class="card" style="cursor: pointer">
+                  <div class="card-content">
+                    <div class="media">
+                      <div class="media-content">
+                        <div style="position: absolute; right:20px">
+                          <b-button v-if="type==='update'"
+                                    class="button"
+                                    type="is-info"
+                                    style="margin-right: 5px"
+                                    size="is-small"
+                                    @click.stop="showMissionParticipants(mission._id, mission.betaTestId)"
+                                    outlined>미션 완료자 추가/삭제
+                          </b-button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="content" style="margin-top: 40px">
+                      <span class="order-wrapper">{{mission.order}}</span>
+                      <Mission :item="mission" :type="'readonly'"
+                               :packageName="packageName"></Mission>
                     </div>
                   </div>
                 </div>
-                <div class="content" style="margin-top: 40px">
-                  <span class="order-wrapper">{{mission.order}}</span>
-                  <Mission :item="mission" :type="'readonly'" :packageName="packageName"></Mission>
-                </div>
               </div>
-            </div>
+            </section>
           </div>
-        </section>
-      </div>
+        </b-step-item>
+      </b-steps>
     </div>
   </div>
 </template>
@@ -292,6 +330,7 @@ export default {
   },
   data() {
     return {
+      activeStep:0,
       subjectTypes:{
         'game-test': '게임 테스트',
         'event' : '이벤트',
