@@ -5,6 +5,41 @@
     </header>
     <div class="modal-card-body">
       <section style="width: 100%">
+        <div class="columns">
+          <div class="column">
+            <div class="notification is-primary">
+              <p class="title is-5">{{ convertedType(9000) }}</p>
+              <p class="title is-4 has-text-right">
+              {{ awardRecords.filter(awardRecord => awardRecord.typeCode === 9000).length }} 회
+              </p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="notification is-info">
+              <p class="title is-5">{{ convertedType(7000) }}</p>
+              <p class="title is-4 has-text-right">
+                {{ awardRecords.filter(awardRecord => awardRecord.typeCode === 7000).length }} 회
+              </p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="notification is-warning">
+              <strong>{{ convertedType(5000) }}</strong><br/>
+              <strong>+ {{ convertedType(5001) }}</strong>
+              <p class="title is-4 has-text-right">
+                {{ awardRecords.filter(awardRecord => awardRecord.typeCode === 5000 || awardRecord.typeCode === 5001).length }} 회
+              </p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="notification is-black">
+              <p class="title is-5">{{ convertedType(3000) }}</p>
+              <p class="title is-4 has-text-right">
+                {{ awardRecords.filter(awardRecord => awardRecord.typeCode === 3000).length }} 회
+              </p>
+            </div>
+          </div>
+        </div>
         <b-table
           ref="awardRecordsTableForUsers"
           :data="awardRecords"

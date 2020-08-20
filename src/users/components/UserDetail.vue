@@ -63,7 +63,7 @@
                 * 추천화면에서 등록한 게임들
                 <br/>
                 <b-taglist>
-                  <b-tag type="is-primary"
+                  <b-tag type="is-white"
                          v-for="wish in result.wishList"
                          :key="wish"
                   >{{wish}}
@@ -72,8 +72,8 @@
               </p>
             </div>
             <div class="column is-one-quarter">
-              <p><strong class="large">역대 수상 내역</strong><br>
-                <b-button type="is-primary" @click="showAwardRecords(result.userId)">조회</b-button>
+              <p><strong class="large">👑 역대 수상 내역</strong><br>
+                <b-button type="is-info" @click="showAwardRecords(result.userId)">조회</b-button>
               </p>
             </div>
           </div>
