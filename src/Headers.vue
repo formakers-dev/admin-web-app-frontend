@@ -24,6 +24,9 @@
       <b-navbar-item tag="router-link" to="/users">
         사용자 정보
       </b-navbar-item>
+      <b-navbar-item tag="router-link" to="/app-usages">
+        앱 사용 정보
+      </b-navbar-item>
       <b-navbar-item tag="router-link" to="/notification">
         알림
       </b-navbar-item>

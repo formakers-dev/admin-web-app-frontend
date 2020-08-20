@@ -14,6 +14,7 @@ const Requests = () => import('./requests/views/Requests.vue');
 const pointExchangeRequestList = () => import('./points/views/PointExchangeRequestList.vue');
 const AwardRecords = () => import('./award-records/views/AwardRecords.vue');
 const BetaTestsStatistics = () => import('./statistics/views/BetaTestsStatistics.vue');
+const AppUsages = () => import('./app-usages/views/AppUsages.vue');
 
 Vue.use(Router);
 
@@ -45,6 +46,11 @@ export default new Router({
       path: '/users',
       name: 'users',
       component: Users,
+    },
+    {
+      path: '/app-usages',
+      name: 'app-usages',
+      component: AppUsages,
     },
     {
       path: '/notification',
