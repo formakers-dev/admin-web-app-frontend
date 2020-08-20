@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-const Home = () => import('./home/views/Home.vue');
-const NotificationManagement = () => import('./notification/views/NotificationManagement.vue');
-const Events = () => import('./event/views/EventBannerManagement.vue');
-const TestRegister = () => import('./test/views/TestRegister.vue');
-const TestDetail = () => import('./test/views/TestDetail.vue');
-const TestList = () => import('./test/views/TestList.vue');
+const Home = () => import('./Home.vue');
+const NotificationManagement = () => import('./notifications/views/NotificationManagement.vue');
+const Events = () => import('./event-banners/views/EventBannerManagement.vue');
+const TestRegister = () => import('./beta-tests/views/TestRegister.vue');
+const TestDetail = () => import('./beta-tests/views/TestDetail.vue');
+const TestList = () => import('./beta-tests/views/TestList.vue');
 const Users = () => import('./users/views/Users.vue');
 const Login = () => import('./auth/views/Login.vue');
 const Logout = () => import('./auth/views/Logout.vue');
