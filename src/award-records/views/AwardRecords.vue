@@ -272,20 +272,22 @@ export default {
     refreshAwardRecords(){
       this.checkedRows.splice(0, this.checkedRows.length);
 
-      request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
-        console.log(res);
-        this.awardRecords = res.data.awardRecords;
-        this.awardRecords = this.awardRecords.map(awardRecord => {
-          awardRecord.typeString = this.convertedType(awardRecord.typeCode);
-          awardRecord.reward.paymentTypeString = this.convertPaymentTypeName(awardRecord.reward.paymentType);
-          return awardRecord;
+      request.get('/api/award-records/beta-test/' + this.betaTestId)
+        .then((res) => {
+          console.log(res);
+          this.awardRecords = res.data.awardRecords;
+          this.awardRecords = this.awardRecords.map(awardRecord => {
+            awardRecord.typeString = this.convertedType(awardRecord.typeCode);
+            awardRecord.reward.paymentTypeString = this.convertPaymentTypeName(awardRecord.reward.paymentType);
+            return awardRecord;
+          });
+          this.betaTest = res.data.betaTest;
+          this.rewardList = res.data.betaTest.rewards.list;
+          console.log(this.betaTest);
+        })
+        .catch((err) => {
+          this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
         });
-        this.betaTest = res.data.betaTest;
-        this.rewardList = res.data.betaTest.rewards.list;
-        console.log(this.betaTest)
-      }).catch((err)=>{
-        this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
-      });
     },
     showDetail(row){
       console.log(row);

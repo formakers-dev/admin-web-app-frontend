@@ -166,7 +166,7 @@
     },
     methods:{
       showAwardRecords(id){
-        request.get('/api/award-records?userId='+id+"&path=user").then((res)=>{
+        request.get('/api/award-records/user/' + id).then((res)=>{
           if(res.data.awardRecords.length === 0){
             this.$root.showToast('수상 내역이 존재하지 않습니다.', 'is-primary');
           }else{
