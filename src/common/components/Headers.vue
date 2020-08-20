@@ -13,19 +13,19 @@
     </template>
     <template slot="start" v-if="$root.isLoggedIn">
       <b-navbar-item tag="router-link" to="/test/list">
-        테스트 목록
+        게임테스트
       </b-navbar-item>
       <b-navbar-item tag="router-link" to="/requests">
-        의뢰 관리
+        의뢰
       </b-navbar-item>
       <b-navbar-item tag="router-link" to="/point-exchange">
-        포인트 교환 요청 목록
+        포인트 교환
       </b-navbar-item>
       <b-navbar-item tag="router-link" to="/users">
-        사용자 정보 조회
+        사용자 정보
       </b-navbar-item>
       <b-navbar-item tag="router-link" to="/notification">
-        알림 관리
+        알림
       </b-navbar-item>
       <b-navbar-item tag="router-link" to="events">
         이벤트 배너
