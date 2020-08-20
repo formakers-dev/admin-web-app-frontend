@@ -271,6 +271,9 @@ export default {
     convertBirthDay: function(value){
       return usersUtil.convertBirthDayToAge(value);
     },
+    convertJob: function(value) {
+      return usersUtil.convertJobToString(value);
+    },
     numberComma: function(value){
       return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '0';
     }

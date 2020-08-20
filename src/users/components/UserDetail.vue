@@ -40,7 +40,7 @@
             <p><strong class="large">성별</strong><br>{{result.gender | convertGender}}</p>
           </div>
           <div class="column is-one-quarter">
-            <p><strong class="large">직업</strong><br>{{result.job}}</p>
+            <p><strong class="large">직업</strong><br>{{result.job | convertJob }}</p>
           </div>
         </div>
         <div class="box">
@@ -170,6 +170,9 @@
       },
       convertBirthDay: function(value){
         return usersUtil.convertBirthDayToAge(value);
+      },
+      convertJob: function(value) {
+        return usersUtil.convertJobToString(value);
       },
     },
     methods:{
