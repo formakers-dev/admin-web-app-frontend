@@ -266,7 +266,7 @@ export default {
       return usersUtil.convertGenderToString(value);
     },
     convertDatetime: function(value){
-      return moment(value).format('YYYY-MM-DD (ddd) HH:mm:ss');
+      return moment(value).format('YYYY-MM-DD(ddd) HH:mm:ss');
     },
     convertBirthDay: function(value){
       return usersUtil.convertBirthDayToAge(value);

@@ -58,7 +58,10 @@
               </p>
             </div>
             <div class="column is-one-quarter">
-              <p><strong class="large">즐겨찾는 게임 (포메스 > 추천게임)</strong><br>
+              <p><strong class="large">즐겨찾는 게임</strong>
+                <br/>
+                * 추천화면에서 등록한 게임들
+                <br/>
                 <b-taglist>
                   <b-tag type="is-primary"
                          v-for="wish in result.wishList"
@@ -166,7 +169,7 @@
         return usersUtil.convertGenderToString(value);
       },
       convertDatetime: function(value){
-        return moment(value).format('YYYY-MM-DD (ddd) HH:mm:ss');
+        return moment(value).format('YYYY-MM-DD(ddd) HH:mm:ss');
       },
       convertBirthDay: function(value){
         return usersUtil.convertBirthDayToAge(value);
