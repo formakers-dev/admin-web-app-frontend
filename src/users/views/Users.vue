@@ -197,6 +197,7 @@
 
 <script>
 import request from '../../common/utils/http';
+import usersUtil from '../../common/utils/users';
 import moment from 'moment';
 import UserDetail from '../components/UserDetail'
 import ExcelDownloadForm from '../components/ExcelDownloadModal';
@@ -259,18 +260,19 @@ export default {
   },
   filters:{
     convertAgeRange: function(value){
-      const age = new Date().getFullYear() - value;
-      return Math.floor(age/10)*10 +'대';
+      return usersUtil.convertBirthDayToAgeRange(value);
     },
     convertGender: function(value){
-      return value === 'male' ? "남성" : "여성";
+      return usersUtil.convertGenderToString(value);
     },
     convertDatetime: function(value){
-      return moment(value).format('YYYY-MM-DD (ddd) HH:mm:ss');
+      return moment(value).format('YYYY-MM-DD(ddd) HH:mm:ss');
     },
     convertBirthDay: function(value){
-      const age = new Date().getFullYear() - value;
-      return '만 ' + age + "세(" + value + ")"
+      return usersUtil.convertBirthDayToAge(value);
+    },
+    convertJob: function(value) {
+      return usersUtil.convertJobToString(value);
     },
     numberComma: function(value){
       return value ? value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,") : '0';

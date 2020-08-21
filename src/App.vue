@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import Headers from './common/components/Headers.vue';
+import Headers from './Headers.vue';
 import GoTop from '@inotom/vue-go-top';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';

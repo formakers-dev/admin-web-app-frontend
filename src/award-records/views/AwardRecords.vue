@@ -213,11 +213,12 @@ export default {
           {text:'유저 아이디', value:'userId'}
         ],
         rewardTypes:[
-          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1}},
-          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1}},
-          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000}},
-          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:''}},
-          {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:''}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석'}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석'}},
+          {key:5001, value:{typeCode:5001, title:'성실 보너스'}},
+          {key:3000, value:{typeCode:3000, title:'참가상'}},
+          {key:1000, value:{typeCode:1000, title:'기타'}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상(포인트 오픈 전)'}},
         ],
         paymentTypes: [
           {key: 'point', value: 'point', text: '포인트'},
@@ -269,20 +270,24 @@ export default {
       }
     },
     refreshAwardRecords(){
-      request.get('/api/award-records?betaTestId='+this.betaTestId+'&path=beta-test').then((res)=>{
-        console.log(res);
-        this.awardRecords = res.data.awardRecords;
-        this.awardRecords = this.awardRecords.map(awardRecord => {
-          awardRecord.typeString = this.convertedType(awardRecord.typeCode);
-          awardRecord.reward.paymentTypeString = this.convertPaymentTypeName(awardRecord.reward.paymentType);
-          return awardRecord;
+      this.checkedRows.splice(0, this.checkedRows.length);
+
+      request.get('/api/award-records/beta-test/' + this.betaTestId)
+        .then((res) => {
+          console.log(res);
+          this.awardRecords = res.data.awardRecords;
+          this.awardRecords = this.awardRecords.map(awardRecord => {
+            awardRecord.typeString = this.convertedType(awardRecord.typeCode);
+            awardRecord.reward.paymentTypeString = this.convertPaymentTypeName(awardRecord.reward.paymentType);
+            return awardRecord;
+          });
+          this.betaTest = res.data.betaTest;
+          this.rewardList = res.data.betaTest.rewards.list;
+          console.log(this.betaTest);
+        })
+        .catch((err) => {
+          this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
         });
-        this.betaTest = res.data.betaTest;
-        this.rewardList = res.data.betaTest.rewards.list;
-        console.log(this.betaTest)
-      }).catch((err)=>{
-        this.$root.showErrorToast('수상 내역 조회에 실패하였습니다.', err);
-      });
     },
     showDetail(row){
       console.log(row);

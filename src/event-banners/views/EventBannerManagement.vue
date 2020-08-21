@@ -43,11 +43,6 @@
         :checked-rows.sync="checkedRows"
         :bordered="false"
         :hoverable="true"
-        :paginated="true"
-        per-page="10"
-        current-page.sync="1"
-        :pagination-simple="false"
-        pagination-position="both"
         default-sort="order"
         @select="showDetail"
         draggable
@@ -60,7 +55,7 @@
       >
 
         <template slot-scope="props">
-          <b-table-column field="order" label="순서" centered>
+          <b-table-column field="order" label="순서" centered sortable>
             <strong>{{ props.row.order }}</strong>
           </b-table-column>
 
@@ -214,9 +209,9 @@ export default {
     getAllPosts() {
       request.get('/api/posts')
         .then((res) => {
-          console.log('response', res.data);
-          res.data.forEach((element, index) => {
+          this.postList = res.data.map(element => {
             element.status = this.getStatus(element.openDate, element.closeDate);
+
             if (element.status === 1) {
               this.counts.open = this.counts.open + 1;
             } else if (element.status === 2) {
@@ -226,14 +221,10 @@ export default {
               element.order = 99999;
               this.counts.close = this.counts.close + 1;
             }
-          });
-          res.data.sort((a, b) => a.order - b.order);
-          res.data.forEach((element, index) => {
-            if (element.order < 99999) {
-              element.order = index + 1;
-            }
-          });
-          this.postList = res.data;
+
+            return element;
+          }).sort((a, b) => a.closeDate > b.closeDate ? -1 : 1);
+
           this.checkedRows = [];
         })
         .catch((err) => {

@@ -19,6 +19,7 @@
               <option v-for="type in options.types"
                       :key="type.key"
                       :value="type.key"
+                      :style="type.value.style"
               >
                 {{ type.value.title }}
               </option>

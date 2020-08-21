@@ -268,7 +268,8 @@
                   <b-select v-model="rewardType" size="is-small" style="margin-right: 5px">
                     <option v-for="type in options.rewardTypes"
                             :key="type.key"
-                            :value="type.key">
+                            :value="type.key"
+                            :style="type.value.style">
                       {{type.value.title}}
                     </option>
                   </b-select>
@@ -400,17 +401,20 @@ export default {
       activeStep:0,
       options:{
         plan:[
-          {key:'trial', text:'Trial'},
-          {key:'starter', text:'Starter'},
-          {key:'lite', text:'Lite'},
-          {key:'simple', text:'Simple'},
-          {key:'standard', text:'Standard'},
+          {key:'v2_indie', text:'인디플랜'},
+          {key:'v2_30', text:'30플랜'},
+          {key:'v2_50', text:'50플랜'},
+          {key:'v2_100', text:'100플랜'},
+          {key:'v2_300', text:'300플랜'},
+          {key:'v2_recruit', text:'리크루팅플랜'},
+          {key:'v2_pc', text:'PC플랜'},
         ],
         rewardTypes:[
-          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'문화상품권 3만원', price: 30000, count: 1, paymentType: 'point'}},
-          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'문화상품권 5천원', price: 5000, count: 1, paymentType: 'point'}},
-          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1천원', price: 1000, paymentType: 'point'}},
-          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'', content:'', paymentType: 'point'}},
+          {key:9000, value:{typeCode:9000, title:'테스트 수석', iconImageUrl:'https://i.imgur.com/ybuI732.png', content:'2000 포인트', price: 2000, count: 1, paymentType: 'point'}},
+          {key:7000, value:{typeCode:7000, title:'테스트 차석', iconImageUrl:'https://i.imgur.com/6RaZ7vI.png', content:'1000 포인트', price: 1000, count: 5, paymentType: 'point'}},
+          {key:5001, value:{typeCode:5001, title:'성실 보너스', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'100 포인트', price: 100, count: 10, paymentType: 'point'}},
+          {key:5000, value:{typeCode:5000, title:'테스트 성실상', iconImageUrl:'https://i.imgur.com/btZZHRp.png', content:'문화상품권 1000원', price: 1000, count: 10, paymentType: 'etc', style:'display:none'}},
+          {key:3000, value:{typeCode:3000, title:'참가상', iconImageUrl:'https://i.imgur.com/upSLF2A.png', content:'500 포인트', price: 500, paymentType: 'point'}},
           {key:1000, value:{typeCode:1000, title:'기타', iconImageUrl:'', content:'', paymentType: 'point'}},
         ],
         testTypes:[
@@ -444,7 +448,7 @@ export default {
       bugReportTitle: '',
       betaTest: {
         title: '',
-        plan:'trial',
+        plan:'v2_indie',
         description: '',
         subjectType: 'game-test',
         tags: [],
@@ -470,7 +474,7 @@ export default {
       handler(value){
         if(value === 'game-test'){
           if(!this.betaTest.plan){
-            this.$set(this.betaTest, 'plan', 'trial');
+            this.$set(this.betaTest, 'plan', 'v2_indie');
           }
         }
       },
@@ -600,7 +604,8 @@ export default {
           .then((result) => {
             this.result = result;
             this.$root.showSuccessToast('정상적으로 수정하였습니다.');
-            this.$router.replace({path:'/test/detail', query:this.$route.query});
+            // this.$router.replace({path:'/test/detail', query:this.$route.query});
+            this.$router.go(-1);
           })
           .catch((err) => {
             this.$root.showErrorToast('수정에 실패하였습니다.',err);
