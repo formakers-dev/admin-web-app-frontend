@@ -9,12 +9,12 @@
             {{ option.text }}
           </option>
         </b-select>
-        <b-input v-model="appName"
+        <b-input v-model="value"
                  style="width: 100%"></b-input>
         <button class="button is-primary"
                 style="height: 100%"
                 @click="search"
-                :disabled="!!!appName || appName.length === 0"
+                :disabled="!!!value || value.length === 0"
         >검색
         </button>
       </b-field>
@@ -105,19 +105,26 @@
       return {
         appUsageList: [],
         isLoading: false,
-        searchKey: 'appName',
+        searchKey: this.appKey,
         options:{
           types:[
-            {text:'게임명', value:'appName'},
+            {text:'게임명', value:'app_name'},
+            {text:'패키지명', value:'package_name'},
           ]
         }
       };
     },
     props: {
-      appName: String,
+      appKey: String,
+      value: String,
     },
     created() {
-      if (this.appName) {
+      if (!!!this.appKey) {
+        this.searchKey = 'app_name';
+      }
+      console.log('searchKey=', this.searchKey);
+
+      if (this.value) {
         this.loadAppUsages();
       }
     },
@@ -127,8 +134,10 @@
       },
       loadAppUsages() {
         this.isLoading = true;
+        const path = '/api/usages/game?' + this.searchKey + '=' + this.value;
+        console.log(path);
 
-        request.get('/api/usages/game?app_name=' + this.appName)
+        request.get(path)
           .then((res) => {
             console.log(res);
             this.appUsageList = res.data.map(appUsage => {
