@@ -51,6 +51,10 @@ export default new Router({
       path: '/app-usages',
       name: 'app-usages',
       component: AppUsages,
+      props: (route) => ({
+        appKey: route.query.key,
+        value: route.query.value,
+      }),
     },
     {
       path: '/notification',

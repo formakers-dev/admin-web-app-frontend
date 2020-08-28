@@ -3,8 +3,28 @@
     <h1 class="title">게임 플레이 시간 조회</h1>
 
     <div class="content">
+      <b-field style="width: 100% !important;">
+        <b-select v-model="searchKey">
+          <option v-for="option in options.types" :key="option.value" :value="option.value">
+            {{ option.text }}
+          </option>
+        </b-select>
+        <b-input v-model="value"
+                 style="width: 100%"></b-input>
+        <button class="button is-primary"
+                style="height: 100%"
+                @click="search"
+                :disabled="!!!value || value.length === 0"
+        >검색
+        </button>
+      </b-field>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
 
+      <div v-if="appUsageList.length > 0">
+        플레이 인원수 : {{ getUserCount() }} 명,
+        총 플레이 시간 : {{ convertDuration(getTotalPlayTime()) }},
+        1인당 평균 플레이 시간 : {{ convertDuration(getAveragePlayTime()) }}
+      </div>
       <b-table
         ref="table"
         :data="appUsageList"
@@ -84,16 +104,40 @@
     data() {
       return {
         appUsageList: [],
-        isLoading: true,
+        isLoading: false,
+        searchKey: this.appKey,
+        options:{
+          types:[
+            {text:'게임명', value:'app_name'},
+            {text:'패키지명', value:'package_name'},
+          ]
+        }
       };
     },
+    props: {
+      appKey: String,
+      value: String,
+    },
     created() {
-      this.isLoading = true;
-      this.loadAppUsages();
+      if (!!!this.appKey) {
+        this.searchKey = 'app_name';
+      }
+      console.log('searchKey=', this.searchKey);
+
+      if (this.value) {
+        this.loadAppUsages();
+      }
     },
     methods: {
+      search() {
+        this.loadAppUsages();
+      },
       loadAppUsages() {
-        request.get('/api/usages/game')
+        this.isLoading = true;
+        const path = '/api/usages/game?' + this.searchKey + '=' + this.value;
+        console.log(path);
+
+        request.get(path)
           .then((res) => {
             console.log(res);
             this.appUsageList = res.data.map(appUsage => {
@@ -104,12 +148,20 @@
             this.isLoading = false;
           })
           .catch((err) => {
-            this.isLoading = false;
+            console.log('err', err);
+
+            let toastMsg;
+            if (err.name === 'NavigationDuplicated') {
+              toastMsg = '동일한 게임명 입니다';
+            } else {
+              toastMsg = '앱 사용 정보를 불러오는데 실패하였습니다.'
+            }
+
             this.$buefy.toast.open({
-              message: '앱 사용 정보를 불러오는데 실패하였습니다.',
+              message: toastMsg,
               type: 'is-danger',
             });
-            console.log(err.response);
+            this.isLoading = false;
           });
       },
       convertDateFormat(date) {
@@ -117,7 +169,25 @@
       },
       convertDuration(ms) {
         return timeUtil.millisecondsToDuration(ms);
-      }
+      },
+      getTotalPlayTime() {
+        return this.appUsageList.reduce((sum, appUsage) => {
+            sum.value = sum.value + appUsage.totalUsedTime;
+            return sum;
+          }, {value: 0}
+        ).value;
+      },
+      getUserCount() {
+        return this.appUsageList.reduce((users, appUsage) => {
+          if (!users.values.includes(appUsage.userId)) {
+            users.values.push(appUsage.userId);
+          }
+          return users;
+        }, { values: [] }).values.length;
+      },
+      getAveragePlayTime() {
+        return this.getTotalPlayTime() / this.getUserCount();
+      },
     },
   };
 </script>

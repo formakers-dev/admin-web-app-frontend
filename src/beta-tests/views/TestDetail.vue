@@ -276,6 +276,14 @@
                     <div class="media">
                       <div class="media-content">
                         <div style="position: absolute; right:20px">
+                          <b-button v-if="mission.type==='play'"
+                                    class="button"
+                                    type="is-warning"
+                                    style="margin-right: 5px"
+                                    size="is-small"
+                                    @click.stop="moveToAppUsage('package_name', mission.packageName)"
+                                    >플레이 시간 조회하기
+                          </b-button>
                           <b-button v-if="type==='update'"
                                     class="button"
                                     type="is-info"
@@ -656,6 +664,9 @@ export default {
       this.statistics.attendCount = betaTestStatistic.attend;
       this.statistics.completeRatio = ratio > 0 ? ratio.toFixed() : 0;
     },
+    moveToAppUsage(searchKey, value) {
+      this.$router.push('/app-usages?app_key=' + searchKey + '&value=' + value);
+    }
   },
 };
 </script>
