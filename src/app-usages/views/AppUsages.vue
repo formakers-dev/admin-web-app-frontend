@@ -119,6 +119,7 @@
       value: String,
     },
     created() {
+      console.log('appKey=', this.appKey);
       if (!!!this.appKey) {
         this.searchKey = 'app_name';
       }
