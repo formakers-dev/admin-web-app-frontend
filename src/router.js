@@ -52,7 +52,7 @@ export default new Router({
       name: 'app-usages',
       component: AppUsages,
       props: (route) => ({
-        appKey: route.query.key,
+        appKey: route.query.app_key,
         value: route.query.value,
       }),
     },
