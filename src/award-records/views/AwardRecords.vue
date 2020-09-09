@@ -385,9 +385,9 @@ export default {
         this.checkedRows = [];
         this.refreshAwardRecords();
 
-        if (!!checkedUserIdsForPointType && checkedUserIdsForPointType.length > 0) {
+        if (!!checkedIds && checkedIds.length > 0) {
           return request.delete('/api/points/beta-test/' + this.betaTestId + '/save', {
-            data: { userIds: checkedUserIdsForPointType }
+            data: { awardRecordIds: checkedIds }
           });
         } else {
           return Promise.resolve();
