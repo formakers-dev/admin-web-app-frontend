@@ -49,7 +49,7 @@
               </b-field>
 
               <b-field label="내용 이미지">
-                <b-input v-model="mission.descriptionImageUrl"
+                <b-input v-model.trim="mission.descriptionImageUrl"
                          placeholder="https://i.imgur.com/NBfLCwq.png"
                          :disabled="disabled"></b-input>
               </b-field>
@@ -111,7 +111,7 @@
 
                   <b-input
                     ref='mission.action'
-                    v-model="mission.action"
+                    v-model.trim="mission.action"
                     placeholder="https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&internal_web=true&entry.1042588232={email}"
                     required
                     :disabled="disabled"></b-input>

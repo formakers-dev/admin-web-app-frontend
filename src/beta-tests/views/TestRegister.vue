@@ -158,7 +158,7 @@
                   <b-input v-model="bugReportTitle" placeholder="[게임명] 버그 제보"></b-input>
                 </b-field>
                 <b-field label="설문 URL" horizontal>
-                  <b-input v-model="bugReportUrl"
+                  <b-input v-model.trim="bugReportUrl"
                            placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
                   ></b-input>
                 </b-field>
@@ -220,7 +220,7 @@
               <template slot="label">
                 <span class="has-text-danger">*</span> 앱 아이콘
               </template>
-              <b-input v-model="betaTest.iconImageUrl"
+              <b-input v-model.trim="betaTest.iconImageUrl"
                        ref="betaTest.iconImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"
                        required></b-input>
@@ -240,7 +240,7 @@
                 </b-tooltip>
               </template>
               <div>
-              <b-input v-model="betaTest.coverImageUrl"
+              <b-input v-model.trim="betaTest.coverImageUrl"
                        ref="betaTest.converImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"
                        required></b-input>
