@@ -380,6 +380,7 @@ import Mission from '../components/Mission.vue';
 import MissionCardPreview from '../components/MissionCardPreview.vue';
 import Draggable from 'vuedraggable';
 import MissionParticipants  from '../components/MissionParticipants';
+import config from '../../../config';
 
 export default {
   name: 'TestRegister',
@@ -764,7 +765,7 @@ export default {
             guide: '',
             packageName: '',
             actionType: 'internal_web',
-            action: '',
+            action: config.defaultURLs.playValidationSurvey,
             options: [
               'mandatory'
             ],
@@ -777,7 +778,7 @@ export default {
             descriptionImageUrl: 'https://i.imgur.com/ALESxUt.png',
             guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
             actionType: 'internal_web',
-            action: '',
+            action: config.defaultURLs.feedbackSurvey,
             options: [
               'mandatory',
               'repeatable',
