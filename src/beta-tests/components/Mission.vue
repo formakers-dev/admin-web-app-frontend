@@ -128,6 +128,15 @@
                   :disabled="disabled">
                 </b-taginput>
               </b-field>
+
+              <b-field label="응답 집계 시트 URL">
+                <div>
+                  <b-input
+                    ref='mission.feedbackAggregationUrl'
+                    v-model.trim="mission.feedbackAggregationUrl"
+                    :disabled="disabled"></b-input>
+                </div>
+              </b-field>
             </div>
           </div>
         </div>
