@@ -57,7 +57,11 @@
                    style="width: 500px" :src="mission.descriptionImageUrl"/>
             </div>
             <div class="column">
-              <b-field label="가이드 문구">
+              <b-field>
+                <template slot="label">
+                  가이드 문구
+                  <b-button class="is-small is-info is-outlined" @click="showGuideExampleModal">예시 문구들</b-button>
+                </template>
                 <b-input ref='mission.guide' type="textarea" v-model="mission.guide"
                          :disabled="disabled"></b-input>
               </b-field>
@@ -214,6 +218,20 @@
         if (this.mission.action && this.mission.action.indexOf('referrer=utm_source') < 0) {
           this.mission.action += '&referrer=utm_source%3Dformakers';
         }
+      },
+      showGuideExampleModal() {
+        if (!!!this.mission.guideExample || this.mission.guideExample.length <= 0) {
+          this.$root.showSuccessToast('해당 타입의 미션에는 아직 가이드 예시 문구가 없어요 😅');
+          return;
+        }
+
+        const guideExample = this.mission.guideExample.replace('\n', '</br>');
+
+        this.$buefy.dialog.alert({
+          title: '가이드 문구 예시',
+          message: guideExample,
+          confirmText: '닫기 👋',
+        });
       },
       create() {
         if (this.validate()) {
