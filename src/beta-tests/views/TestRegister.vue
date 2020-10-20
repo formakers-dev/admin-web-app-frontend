@@ -116,13 +116,24 @@
                     <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
                 </b-tooltip>
               </template>
+              <div>
               <b-input ref="betaTest.refTitle"
                        v-model="betaTest.refTitle"
                        placeholder="게임명"
                        required></b-input>
-              <b-checkbox v-model="isUseRefForTestTitle">
+              </div>
+              <div>
+              <b-checkbox class="is-small"
+                          v-model="isUseRefForTestTitle"
+                          @input="onChangedUseRefCheckbox">
                 테스트 제목과 연결하기
               </b-checkbox>
+              <b-checkbox class="is-small"
+                          v-model="isUseRefForBugReportUrl"
+                          @input="onChangedUseRefCheckbox">
+                버그리포트 URL과 연결하기
+              </b-checkbox>
+              </div>
             </b-field>
             <b-field horizontal>
               <template slot="label">
@@ -459,6 +470,7 @@ export default {
       isTargetToFomesMembers: false,
       isCustomizedProgressText: false,
       isUseRefForTestTitle: true,
+      isUseRefForBugReportUrl: true,
       packageName: '',
       iconImageUrlFromApps: '',
       testType: 'simple',
@@ -468,6 +480,7 @@ export default {
       bugReportTitle: '',
       betaTest: {
         title: '',
+        refTitle: '',
         plan:'v2_indie',
         description: '',
         subjectType: 'game-test',
@@ -502,9 +515,7 @@ export default {
     },
     'betaTest.refTitle': {
       handler(value) {
-        if (this.isUseRefForTestTitle) {
-          this.betaTest.title = "[" + value + "] 게임 테스트";
-        }
+        this.applyRefTitleToAssociatedFields(value);
       },
       deep:true
     }
@@ -518,6 +529,7 @@ export default {
     if (this.$route.query.id) {
       this.type='update';
       this.isUseRefForTestTitle = false;
+      this.isUseRefForBugReportUrl = false;
       this.getBetaTest();
     } else {
       this.type='add';
@@ -529,9 +541,20 @@ export default {
     this.activeStep = this.step > 0 ? this.step : this.activeStep;
   },
   methods: {
+    applyRefTitleToAssociatedFields(value) {
+      if (this.isUseRefForTestTitle) {
+        this.betaTest.title = "[" + value + "] 게임 테스트";
+      }
+
+      if (this.isUseRefForBugReportUrl) {
+        this.bugReportTitle = "[" + value + "] 버그 제보";
+        this.bugReportUrl = config.defaultURLs.bugReportURL + value;
+      }
+    },
     setDefaultForAdd() {
       this.isTargetToFomesMembers = true;
       this.isUseRefForTestTitle = true;
+      this.isUseRefForBugReportUrl = true;
 
       const openDate = new Date();
       openDate.setHours(9);
@@ -545,6 +568,8 @@ export default {
 
       this.betaTest.openDate = openDate;
       this.betaTest.closeDate = closeDate;
+
+      this.bugReportUrl = config.defaultURLs.bugReportURL;
     },
     prepareDataToRegister() {
       if (this.isTargetToFomesMembers) {
@@ -920,6 +945,11 @@ export default {
             '저장 전, <strong>오픈시각</strong>과 <strong>종료시각</strong>을 다시 한번 체크해주세요! 😉',
           confirmText: '네! 알겠습니다! 👍🏻',
         })
+      }
+    },
+    onChangedUseRefCheckbox(isChecked) {
+      if (isChecked) {
+        this.applyRefTitleToAssociatedFields(this.betaTest.refTitle);
       }
     }
   },

@@ -4,7 +4,7 @@ config.development = {
   serverBaseUrl: process.env.VUE_APP_SERVER_BASE_URL || 'http://localhost:3000',
   port: process.env.VUE_APP_PORT || 8989,
   defaultURLs: {
-    bugReportURL: '',
+    bugReportURL: 'https://docs.google.com/forms/d/e/1FAIpQLSdJKGI6y153cfTVMWtUF6465ejA_C2ra_oXPASDCTekG9i0xA/viewform?usp=pp_url&entry.1223559684={email}&entry.430293599=',
     playValidationSurvey: 'https://docs.google.com/forms/d/e/1FAIpQLScCqS2RkQJSb2vrbPA4hfcVWU-N2o6nisor8_FT7M-YudZH4A/viewform?usp=pp_url&entry.1817112629={email}&entry.1949077225={b-m-ids}',
     feedbackSurvey: 'https://docs.google.com/forms/d/e/1FAIpQLSd1oWwrrKNEPxdlsenNHuLUd6YeqQETHWb0pVXNFV0fDOn3MA/viewform?usp=pp_url&entry.1792507658={b-m-ids}&entry.1434060134={email}'
   },
