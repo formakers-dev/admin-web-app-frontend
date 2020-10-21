@@ -134,7 +134,15 @@
             </b-field>
             <b-field horizontal>
               <template slot="label">
-                <span class="has-text-danger">*</span> 제목
+                게임명
+              </template>
+              <b-input ref="betaTest.refTitle"
+                       v-model="betaTest.refTitle"
+                       disabled></b-input>
+            </b-field>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 테스트 제목
               </template>
               <b-input ref="betaTest.title"
                        v-model="betaTest.title"

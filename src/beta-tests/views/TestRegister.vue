@@ -108,7 +108,7 @@
             </b-field>
             <b-field horizontal>
               <template slot="label">
-                <span class="has-text-danger">*</span> 게임명
+                게임명
                 <b-tooltip type="is-dark"
                            label="보고서 제작용 스프레드 시트에서 사용하는 '게임명'과 동일하게 입력해주세요!"
                            position="is-right"
@@ -119,8 +119,7 @@
               <div>
               <b-input ref="betaTest.refTitle"
                        v-model="betaTest.refTitle"
-                       placeholder="게임명"
-                       required></b-input>
+                       placeholder="게임명"></b-input>
               </div>
               <div>
               <b-checkbox class="is-small"
