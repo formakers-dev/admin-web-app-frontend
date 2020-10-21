@@ -80,7 +80,7 @@
                   </b-button>
                 </b-tooltip>
               </template>
-              <b-input v-model="data.coverImageUrl"
+              <b-input v-model.trim="data.coverImageUrl"
                        validation-message="필수 입력 값입니다."
                        required
               ></b-input>
@@ -124,7 +124,7 @@
               ></b-input>
             </b-field>
             <b-field v-else>
-              <b-input v-model="data.deeplink"
+              <b-input v-model.trim="data.deeplink"
                        validation-message="필수 입력 값입니다."
                        required
               ></b-input>

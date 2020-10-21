@@ -108,7 +108,36 @@
             </b-field>
             <b-field horizontal>
               <template slot="label">
-                <span class="has-text-danger">*</span> 제목
+                <span class="has-text-danger">*</span> 게임명
+                <b-tooltip type="is-dark"
+                           label="보고서 제작용 스프레드 시트에서 사용하는 '게임명'과 동일하게 입력해주세요!"
+                           position="is-right"
+                           multilined>
+                    <b-icon size="is-small" icon="help-circle-outline" ></b-icon>
+                </b-tooltip>
+              </template>
+              <div>
+              <b-input ref="betaTest.refTitle"
+                       v-model="betaTest.refTitle"
+                       placeholder="게임명"
+                       required></b-input>
+              </div>
+              <div>
+              <b-checkbox class="is-small"
+                          v-model="isUseRefForTestTitle"
+                          @input="onChangedUseRefCheckbox">
+                테스트 제목과 연결하기
+              </b-checkbox>
+              <b-checkbox class="is-small"
+                          v-model="isUseRefForBugReportUrl"
+                          @input="onChangedUseRefCheckbox">
+                버그리포트 URL과 연결하기
+              </b-checkbox>
+              </div>
+            </b-field>
+            <b-field horizontal>
+              <template slot="label">
+                <span class="has-text-danger">*</span> 테스트 제목
               </template>
               <b-input ref="betaTest.title"
                        v-model="betaTest.title"
@@ -158,7 +187,7 @@
                   <b-input v-model="bugReportTitle" placeholder="[게임명] 버그 제보"></b-input>
                 </b-field>
                 <b-field label="설문 URL" horizontal>
-                  <b-input v-model="bugReportUrl"
+                  <b-input v-model.trim="bugReportUrl"
                            placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfCYFte9p8faIOve6YWYQkqDXdeJLggSnucAtnIYR0TsEF8fA/viewform?usp=pp_url&entry.1223559684={email}"
                   ></b-input>
                 </b-field>
@@ -220,7 +249,7 @@
               <template slot="label">
                 <span class="has-text-danger">*</span> 앱 아이콘
               </template>
-              <b-input v-model="betaTest.iconImageUrl"
+              <b-input v-model.trim="betaTest.iconImageUrl"
                        ref="betaTest.iconImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"
                        required></b-input>
@@ -240,7 +269,7 @@
                 </b-tooltip>
               </template>
               <div>
-              <b-input v-model="betaTest.coverImageUrl"
+              <b-input v-model.trim="betaTest.coverImageUrl"
                        ref="betaTest.converImageUrl"
                        placeholder="https://i.imgur.com/NBfLCwq.png"
                        required></b-input>
@@ -305,7 +334,7 @@
                                       v-for="type in options.testTypes"
                                       :key="type.key"
                                       :native-value="type.key"
-                                      @input="setMissionsByTestType"
+                                      @input="setDefaultMissionsByTestType"
                                       type="is-primary"
                                       size="is-small">
                         {{type.text}}
@@ -380,6 +409,7 @@ import Mission from '../components/Mission.vue';
 import MissionCardPreview from '../components/MissionCardPreview.vue';
 import Draggable from 'vuedraggable';
 import MissionParticipants  from '../components/MissionParticipants';
+import config from '../../../config';
 
 export default {
   name: 'TestRegister',
@@ -439,6 +469,8 @@ export default {
       result: '',
       isTargetToFomesMembers: false,
       isCustomizedProgressText: false,
+      isUseRefForTestTitle: true,
+      isUseRefForBugReportUrl: true,
       packageName: '',
       iconImageUrlFromApps: '',
       testType: 'simple',
@@ -448,6 +480,7 @@ export default {
       bugReportTitle: '',
       betaTest: {
         title: '',
+        refTitle: '',
         plan:'v2_indie',
         description: '',
         subjectType: 'game-test',
@@ -480,31 +513,64 @@ export default {
       },
       deep:true
     },
+    'betaTest.refTitle': {
+      handler(value) {
+        this.applyRefTitleToAssociatedFields(value);
+      },
+      deep:true
+    }
+  },
+  computed: {
+    'betaTest.title': function() {
+      return "[" + this.betaTest.refTitle + "] 게임 테스트";
+    }
   },
   created() {
     if (this.$route.query.id) {
       this.type='update';
+      this.isUseRefForTestTitle = false;
+      this.isUseRefForBugReportUrl = false;
       this.getBetaTest();
     } else {
       this.type='add';
-      this.isTargetToFomesMembers = true;
-      const openDate = new Date();
-      openDate.setHours(9);
-      openDate.setMinutes(0);
-      openDate.setSeconds(0);
-      const closeDate = new Date();
-      closeDate.setHours(23);
-      closeDate.setMinutes(59);
-      closeDate.setSeconds(59);
-      this.betaTest.openDate = openDate;
-      this.betaTest.closeDate = closeDate;
-      this.setMissionsByTestType();
+      this.setDefaultForAdd();
+      this.setDefaultMissionsByTestType();
     }
   },
   mounted() {
     this.activeStep = this.step > 0 ? this.step : this.activeStep;
   },
   methods: {
+    applyRefTitleToAssociatedFields(value) {
+      if (this.isUseRefForTestTitle) {
+        this.betaTest.title = "[" + value + "] 게임 테스트";
+      }
+
+      if (this.isUseRefForBugReportUrl) {
+        this.bugReportTitle = "[" + value + "] 버그 제보";
+        this.bugReportUrl = config.defaultURLs.bugReportURL + value;
+      }
+    },
+    setDefaultForAdd() {
+      this.isTargetToFomesMembers = true;
+      this.isUseRefForTestTitle = true;
+      this.isUseRefForBugReportUrl = true;
+
+      const openDate = new Date();
+      openDate.setHours(9);
+      openDate.setMinutes(0);
+      openDate.setSeconds(0);
+
+      const closeDate = new Date();
+      closeDate.setHours(23);
+      closeDate.setMinutes(59);
+      closeDate.setSeconds(59);
+
+      this.betaTest.openDate = openDate;
+      this.betaTest.closeDate = closeDate;
+
+      this.bugReportUrl = config.defaultURLs.bugReportURL;
+    },
     prepareDataToRegister() {
       if (this.isTargetToFomesMembers) {
         this.betaTest.status = 'test';
@@ -721,7 +787,7 @@ export default {
         delete this.betaTest.progressText;
       }
     },
-    setMissionsByTestType() {
+    setDefaultMissionsByTestType() {
       const missions = [];
       switch (this.testType) {
         case 'application+simple':
@@ -730,7 +796,7 @@ export default {
             order: missions.length + 1,
             type: 'survey',
             title: '참여 신청',
-            description: '[게임명] 클로즈드 베타 테스터 참여 신청',
+            description: '클로즈드 베타 테스터로 참여 신청을 해보세요!',
             descriptionImageUrl: 'https://i.imgur.com/F3EJAOs.png',
             guide: '• 참여 신청 후 설치권한 부여까지 약 1일이 소요됩니다.',
             actionType: 'internal_web',
@@ -744,8 +810,9 @@ export default {
             order: missions.length + 1,
             type: 'install',
             title: '게임 설치 & 플레이',
-            description: '[게임명] 게임을 설치하고 플레이하세요.',
+            description: '플레이 권장 시간은 30분 입니다.',
             descriptionImageUrl: 'https://i.imgur.com/XJNFDjy.png',
+            guideExample: '',
             guide: '• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.',
             packageName: '',
             actionType: 'default',
@@ -759,12 +826,12 @@ export default {
             order: missions.length + 1,
             type: 'play',
             title: '게임 플레이 인증하기',
-            description: '[게임명] 게임을 플레이하고 인증해주세요.(30분 이상 플레이 권장)',
+            description: '게임을 플레이하고 인증해주세요.(30분 이상 플레이 권장)',
             descriptionImageUrl: 'https://i.imgur.com/DHjiF8G.png',
             guide: '',
             packageName: '',
             actionType: 'internal_web',
-            action: '',
+            action: config.defaultURLs.playValidationSurvey,
             options: [
               'mandatory'
             ],
@@ -773,11 +840,12 @@ export default {
             order: missions.length + 1,
             type: 'survey',
             title: '플레이 후 소감 작성',
-            description: '[게임명]에 대한 구체적인 의견을 작성해주세요.',
+            description: '언제든 설문 참여가 가능합니다',
             descriptionImageUrl: 'https://i.imgur.com/ALESxUt.png',
-            guide: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
+            guide: '• 테스트 종료일 전까지 언제든 수정 가능합니다.',
+            guideExample: '• "참여 완료" 상태에도 소감을 수정할 수 있습니다.\n• 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다.',
             actionType: 'internal_web',
-            action: '',
+            action: config.defaultURLs.feedbackSurvey,
             options: [
               'mandatory',
               'repeatable',
@@ -877,6 +945,11 @@ export default {
             '저장 전, <strong>오픈시각</strong>과 <strong>종료시각</strong>을 다시 한번 체크해주세요! 😉',
           confirmText: '네! 알겠습니다! 👍🏻',
         })
+      }
+    },
+    onChangedUseRefCheckbox(isChecked) {
+      if (isChecked) {
+        this.applyRefTitleToAssociatedFields(this.betaTest.refTitle);
       }
     }
   },

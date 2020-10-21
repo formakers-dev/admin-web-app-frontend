@@ -24,7 +24,7 @@
               </b-button>
             </b-tooltip>
           </template>
-          <b-input v-model="epilogue.deeplink"
+          <b-input v-model.trim="epilogue.deeplink"
                    ref="deeplink"
                    required></b-input>
         </b-field>
