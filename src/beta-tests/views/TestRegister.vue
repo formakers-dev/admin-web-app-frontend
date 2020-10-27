@@ -831,7 +831,6 @@ export default {
             type: 'play',
             title: '게임 플레이 인증하기',
             description: '게임을 플레이하고 인증해주세요.(30분 이상 플레이 권장)',
-            descriptionImageUrl: 'https://i.imgur.com/DHjiF8G.png',
             guide: '',
             packageName: '',
             actionType: 'internal_web',
