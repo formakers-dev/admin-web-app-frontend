@@ -236,10 +236,13 @@
               <template slot="label">
                 게임 패키지명
               </template>
-              <b-input v-model="packageName"
+              <div>
+                <b-input v-model="unfilteredPackageName"
                        @input="resetAppsCheckStatus"
-                       ref="packageName"
+                       ref="unfilteredPackageName"
                        placeholder="com.formakers.fomes"></b-input>
+                <small> * 저장될 패키지명 : {{this.packageName}} </small>
+              </div>
               <b-button type="is-primary" @click="getApp(packageName)">
                 앱 정보 존재여부 확인
               </b-button>
@@ -386,7 +389,7 @@
                             <b-tag type="is-warning">{{mission.type}}</b-tag>
                           </p>
                           <p class="subtitle is-6" style="margin-top:10px"><i>Preview</i></p>
-                          <MissionCardPreview :mission="mission"/>
+                          <MissionCardPreview :mission="mission" />
                         </div>
                       </div>
                     </div>
@@ -470,6 +473,7 @@ export default {
       isCustomizedProgressText: false,
       isUseRefForTestTitle: true,
       isUseRefForBugReportUrl: true,
+      unfilteredPackageName: '',
       packageName: '',
       iconImageUrlFromApps: '',
       testType: 'simple',
@@ -517,11 +521,12 @@ export default {
         this.applyRefTitleToAssociatedFields(value);
       },
       deep:true
-    }
-  },
-  computed: {
-    'betaTest.title': function() {
-      return "[" + this.betaTest.refTitle + "] 게임 테스트";
+    },
+    'unfilteredPackageName': {
+      handler(value) {
+        this.packageName = value.replace(/[&|?].*/, '');
+      },
+      deep:true
     }
   },
   created() {
