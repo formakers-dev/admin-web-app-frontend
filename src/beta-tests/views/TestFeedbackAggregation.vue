@@ -92,27 +92,29 @@ export default {
   },
   created() {
     console.log('[TestFeedbackAggregation] created')
+    this.$root.isLoading = true;
     request.get('/api/beta-test/' + this.betaTestId + '/mission/' + this.missionId + '/feedback')
-    .then(res => {
-      console.log(res.data);
-      this.result.answers = res.data.answers;
-      this.result.userInfoMap = res.data.userInfoMap;
-      // this.result.answers = res.data.answers.map(answer => {
-      //   answer.userInfo = this.result.userInfoMap[answer["포메스 계정 이메일"]];
-      //   return answer;
-      // });
-      this.result.headerKeys = ["order"].concat(res.data.headerKeys)
-        .map(question => {
-          return {
-            field: question,
-            label: question,
-            sticky: true
-        }
-      });
-      console.log(this.result);
-    }).catch(err => {
-      this.$root.showErrorToast('조회하는데 실패하였습니다.', err);
-    })
+      .then(res => {
+        console.log(res.data);
+        this.result.answers = res.data.answers;
+        this.result.userInfoMap = res.data.userInfoMap;
+        // this.result.answers = res.data.answers.map(answer => {
+        //   answer.userInfo = this.result.userInfoMap[answer["포메스 계정 이메일"]];
+        //   return answer;
+        // });
+        this.result.headerKeys = ['order'].concat(res.data.headerKeys)
+          .map(question => {
+            return {
+              field: question,
+              label: question,
+              sticky: true
+            };
+          });
+        console.log(this.result);
+      })
+      .catch(err => {
+        this.$root.showErrorToast('조회하는데 실패하였습니다.', err);
+      })
   },
   mounted() {
   },
