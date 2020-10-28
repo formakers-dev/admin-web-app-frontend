@@ -23,12 +23,12 @@
         </div>
       </div>
     </div>
-    <div class="contents">
+    <div class="contents full-width">
       <b-table
-        :data="result.answerRows"
-        :columns="result.questions"
+        :data="result.answers"
+        :columns="result.headerKeys"
         :sticky-header="true"
-        style="height: 60vh"
+        style="height: 65vh"
       ></b-table>
     </div>
   </div>
@@ -55,8 +55,9 @@ export default {
   data() {
     return {
       result: {
-        questions: [],
-        answerRows: [],
+        headers: [],
+        headerKeys: [],
+        answers: [],
       }
     };
   },
@@ -65,8 +66,8 @@ export default {
     request.get('/api/beta-test/' + this.betaTestId + '/mission/' + this.missionId + '/feedback')
     .then(res => {
       console.log(res.data);
-      this.result.answerRows = res.data.answerRows;
-      this.result.questions = ["order"].concat(res.data.questions)
+      this.result.answers = res.data.answers;
+      this.result.headerKeys = ["order"].concat(res.data.headerKeys)
         .map(question => {
           return {
             field: question,
@@ -100,5 +101,8 @@ export default {
 .contents {
   margin: 0 auto !important;
   width: 85% !important;
+}
+.full-width {
+  width: 95% !important;
 }
 </style>
