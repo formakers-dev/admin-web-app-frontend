@@ -5,6 +5,7 @@ const NotificationManagement = () => import('./notifications/views/NotificationM
 const Events = () => import('./event-banners/views/EventBannerManagement.vue');
 const TestRegister = () => import('./beta-tests/views/TestRegister.vue');
 const TestDetail = () => import('./beta-tests/views/TestDetail.vue');
+const TestFeedbackAggregation = () => import('./beta-tests/views/TestFeedbackAggregation.vue');
 const TestList = () => import('./beta-tests/views/TestList.vue');
 const Users = () => import('./users/views/Users.vue');
 const Login = () => import('./auth/views/Login.vue');
@@ -41,6 +42,16 @@ export default new Router({
       path: '/test/list',
       name: 'test-list',
       component: TestList,
+    },
+    {
+      path: '/test/:betaTestId/mission/:missionId/results',
+      name: 'test-results',
+      component: TestFeedbackAggregation,
+      // props: true
+      props: (route) => ({
+        // user: userData,
+        ...route.params
+      }),
     },
     {
       path: '/users',

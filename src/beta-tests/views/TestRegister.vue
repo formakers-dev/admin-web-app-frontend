@@ -108,7 +108,7 @@
             </b-field>
             <b-field horizontal>
               <template slot="label">
-                <span class="has-text-danger">*</span> 게임명
+                게임명
                 <b-tooltip type="is-dark"
                            label="보고서 제작용 스프레드 시트에서 사용하는 '게임명'과 동일하게 입력해주세요!"
                            position="is-right"
@@ -119,8 +119,7 @@
               <div>
               <b-input ref="betaTest.refTitle"
                        v-model="betaTest.refTitle"
-                       placeholder="게임명"
-                       required></b-input>
+                       placeholder="게임명"></b-input>
               </div>
               <div>
               <b-checkbox class="is-small"
@@ -237,10 +236,13 @@
               <template slot="label">
                 게임 패키지명
               </template>
-              <b-input v-model="packageName"
+              <div>
+                <b-input v-model="unfilteredPackageName"
                        @input="resetAppsCheckStatus"
-                       ref="packageName"
+                       ref="unfilteredPackageName"
                        placeholder="com.formakers.fomes"></b-input>
+                <small> * 저장될 패키지명 : {{this.packageName}} </small>
+              </div>
               <b-button type="is-primary" @click="getApp(packageName)">
                 앱 정보 존재여부 확인
               </b-button>
@@ -387,7 +389,7 @@
                             <b-tag type="is-warning">{{mission.type}}</b-tag>
                           </p>
                           <p class="subtitle is-6" style="margin-top:10px"><i>Preview</i></p>
-                          <MissionCardPreview :mission="mission"/>
+                          <MissionCardPreview :mission="mission" />
                         </div>
                       </div>
                     </div>
@@ -471,6 +473,7 @@ export default {
       isCustomizedProgressText: false,
       isUseRefForTestTitle: true,
       isUseRefForBugReportUrl: true,
+      unfilteredPackageName: '',
       packageName: '',
       iconImageUrlFromApps: '',
       testType: 'simple',
@@ -518,11 +521,12 @@ export default {
         this.applyRefTitleToAssociatedFields(value);
       },
       deep:true
-    }
-  },
-  computed: {
-    'betaTest.title': function() {
-      return "[" + this.betaTest.refTitle + "] 게임 테스트";
+    },
+    'unfilteredPackageName': {
+      handler(value) {
+        this.packageName = value.replace(/[&|?].*/, '');
+      },
+      deep:true
     }
   },
   created() {
@@ -827,7 +831,6 @@ export default {
             type: 'play',
             title: '게임 플레이 인증하기',
             description: '게임을 플레이하고 인증해주세요.(30분 이상 플레이 권장)',
-            descriptionImageUrl: 'https://i.imgur.com/DHjiF8G.png',
             guide: '',
             packageName: '',
             actionType: 'internal_web',

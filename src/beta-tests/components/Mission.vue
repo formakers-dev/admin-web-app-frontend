@@ -68,14 +68,17 @@
 
               <b-field v-if="missionType === 'install' || missionType === 'play'">
                 <template slot="label">
-                  <span class="has-text-danger">*</span> 설치&플레이 게임의 패키지명
+                  <span class="has-text-danger">*</span> 게임 패키지명
                 </template>
+                <div>
                 <b-input
-                  v-model="mission.packageName"
-                  ref='mission.packageName'
+                  v-model="unfilteredPackageName"
+                  ref='unfilteredPackageName'
                   placeholder="com.formakers.fomes"
-                  @input="resetAction"
+                  @input="updateAction"
                   required :disabled="disabled"></b-input>
+                  <small> * 저장될 패키지명 : {{this.mission.packageName}} </small>
+                </div>
               </b-field>
 
               <b-field>
@@ -101,7 +104,7 @@
                   <div class="level" v-if="missionType === 'install'">
                     <div class="level-left">
                       <b-checkbox v-model="isGooglePlayUrl"
-                                  @input="resetAction" :disabled="disabled">
+                                  @input="updateAction" :disabled="disabled">
                         구글플레이 기본 마켓 URL 사용하기
                       </b-checkbox>
                     </div>
@@ -131,6 +134,15 @@
                   placeholder="미션 아이템의 옵션을 추가해주세요"
                   :disabled="disabled">
                 </b-taginput>
+              </b-field>
+
+              <b-field label="응답 집계 시트 URL">
+                <div>
+                  <b-input
+                    ref='mission.feedbackAggregationUrl'
+                    v-model.trim="mission.feedbackAggregationUrl"
+                    :disabled="disabled"></b-input>
+                </div>
               </b-field>
             </div>
           </div>
@@ -171,6 +183,7 @@
     data() {
       return {
         mission: {},
+        unfilteredPackageName: '',
         isGooglePlayUrl: false,
         actionType: 'default',
         missionType: 'survey',
@@ -180,13 +193,28 @@
         disabled: false
       };
     },
+    watch: {
+      'unfilteredPackageName': {
+        handler(value){
+          this.mission.packageName = value.replace(/[&|?].*/, '');
+        },
+        deep:true
+      }
+    },
     mounted() {
       this.mission = Object.assign({}, this.item);
       this.missionType = this.mission.type ? this.mission.type : 'survey';
-      this.mission.packageName = this.mission.packageName ? this.mission.packageName : this.packageName;
+      this.unfilteredPackageName = this.mission.packageName && this.mission.packageName.length > 0 ? this.mission.packageName : this.packageName;
+      console.log('unfileterd: ', this.unfilteredPackageName)
       this.setMissionType(this.missionType);
       this.actionType = this.mission.actionType ? this.mission.actionType : 'default';
       this.disabled = this.type === 'readonly';
+    },
+    filters: {
+      removeParams: function(value) {
+        console.log(this.mission);
+        return value.replace(/[&|?].*/, '');
+      }
     },
     methods: {
       setMissionType(selected) {
@@ -207,7 +235,7 @@
           this.mission.actionType = selected;
         }
       },
-      resetAction() {
+      updateAction() {
         if (this.isGooglePlayUrl) {
           this.mission.action = `https://play.google.com/store/apps/details?id=${this.mission.packageName}`;
         } else {
