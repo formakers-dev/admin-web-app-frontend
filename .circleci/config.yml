@@ -43,9 +43,8 @@ aliases:
 
   - &filter-dev-branch
     branches:
-      only:
-        - master
-        - jo
+      ignore:
+        - release
 
   - &filter-master-branch
     branches:

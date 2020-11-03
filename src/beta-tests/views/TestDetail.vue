@@ -284,6 +284,14 @@
                     <div class="media">
                       <div class="media-content">
                         <div style="position: absolute; right:20px">
+                          <b-button v-if="mission.feedbackAggregationUrl"
+                                    class="button"
+                                    type="is-info"
+                                    style="margin-right: 5px"
+                                    size="is-small"
+                                    @click.stop="moveToFeedbackAggregation(mission.betaTestId, mission)"
+                          >응답 집계 확인하기
+                          </b-button>
                           <b-button v-if="mission.type==='play'"
                                     class="button"
                                     type="is-warning"
@@ -674,6 +682,17 @@ export default {
     },
     moveToAppUsage(searchKey, value) {
       this.$router.push('/app-usages?app_key=' + searchKey + '&value=' + value);
+    },
+    moveToFeedbackAggregation(betaTestId, mission) {
+      this.$router.push({
+        name: 'test-results',
+        params: {
+          betaTestId: betaTestId,
+          missionId: mission._id,
+          mission: mission,
+          betaTest: this.betaTest,
+        }
+      });
     }
   },
 };
